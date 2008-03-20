@@ -1,0 +1,7 @@
+You can select block of text by pressing the ALT key while selecting the text with the left mouse.
+You can add up to 5 pdf documents to the About menu. Simply edit the "wide.ini" file and restart WIDE.
+Custom autocompletion list. In the "wide.ini" file you can add keywords to the AUTOCOMPLETION feature. The [AUTOCOMPLETIONLIST] list will enable the syntax highlighting.
+You can zoom-in/out the font dimension with CTRL+MOUSE SCROLL.
+You can shift right-left blocks of text using the TAB and SHIFT+TAB keys.
+It's possible to install WIDE into an USB pen: simply use relative paths for the executables.
+It's possible to set a Main File for compilation process: create a txt file (in the project directory) with the name of main file (only the name without path). This file must have ".wpf" extension. In Wide, open this project file: every time you run compilation, WIDE will compile the main file.

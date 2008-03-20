@@ -1,0 +1,26 @@
+CHANGELOG WIDE
+
+2008-03-19
+- nuova icona
+- Modifiche di Paolo
+
+
+2007-09-01
+- Tips of the day
+- Icone nei menu
+- syntax highlight
+- autocompletion
+- compilazione zcode, ulx
+
+
+2007-08-12
+- Aggiunto file di configurazione (wxFileConfig)
+- Aggiunto CTRL+S per salvare il file corrente
+
+2007-08-08
+- aggiunto tasto cancel quando chiudo
+
+2007-08-05
+- Aggiunti nome e descrizione delle costanti
+- Console attiva (test di compilazione file attuale senza switch)
+- Aggiunte le principali icone della toolbar
