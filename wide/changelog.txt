@@ -1,4 +1,5 @@
 CHANGELOG WIDE
+==============
 
 2008-03-23
 - sorgenti su cvs di berlios.de
