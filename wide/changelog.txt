@@ -1,5 +1,8 @@
 CHANGELOG WIDE
 
+2008-03-22
+- sorgenti su cvs di berlios.de
+
 2008-03-19
 - nuova icona
 - Modifiche di Paolo
