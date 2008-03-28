@@ -981,7 +981,7 @@ void MyFrame::OnRunZcode (wxCommandEvent &event) {
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome = e->GetFilename();
     nome.Replace(".inf", zcodeversion, true);    
-    wxString comando =  pConfig->Read("INFORMINTERPRETER", _T("")) +" "+"\""+nome+"\"";
+    wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
     console->AppendText(comando+"\n");
     wxArrayString output; 
     wxExecute(_T(comando));
