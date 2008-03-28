@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // File:        main.cpp
 // Purpose:     Wide Inform 6 Editor
-// Author:      silver.slade@tiscali.it
+// Author:      schillacia@users.berlios.de
 // Licence:     GNU GPL
 //////////////////////////////////////////////////////////////////////////////
   #include <wx/wx.h>
@@ -58,8 +58,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.9 beta"
-  #define BUILD " (build 20080320) "
+  #define VERSIONE "0.91 beta"
+  #define BUILD " (build 20080328) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -74,7 +74,6 @@ class MyFrame : public wxFrame {
         ID_Exit,
         ID_About,
         ID_Licence,
-        ID_Support,
         ID_Save_File,
         ID_Save_All,        //PL
         ID_NB_Close,
@@ -185,6 +184,7 @@ class MyFrame : public wxFrame {
     void OnNewFile(wxCommandEvent& evt);    
     void OnLoadFile(wxCommandEvent& evt);
     void LoadFile(wxString path, wxString name);    
+    bool checkOpenFile(wxString path);          //AS: check if file is opened
     void OnSaveFile(wxCommandEvent &event); 
     void OnSaveAll(wxCommandEvent &event);       //PL
     void OnExit(wxCommandEvent& evt);
@@ -195,8 +195,6 @@ class MyFrame : public wxFrame {
     // MENU ABOUT
     void OnAbout(wxCommandEvent& evt);
     void OnLicence(wxCommandEvent& evt);
-    void OnSupport(wxCommandEvent& evt);
-        
     void OnOptions(wxCommandEvent &event);   
     void LoadConfiguration();   
     void SaveConfiguration();
@@ -330,7 +328,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_Exit,       MyFrame::OnExit)
     EVT_MENU(MyFrame::ID_About,      MyFrame::OnAbout)
     EVT_MENU(MyFrame::ID_Licence,    MyFrame::OnLicence)
-    EVT_MENU(MyFrame::ID_Support,    MyFrame::OnSupport)    
     EVT_MENU(MyFrame::ID_NewFile,    MyFrame::OnNewFile)
     
     // MENU EDIT
@@ -722,7 +719,7 @@ void MyFrame::OnSaveFile (wxCommandEvent &evt) {
 
 void MyFrame::OnSaveAll (wxCommandEvent &evt) {     //PL
     int pannelli = auinotebook->GetPageCount();
-    for (int i=0; i<=pannelli ;i++) { 
+    for (int i=0; i<=pannelli-1 ;i++) { 
         Edit* e = (Edit*) auinotebook->GetPage(i);
         wxString titolo = auinotebook->GetPageText(i);
         if (e) {
@@ -1167,6 +1164,20 @@ void MyFrame::OnEdit (wxCommandEvent &event) {
     }       
 }
  
+bool MyFrame::checkOpenFile(wxString path)
+{
+    bool result = false;
+    int pannelli = auinotebook->GetPageCount();
+    for (int i=0; i<=pannelli-1 ;i++) {
+        Edit* e = (Edit*) auinotebook->GetPage(i);
+        wxString nome = e->GetFilename();
+        if (path.Cmp(nome)==0){
+            result = true;
+        }        
+    }    
+    return result;
+} 
+ 
 void MyFrame::LoadFile(wxString path, wxString name)
 {
     Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
@@ -1213,6 +1224,9 @@ void MyFrame::LoadFile(wxString path, wxString name)
     OnUpdateTree();
 }
  
+ 
+ 
+ 
 void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog* fd = new wxFileDialog(this, "Open File","","","*.*",
@@ -1221,6 +1235,13 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
     if (fd->ShowModal() == wxID_OK ){
         path = fd->GetPath();
         name = fd->GetFilename();
+        
+        // Check if file is already opened
+        if (checkOpenFile(path)){
+           wxMessageBox (_("File is already opened."),_("Warning"), wxOK | wxICON_WARNING);    
+           return;
+        }
+        
         Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
         stc->LoadFile (path);
         
@@ -1308,34 +1329,14 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
 }
 
 
-// MENU ABOUT
-void MyFrame::OnSupport(wxCommandEvent& WXUNUSED(event))
-{
-    wxAboutDialogInfo info;
-    info.SetName(_(NOMEAPPLICAZIONE));
-    info.SetVersion(_(VERSIONE));
-    info.SetWebSite(_T("http://www.slade.altervista.org/"), _T("Home page"));
-    info.SetDescription(wxString::FromAscii(
-"SUPPORT WIDE\n"
-"===============\n"
-"\n"
-"  If you like this program you can support it in these ways:\n"
-"  \n"
-"  1) Send a donation with PayPal to silver.slade@tiscali.it\n"
-"  2) Offer your help for documentation/test/translation in your language\n"
-"  3) Offer your help to make a linux/MacOs version of Wide (C++/WxWidgets knowledge required)\n"
-    ));
-    wxAboutBox(info);
-}
-
 void MyFrame::OnLicence(wxCommandEvent& WXUNUSED(event))
 {
 
     wxAboutDialogInfo info;
     info.SetName(_(NOMEAPPLICAZIONE));
     info.SetVersion(_(VERSIONE));
-    info.SetCopyright(_T("(C) 2007 - Alessandro Schillaci"));
-    info.SetWebSite(_T("http://www.slade.altervista.org/"), _T("Home page"));
+    info.SetCopyright(_T("(C) 2008 - Alessandro Schillaci"));
+    info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.SetDescription(wxString::FromAscii(
 "GNU GPL LICENCE\n"
 "===============\n"
@@ -1364,8 +1365,10 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     info.SetName(_(NOMEAPPLICAZIONE));
     info.SetVersion(_(VERSIONE));
     info.SetDescription(_(DESCRIZIONE));
-    info.SetCopyright(_T("(C) 2007 - silver.slade@tiscali.it"));
+    info.SetCopyright(_T("(C) 2008 - schillacia@users.berlios.de"));
+    info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.AddDeveloper(_T("Alessandro Schillaci"));
+    info.AddDeveloper(_T("Paolo Lucchesi"));
     wxAboutBox(info);    
 }
  
@@ -1443,14 +1446,6 @@ wxAuiNotebook* MyFrame::CreateNotebook()
                                     wxPoint(client_size.x, client_size.y),
                                     wxSize(430,200),
                                     wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
-   
-                      
-//   Edit* stc = new Edit( ctrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
-//   stc->LoadFile (_T("principe.inf"));
-//   ctrl->AddPage( stc , wxT("wxTextCtrl 2"));
-//   ctrl->AddPage( new wxTextCtrl( ctrl, wxID_ANY, wxT("Some more text"),
-//                wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER) , wxT("wxTextCtrl 2") );
-                
    return ctrl;
 }
 
@@ -1607,7 +1602,6 @@ wxMenuBar* MyFrame::CreateMenuBar()
 
     wxMenu* help = new wxMenu;
     help->Append(ID_Licence, _("Licence"));    
-    help->Append(ID_Support, _("Support"));        
     help->AppendSeparator();
     
     
@@ -1655,7 +1649,6 @@ wxToolBar* MyFrame::CreateToolBarCtrl()
     wxToolBar* tb2 = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                    wxTB_FLAT | wxTB_NODIVIDER);
     tb2->SetToolBitmapSize(wxSize(16,16));
-//    wxBitmap tb2_bmp_fileopen = wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_OTHER, wxSize(16,16));
    
     tb2->AddTool(ID_LoadFile, fileopen_xpm,"Open File");
     tb2->AddTool(ID_NewFile, new_xpm,"New File");    
