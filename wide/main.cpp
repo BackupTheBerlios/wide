@@ -2,7 +2,7 @@
 // File:        main.cpp
 // Purpose:     Wide Inform 6 Editor
 // Author:      schillacia@users.berlios.de
-// Licence:     GNU GPL
+// License:     GNU GPL
 //////////////////////////////////////////////////////////////////////////////
   #include <wx/wx.h>
   #include "wx/aui/aui.h"
@@ -59,7 +59,7 @@
 // COSTANTI
   #define SEP " - "
   #define VERSIONE "0.91 beta"
-  #define BUILD " (build 20080328) "
+  #define BUILD " (build 200803281713) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -73,7 +73,7 @@ class MyFrame : public wxFrame {
         ID_NewFile,        
         ID_Exit,
         ID_About,
-        ID_Licence,
+        ID_License,
         ID_Save_File,
         ID_Save_All,        //PL
         ID_NB_Close,
@@ -194,7 +194,7 @@ class MyFrame : public wxFrame {
                 
     // MENU ABOUT
     void OnAbout(wxCommandEvent& evt);
-    void OnLicence(wxCommandEvent& evt);
+    void OnLicense(wxCommandEvent& evt);
     void OnOptions(wxCommandEvent &event);   
     void LoadConfiguration();   
     void SaveConfiguration();
@@ -327,7 +327,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_LoadFile,   MyFrame::OnLoadFile)
     EVT_MENU(MyFrame::ID_Exit,       MyFrame::OnExit)
     EVT_MENU(MyFrame::ID_About,      MyFrame::OnAbout)
-    EVT_MENU(MyFrame::ID_Licence,    MyFrame::OnLicence)
+    EVT_MENU(MyFrame::ID_License,    MyFrame::OnLicense)
     EVT_MENU(MyFrame::ID_NewFile,    MyFrame::OnNewFile)
     
     // MENU EDIT
@@ -1352,7 +1352,7 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
 }
 
 
-void MyFrame::OnLicence(wxCommandEvent& WXUNUSED(event))
+void MyFrame::OnLicense(wxCommandEvent& WXUNUSED(event))
 {
 
     wxAboutDialogInfo info;
@@ -1361,7 +1361,7 @@ void MyFrame::OnLicence(wxCommandEvent& WXUNUSED(event))
     info.SetCopyright(_T("(C) 2008 - Alessandro Schillaci"));
     info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.SetDescription(wxString::FromAscii(
-"GNU GPL LICENCE\n"
+"GNU GPL LICENSE\n"
 "===============\n"
 "\n"
 "  This program is free software; you can redistribute it and/or modify\n"
@@ -1624,7 +1624,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
 
 
     wxMenu* help = new wxMenu;
-    help->Append(ID_Licence, _("Licence"));    
+    help->Append(ID_License, _("License"));    
     help->AppendSeparator();
     
     
