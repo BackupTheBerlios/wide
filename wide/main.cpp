@@ -919,6 +919,12 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
 
     // Azzero la console
     console->Clear();
+    
+    // PL: Salvo tutto
+    console->AppendText("Saving all...\n");
+    wxCommandEvent subev;
+    OnSaveAll(subev);
+    
     console->AppendText("Compiling in ULX format...\n");
     wxArrayString output;
 
@@ -988,6 +994,12 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
 
     // Azzero la console
     console->Clear();
+
+    // PL: Salvo tutto
+    console->AppendText("Saving all...\n");
+    wxCommandEvent subev;
+    OnSaveAll(subev);
+        
     console->AppendText("Compiling Z-Code...\n");
     wxArrayString output;
     
@@ -1180,6 +1192,7 @@ bool MyFrame::checkOpenFile(wxString path)
  
 void MyFrame::LoadFile(wxString path, wxString name)
 {
+    if (checkOpenFile(path)) return;
     Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
     stc->LoadFile (path);
 
@@ -1308,6 +1321,16 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
         
         // Apro il file
         LoadFile(mainFile,main_f);
+        
+        // PL: Leggo le altre righe, apro gli altri file
+        wxString proj_f;
+        wxString projFile;
+        for (;;) {
+            proj_f = file.GetNextLine();
+            if (file.Eof()) break;
+            projFile = path.Mid(0,path.Find('\\',true)+1) + proj_f;
+            LoadFile(projFile,proj_f);
+        }        
     }
 }
 
