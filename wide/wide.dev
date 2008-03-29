@@ -54,8 +54,8 @@ Linker=-lwxmsw28_stc_@@_-mwindows_@@_-lwxmsw28_@@_-lwxmsw28_gl_@@_-lwxtiff_@@_-l
 PreprocDefines=__WXMSW___@@___GNUWIN32___@@___WIN95___@@_
 CompilerSettings=0000000001001000000000
 Icon=wide.ico
-ExeOutput=Output\MingW
-ObjectOutput=Objects\MingW
+ExeOutput=Output\MingW\bin
+ObjectOutput=Objects\MingW\bin
 OverrideOutput=0
 OverrideOutputName=wide.exe
 HostApplication=
@@ -66,6 +66,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 compilerType=0
+PrivateResource=I:\devel\wide\Objects\MingW\bin\wide_private.rc
 
 [Profile2]
 ProfileName=Visual C++ 2005
@@ -93,6 +94,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 compilerType=1
+PrivateResource=
 
 [Unit2]
 FileName=defsext.h
