@@ -23,7 +23,6 @@
   
   #include "wx/fileconf.h" // Gestione file di configurazione
 
-  #include "wx/tipdlg.h" // Gestione tips
   #include "wx/generic/numdlgg.h" // Gestione input dialog
   #include "main.h" // Gestione file di configurazione
 
@@ -49,7 +48,7 @@
   #include "images/cut.xpm"                      
   #include "images/paste.xpm"                       
   #include "images/new.xpm"           
-  #include "images/tipicon.xpm"       
+//  #include "images/tipicon.xpm"       
   #include "images/addbookm.xpm"       
   #include "images/forward.xpm"       
 //  #include "images/back.xpm"             
@@ -58,8 +57,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.91 beta"
-  #define BUILD " (build 200803281713) "
+  #define VERSIONE "0.92 beta"
+  #define BUILD " (build 200803290840) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -89,7 +88,6 @@ class MyFrame : public wxFrame {
         ID_Find,
         ID_FindBack,     //PL
         ID_FindReplace,
-        ID_ShowTips,
         ID_NextMarker,
         ID_ToggleMarker,
         ID_RefreshTree,
@@ -161,10 +159,6 @@ class MyFrame : public wxFrame {
                               
      // tell the manager to "commit" all the changes just made
      m_mgr.Update();
-     
-     // Show tips
-     if (showTips) ShowTip();
-     
 
    }
  
@@ -177,8 +171,6 @@ class MyFrame : public wxFrame {
  
  // Funzioni
  private:
-    // Show tips
-    void ShowTip();
     
     // FILE MENU
     void OnNewFile(wxCommandEvent& evt);    
@@ -240,7 +232,6 @@ class MyFrame : public wxFrame {
     
     // HELP MENU
     void OnViewDoc(wxCommandEvent &event);
-    void OnTip(wxCommandEvent &event);    
    
  private:
      wxAuiManager m_mgr;
@@ -262,7 +253,6 @@ class MyFrame : public wxFrame {
      bool showVerbs;          
      bool showLineNumber;          
      bool wrapMode;      
-     bool showTips;    
 
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     
@@ -383,7 +373,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Opzioni
     EVT_MENU (myID_LINENUMBER,       MyFrame::OnEdit)
     EVT_MENU (myID_WRAPMODEON,       MyFrame::OnEdit)    
-    EVT_MENU (ID_ShowTips,           MyFrame::OnOptions)    
     
     // Eventi sull'oggetto TREE
     EVT_TREE_SEL_CHANGED(wxID_ANY, MyFrame::OnSelChanged)
@@ -398,8 +387,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (ID_Doc3,           MyFrame::OnViewDoc)                
     EVT_MENU (ID_Doc4,           MyFrame::OnViewDoc)                
     EVT_MENU (ID_Doc5,           MyFrame::OnViewDoc)     
-    
-    EVT_MENU (ID_Tip,           MyFrame::OnTip)                            
+
 END_EVENT_TABLE()
 
 
@@ -465,26 +453,6 @@ void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
         OnUpdateTree();
     }
 }
-
-// SHOW TIPS
-void MyFrame::ShowTip()
-{
-    static size_t s_index = (size_t)-1;
-    if ( s_index == (size_t)-1 )
-    {
-        srand(time(NULL));
-        // this is completely bogus, we don't know how many lines are there
-        // in the file, but who cares, it's a demo only...
-        s_index = rand() % 5;
-    }
-
-    wxTipProvider *tipProvider = wxCreateFileTipProvider(_T("tips.txt"), s_index);
-    bool showAtStartup = wxShowTip(this, tipProvider);
-    s_index = tipProvider->GetCurrentTip();
-    delete tipProvider;
-    showTips = showAtStartup;
-}
-
 
 // MENU - SEARCH
 void MyFrame::Search(wxCommandEvent &event){  //PL
@@ -633,8 +601,6 @@ void MyFrame::SaveConfiguration() {
      pConfig->Write(_T("SHOWLINENUMBERS"), showLineNumber);
      pConfig->Write(_T("WRAPMODE"), wrapMode);
      
-     pConfig->Write(_T("SHOWTIPS"), showTips);
-     
      pConfig->Write(_T("AUTOCOMPLETE_NUMBER"), autoCompleteNumber);
      
      
@@ -662,8 +628,6 @@ void MyFrame::LoadConfiguration() {
 
      showLineNumber = pConfig->Read(_T("SHOWLINENUMBERS"), 1l) != 0;
      wrapMode       = pConfig->Read(_T("WRAPMODE"), 1l) != 0;             
-     
-     showTips       = pConfig->Read(_T("SHOWTIPS"), 1l) != 0;             
      
      autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l)!=0;
      
@@ -759,15 +723,10 @@ void MyFrame::OnOptions(wxCommandEvent &event){
         case ID_ShowInclude: showIncludes=event.IsChecked(); OnUpdateTree(); break;        
         case ID_ShowVerb: showVerbs=event.IsChecked(); OnUpdateTree(); break;                 
         case ID_ExpandAllAlways: expandAllNodes=event.IsChecked(); OnUpdateTree(); break;                                
-        
-        case ID_ShowTips: showTips=event.IsChecked(); break;                                                
+
     }
 }
 
-// MENU HELP
-void MyFrame::OnTip(wxCommandEvent &event){
-    ShowTip();    
-}
 // MENU DOC
 void MyFrame::OnViewDoc(wxCommandEvent &event){
     int id = event.GetId();
@@ -1585,11 +1544,9 @@ wxMenuBar* MyFrame::CreateMenuBar()
     wxMenu* option = new wxMenu;
     option->AppendCheckItem (myID_LINENUMBER, _("Show line &numbers"));
     option->AppendCheckItem (myID_WRAPMODEON, _("&Wrap mode"));    
-    option->AppendCheckItem (ID_ShowTips, _("&Show Tips at Startup"));    
     
     option->Check(myID_LINENUMBER, showLineNumber);
     option->Check(myID_WRAPMODEON, wrapMode);
-    option->Check(ID_ShowTips, showTips);    
 
     // OBJECT TREE MENU
     wxMenu* otree = new wxMenu;
@@ -1627,11 +1584,6 @@ wxMenuBar* MyFrame::CreateMenuBar()
     help->Append(ID_License, _("License"));    
     help->AppendSeparator();
     
-    
-    wxMenuItem *tips = new wxMenuItem(help, ID_Tip, _("Tip of the day"));
-    tips->SetBitmap(tipicon_xpm);
-    help->Append(tips);
-  
     // HELP::ABOUT
     wxMenuItem *about = new wxMenuItem(help, ID_About, _("About Wide"));
     about->SetBitmap(help_xpm);

@@ -1,8 +1,41 @@
-*** WIDE ***
-Wx Inform Development Environment
-Versione 0.91 beta
+***************** WIDE ****************
+    Wx Inform Development Environment
+        http://wide.berlios.de/
+          Version 0.92 beta
+***************************************
 
-Setup:
+Contents:
+
+0) Intro
+1) Setup
+2) Tips about using Wide
+
+
+0) Intro
+========
+Wide is a win32 Editor for Inform6: is an Integrated Development Environment 
+(IDE), written entirely in C++/WxWidgets, for the creation of text adventures 
+based on Graham Nelson's Inform 6 Language. 
+
+With Wide it's possible to edit, compile and run a text adventure in the 
+z-code and glulx formats.
+
+Main Features:
+
+* Written in C++ (using the wxWidgets Library)
+* Currently, Wide runs on Win32 systems
+* Auto-completion window, in edit mode
+* Wide is just an exe file: no DLL, no virtual machines. Wide is a "real" 
+  stand alone application.
+* Wrap lines, show number of lines, code folding
+* Inform/Glulx support: wide supports zcode (5 and 8 version), ulx, blb, bres
+* Objects tree and Syntax highlight is customizable
+* Wide is portable: it can be started from an USB key/pen
+
+
+
+1) Setup
+========
 
 All the configuration informations are in the wide.ini file. You can edit this
 file with a text editor of your choice (for example SciTE or Notepad++).
@@ -97,3 +130,19 @@ appears.
 Following [AUTOCOMPLETIONLIST] there's a list of keyword used both for
 autocompletion and for syntax highlighting.
 
+
+2) Tips about using Wide
+========================
+
+* You can select block of text by pressing the ALT key while selecting the text with the left mouse.
+* You can add up to 5 pdf documents to the About menu. Simply edit the "wide.ini" file and restart WIDE.
+* Custom autocompletion list. In the "wide.ini" file you can add keywords to the AUTOCOMPLETION feature. 
+  The [AUTOCOMPLETIONLIST] list will enable the syntax highlighting.
+* You can zoom-in/out the font dimension with CTRL+MOUSE SCROLL.
+* You can shift right-left blocks of text using the TAB and SHIFT+TAB keys.
+* It's possible to install WIDE into an USB pen: simply use relative paths for the executables.
+* It's possible to set a Main File for compilation process: create a txt file (in the project directory)
+  with the name of main file (only the name without path). This file must have ".wpf" extension. In 
+  Wide, open this project file: every time you run compilation, WIDE will compile the main file.
+  
+  
