@@ -732,6 +732,7 @@ void MyFrame::OnViewDoc(wxCommandEvent &event){
     int id = event.GetId();
 //    wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION);
     wxString documento;
+    wxString comando;
     switch (id)
     {
         case ID_Doc1: documento = pConfig->Read("PDF1_PATH", _T("")); break;
@@ -742,8 +743,17 @@ void MyFrame::OnViewDoc(wxCommandEvent &event){
     }
     
     // Visualizzo il pdf o word   
-    wxString comando = pConfig->Read("PDFREADER", _T(""))+" \""+documento+"\"";
-    wxExecute(_T(comando));    
+    //wxString comando = pConfig->Read("PDFREADER", _T(""))+" \""+documento+"\"";
+    wxString pdfreader = pConfig->Read("PDFREADER", _T(""));
+    if (pdfreader == "") {
+        comando = "start \"\" \"" + documento + "\"";
+        comando.Replace("/","\\",true);
+        wxShell(_T(comando));
+    }
+    else {
+        comando = "\"" + pdfreader + "\" \"" + documento + "\"";
+        wxExecute(_T(comando));
+    }
 }
 
 
@@ -779,6 +789,11 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         blcFile = mainFile;
         blbFile = mainFile;
     }
+    wxString wpath=wxPathOnly(blbFile);
+    wxString mpath = wxGetCwd();
+    wxSetWorkingDirectory(wpath);
+
+
     blcFile.Replace(".inf", ".blc", true);
     blbFile.Replace(".inf", ".blb", true);
     wxString comando =  "\""+blc +"\""+" "+"\""+blcFile+"\""+" "+"\""+blbFile+"\"";
@@ -809,6 +824,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         }
         console->AppendText("Ok.");
     }    
+    wxSetWorkingDirectory(mpath);
 }
 
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
