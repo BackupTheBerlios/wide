@@ -1,6 +1,12 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-04
+- portato a 8 il numero max di documenti pdf
+- aggiunta voce Build All blorb file
+- rinominato menu inform -> zcode, voci blb -> blorb
+- aggiunta voce per estensione blorb in wide.ini
+
 2008-03-23
 - sorgenti su cvs di berlios.de
 

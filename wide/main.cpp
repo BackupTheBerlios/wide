@@ -102,11 +102,15 @@ class MyFrame : public wxFrame {
         ID_Doc3,                            
         ID_Doc4,    
         ID_Doc5,            
+        ID_Doc6,
+        ID_Doc7,
+        ID_Doc8,        
         ID_Tip,              
         ID_OpenProject,           
         ID_SaveProject,         
         ID_CloseProject,
         ID_CreateBlb,    
+        ID_MakeAllBlb,
         ID_CreateRes,                               
         ID_Fine = ID_Exit+1000
     };    
@@ -213,16 +217,17 @@ class MyFrame : public wxFrame {
     void OnSaveProject(wxCommandEvent &event);
     void OnCloseProject(wxCommandEvent &event);
     
-    // Inform menu
+    // ZCode menu
     void OnCompile (wxCommandEvent &event);
     void OnRunZcode(wxCommandEvent &event);
     void OnZcodeVersion(wxCommandEvent &event);
     
-    // Glulxe Menu
+    // Glulx Menu
     void OnCompileUlx(wxCommandEvent &event);
     void OnRunUlx(wxCommandEvent &event);        
     void OnCreateBlb(wxCommandEvent &event);    
     void OnCreateRes(wxCommandEvent &event);        
+    void OnMakeAllBlb(wxCommandEvent &event);
         
     // Metodi generici
     void OnClose (wxCloseEvent &event);
@@ -252,7 +257,8 @@ class MyFrame : public wxFrame {
      bool showIncludes;     
      bool showVerbs;          
      bool showLineNumber;          
-     bool wrapMode;      
+     bool wrapMode;   
+     bool autoCompleteSwitch;   
 
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     
@@ -264,8 +270,11 @@ class MyFrame : public wxFrame {
      wxString zcodeswitch;    
      
      wxString bres;         
-     wxString blc;              
-     wxString mainFile;                  
+     wxString blc;  
+     wxString bext;            
+     wxString mainFile;      
+     
+     bool inform_error;            
 
      // Funzioni di inzializzazione componenti
      wxTreeCtrl* CreateTreeCtrl();      // Definizione creazione albero
@@ -337,17 +346,18 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (ID_SaveProject,            MyFrame::OnSaveProject)
     EVT_MENU (ID_CloseProject,           MyFrame::OnCloseProject)        
     
-    // Inform    
+    // ZCode Menu    
     EVT_MENU (ID_Compile,            MyFrame::OnCompile)
     EVT_MENU (ID_RunZcode,           MyFrame::OnRunZcode)    
     EVT_MENU (ID_ZcodeVersion5,      MyFrame::OnZcodeVersion)    
     EVT_MENU (ID_ZcodeVersion8,      MyFrame::OnZcodeVersion)        
     
-    // GLULXE MENU
+    // Glulx Menu
     EVT_MENU (ID_CompileUlx,         MyFrame::OnCompileUlx)
     EVT_MENU (ID_RunUlx,             MyFrame::OnRunUlx)
     EVT_MENU (ID_CreateBlb,          MyFrame::OnCreateBlb)    
     EVT_MENU (ID_CreateRes,          MyFrame::OnCreateRes)        
+    EVT_MENU (ID_MakeAllBlb,         MyFrame::OnMakeAllBlb)
     
         
     // Object Tree    
@@ -368,11 +378,12 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (wxID_UNDO,             MyFrame::OnSingleEdit)
     EVT_MENU (wxID_REDO,             MyFrame::OnSingleEdit)
     EVT_MENU (ID_Save_File,          MyFrame::OnSaveFile)
-    EVT_MENU (ID_Save_All,          MyFrame::OnSaveAll)      //PL
+    EVT_MENU (ID_Save_All,           MyFrame::OnSaveAll)      //PL
 
     // Opzioni
     EVT_MENU (myID_LINENUMBER,       MyFrame::OnEdit)
-    EVT_MENU (myID_WRAPMODEON,       MyFrame::OnEdit)    
+    EVT_MENU (myID_WRAPMODEON,       MyFrame::OnEdit) 
+    EVT_MENU (myID_AUTOCOMPON,       MyFrame::OnEdit)   
     
     // Eventi sull'oggetto TREE
     EVT_TREE_SEL_CHANGED(wxID_ANY, MyFrame::OnSelChanged)
@@ -386,7 +397,10 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (ID_Doc2,           MyFrame::OnViewDoc)        
     EVT_MENU (ID_Doc3,           MyFrame::OnViewDoc)                
     EVT_MENU (ID_Doc4,           MyFrame::OnViewDoc)                
-    EVT_MENU (ID_Doc5,           MyFrame::OnViewDoc)     
+    EVT_MENU (ID_Doc5,           MyFrame::OnViewDoc) 
+    EVT_MENU (ID_Doc6,           MyFrame::OnViewDoc)
+    EVT_MENU (ID_Doc7,           MyFrame::OnViewDoc)
+    EVT_MENU (ID_Doc8,           MyFrame::OnViewDoc)    
 
 END_EVENT_TABLE()
 
@@ -600,6 +614,7 @@ void MyFrame::SaveConfiguration() {
 
      pConfig->Write(_T("SHOWLINENUMBERS"), showLineNumber);
      pConfig->Write(_T("WRAPMODE"), wrapMode);
+     pConfig->Write(_T("AUTOCOMPLETION"), autoCompleteSwitch);
      
      pConfig->Write(_T("AUTOCOMPLETE_NUMBER"), autoCompleteNumber);
      
@@ -626,8 +641,9 @@ void MyFrame::LoadConfiguration() {
      showIncludes   = pConfig->Read(_T("OBJECT_TREE_SHOW_INCLUDES"), 1l) != 0;
      showVerbs      = pConfig->Read(_T("OBJECT_TREE_SHOW_VERBS"), 1l) != 0;
 
-     showLineNumber = pConfig->Read(_T("SHOWLINENUMBERS"), 1l) != 0;
-     wrapMode       = pConfig->Read(_T("WRAPMODE"), 1l) != 0;             
+     showLineNumber     = pConfig->Read(_T("SHOWLINENUMBERS"), 1l) != 0;
+     wrapMode           = pConfig->Read(_T("WRAPMODE"), 1l) != 0; 
+     autoCompleteSwitch = pConfig->Read(_T("AUTOCOMPLETION"), 1l) != 0;
      
      autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l)!=0;
      
@@ -638,7 +654,8 @@ void MyFrame::LoadConfiguration() {
                 pConfig->Read("LIBRARYPATH2", _T(""))+_T(",")+
                 pConfig->Read("LIBRARYPATH3", _T(""));                
     bres = pConfig->Read("BRESPATH", _T(""));                
-    blc  = pConfig->Read("BLCPATH", _T(""));                              
+    blc  = pConfig->Read("BLCPATH", _T(""));
+    bext = pConfig->Read("BLORBEXTENSION", _T(""));                              
 }
 
 
@@ -740,6 +757,9 @@ void MyFrame::OnViewDoc(wxCommandEvent &event){
         case ID_Doc3: documento = pConfig->Read("PDF3_PATH", _T("")); break;
         case ID_Doc4: documento = pConfig->Read("PDF4_PATH", _T("")); break;
         case ID_Doc5: documento = pConfig->Read("PDF5_PATH", _T("")); break;
+        case ID_Doc6: documento = pConfig->Read("PDF6_PATH", _T("")); break;
+        case ID_Doc7: documento = pConfig->Read("PDF7_PATH", _T("")); break;
+        case ID_Doc8: documento = pConfig->Read("PDF8_PATH", _T("")); break;
     }
     
     // Visualizzo il pdf o word   
@@ -757,7 +777,7 @@ void MyFrame::OnViewDoc(wxCommandEvent &event){
 }
 
 
-// MENU INFORM ******************************************************
+// MENU ZCODE  ******************************************************
 // MENU - SEARCH
 void MyFrame::OnZcodeVersion(wxCommandEvent &event){
     int id = event.GetId();
@@ -776,7 +796,7 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
 // Create Blb
 void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
+    if (event.GetId() != ID_MakeAllBlb) console->Clear();
     console->AppendText("Creating blb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString blcFile, blbFile;
@@ -795,7 +815,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
 
 
     blcFile.Replace(".inf", ".blc", true);
-    blbFile.Replace(".inf", ".blb", true);
+    blbFile.Replace(".inf", "."+bext, true);
     wxString comando =  "\""+blc +"\""+" "+"\""+blcFile+"\""+" "+"\""+blbFile+"\"";
 
     //wxString comando =  blc +" "+blcFile+" "+blbFile;    
@@ -810,7 +830,8 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("OK.");
+        console->AppendText("ERROR.\n");
+        inform_error = true;
     }
     else
     {
@@ -822,15 +843,16 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("Ok.");
+        console->AppendText("Ok.\n");
+        inform_error = false;
     }    
     wxSetWorkingDirectory(mpath);
 }
 
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Creating Resources for BLB file...\n");
+    if (event.GetId() != ID_MakeAllBlb) console->Clear();
+    console->AppendText("Creating Resources for blorb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString bresFile;
     if (mainFile==""){
@@ -854,7 +876,8 @@ void MyFrame::OnCreateRes (wxCommandEvent &event) {
             console->AppendText("\n");
         }
 
-        console->AppendText("OK.");
+        console->AppendText("ERROR.\n");
+        inform_error = true;
     }
     else
     {
@@ -866,8 +889,20 @@ void MyFrame::OnCreateRes (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("Ok.");
+        console->AppendText("Ok.\n");
+        inform_error = false;
     }
+}
+
+// Make All Blb
+void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
+    if (auinotebook->GetPageCount()==0){ return; }
+    console->Clear();
+    OnCreateRes(event); 
+    if (inform_error) return;
+    OnCompileUlx(event); 
+    if (inform_error) return;
+    OnCreateBlb(event);
 }
 
 
@@ -893,12 +928,12 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
 
     // Azzero la console
-    console->Clear();
+    if (event.GetId() != ID_MakeAllBlb) console->Clear();
     
     // PL: Salvo tutto
     console->AppendText("Saving all...\n");
-    wxCommandEvent subev;
-    OnSaveAll(subev);
+    //wxCommandEvent subev;
+    OnSaveAll(event);
     
     console->AppendText("Compiling in ULX format...\n");
     wxArrayString output;
@@ -931,7 +966,9 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
             console->AppendText("\n");
         }
 
-        console->AppendText("ERROR.");
+        console->AppendText("ERROR.\n");
+        inform_error = true;
+
     }
     else
     {
@@ -944,7 +981,8 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("Ok.");
+        console->AppendText("Ok.\n");
+        inform_error = false;
     }
 }
 
@@ -1004,7 +1042,8 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("ERROR.");
+        console->AppendText("ERROR.\n");
+        inform_error = true;
     }
     else
     {
@@ -1016,7 +1055,8 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
             console->AppendText(output[n].c_str());
             console->AppendText("\n");
         }
-        console->AppendText("Ok.");
+        console->AppendText("Ok.\n");
+        inform_error = true;
     }
 }
 
@@ -1140,6 +1180,7 @@ void MyFrame::OnEdit (wxCommandEvent &event) {
     {
         case myID_LINENUMBER: showLineNumber=event.IsChecked(); break;
         case myID_WRAPMODEON: wrapMode=event.IsChecked(); break;
+        case myID_AUTOCOMPON: autoCompleteSwitch=event.IsChecked(); break;
     }    
     
     int pannelli = auinotebook->GetPageCount();
@@ -1537,32 +1578,37 @@ wxMenuBar* MyFrame::CreateMenuBar()
     project->Append (ID_CloseProject, _("&Close Project"));
     
     
-    // Inform MENU
-    wxMenu* inform = new wxMenu;
-    inform->Append (ID_Compile, _("&Compile Zcode\tF8"));
-    inform->Append (ID_RunZcode, _("&Run Zcode\tCtrl+F8"));
-    inform->AppendSeparator();
-    inform->AppendRadioItem (ID_ZcodeVersion5, _("Zcode version 5"));
-    inform->AppendRadioItem (ID_ZcodeVersion8, _("Zcode version 8"));
+    // ZCODE MENU
+    wxMenu* zcode = new wxMenu;
+    zcode->Append (ID_Compile, _("&Compile Zcode\tF8"));
+    zcode->Append (ID_RunZcode, _("&Run Zcode\tCtrl+F8"));
+    zcode->AppendSeparator();
+    zcode->AppendRadioItem (ID_ZcodeVersion5, _("Zcode version 5"));
+    zcode->AppendRadioItem (ID_ZcodeVersion8, _("Zcode version 8"));
     
     
-    // GLULXE MENU
-    wxMenu* glulxe = new wxMenu;
-    glulxe->Append (ID_CompileUlx, _("&Compile Ulx\tF9"));            
-    glulxe->Append (ID_RunUlx, _("&Run Ulx\tCtrl+F9"));
-    glulxe->AppendSeparator();
-    glulxe->Append (ID_CreateRes, _("&Create Resources\tF10"));
-    glulxe->Append (ID_CreateBlb, _("&Create Blb File\tF11"));
-    glulxe->Append (wxID_ANY, _("&Run Blb\tCtrl+F11"));
+    // GLULX MENU
+    wxMenu* glulx = new wxMenu;
+    glulx->Append (ID_CompileUlx, _("&Compile Ulx\tF9"));            
+    glulx->Append (ID_RunUlx, _("&Run Ulx\tCtrl+F9"));
+    glulx->AppendSeparator();
+    glulx->Append (ID_CreateRes, _("&Create Resources\tF10"));
+    glulx->Append (ID_CreateBlb, _("&Create Blorb File\tCtrl+F10"));
+    glulx->Append (ID_MakeAllBlb, _("&Build All Blorb File\tF11"));
+    glulx->Append (wxID_ANY, _("&Run Blorb\tCtrl+F11"));
 
 
     // OPTION MENU
     wxMenu* option = new wxMenu;
     option->AppendCheckItem (myID_LINENUMBER, _("Show line &numbers"));
     option->AppendCheckItem (myID_WRAPMODEON, _("&Wrap mode"));    
+    option->AppendCheckItem (myID_AUTOCOMPON, _("&Autocomplete"));
+    
     
     option->Check(myID_LINENUMBER, showLineNumber);
     option->Check(myID_WRAPMODEON, wrapMode);
+    option->Check(myID_AUTOCOMPON, autoCompleteSwitch);
+    
 
     // OBJECT TREE MENU
     wxMenu* otree = new wxMenu;
@@ -1594,6 +1640,10 @@ wxMenuBar* MyFrame::CreateMenuBar()
     if (pConfig->Read("PDF3_NAME", _T(""))!=""){docs->Append(ID_Doc3, pConfig->Read("PDF3_NAME", _T("")));}
     if (pConfig->Read("PDF4_NAME", _T(""))!=""){docs->Append(ID_Doc4, pConfig->Read("PDF4_NAME", _T("")));}
     if (pConfig->Read("PDF5_NAME", _T(""))!=""){docs->Append(ID_Doc5, pConfig->Read("PDF5_NAME", _T("")));}
+    if (pConfig->Read("PDF6_NAME", _T(""))!=""){docs->Append(ID_Doc6, pConfig->Read("PDF6_NAME", _T("")));}
+    if (pConfig->Read("PDF7_NAME", _T(""))!=""){docs->Append(ID_Doc7, pConfig->Read("PDF7_NAME", _T("")));}
+    if (pConfig->Read("PDF8_NAME", _T(""))!=""){docs->Append(ID_Doc8, pConfig->Read("PDF8_NAME", _T("")));}
+    
 
 
     wxMenu* help = new wxMenu;
@@ -1609,8 +1659,8 @@ wxMenuBar* MyFrame::CreateMenuBar()
     mb->Append(edit, _("Edit"));
     mb->Append(search, _("Search"));        
     mb->Append(project , _("Project"));            
-    mb->Append(inform, _("Inform"));
-    mb->Append(glulxe, _("Glulxe"));    
+    mb->Append(zcode, _("ZCode"));
+    mb->Append(glulx, _("Glulx"));    
     mb->Append(otree, _("Object Tree"));
     mb->Append(option, _("Options"));
     mb->Append(docs, _("Documents"));        

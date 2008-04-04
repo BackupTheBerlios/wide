@@ -3,7 +3,7 @@
 // Purpose:     STC test declarations
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: defsext.h,v 1.1 2008/03/20 10:37:56 schillacia Exp $
+// RCS-ID:      $Id: defsext.h,v 1.2 2008/04/04 21:16:44 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -57,6 +57,7 @@ enum {
     myID_OVERTYPE,
     myID_READONLY,
     myID_WRAPMODEON,
+    myID_AUTOCOMPON,
     myID_CHANGECASE,
     myID_CHANGELOWER,
     myID_CHANGEUPPER,
