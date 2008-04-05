@@ -263,6 +263,7 @@ class MyFrame : public wxFrame {
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     
 
+
      // INFORM STUFF
      wxString informCompiler;
      wxString libraryPath;     
@@ -645,7 +646,7 @@ void MyFrame::LoadConfiguration() {
      wrapMode           = pConfig->Read(_T("WRAPMODE"), 1l) != 0; 
      autoCompleteSwitch = pConfig->Read(_T("AUTOCOMPLETION"), 1l) != 0;
      
-     autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l)!=0;
+     autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l);
      
      // Inform Stuff
      informCompiler = pConfig->Read("INFORMCOMPILER", _T(""));

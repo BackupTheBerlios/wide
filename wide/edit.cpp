@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.1 2008/03/20 10:37:56 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.2 2008/04/05 07:31:50 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -102,6 +102,10 @@ BEGIN_EVENT_TABLE (Edit, wxStyledTextCtrl)
     // stc
     EVT_STC_MARGINCLICK (wxID_ANY,     Edit::OnMarginClick)
     EVT_STC_CHARADDED (wxID_ANY,       Edit::OnCharAdded)
+    
+    // custom
+    EVT_MENU (myID_AUTOCOMPON,         Edit::OnAutocompOn)
+    
 END_EVENT_TABLE()
 
 Edit::Edit (wxWindow *parent, wxWindowID id,
@@ -116,6 +120,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     m_DividerID = 1;
     m_FoldingID = 2;
     autoCompleteNumber = 2;
+    autocomplete=true;
 
     // initialize language
     m_language = NULL;
@@ -301,6 +306,15 @@ void Edit::OnWrapmodeOn (wxCommandEvent &WXUNUSED(event)) {
     SetWrapMode (GetWrapMode() == 0? wxSTC_WRAP_WORD: wxSTC_WRAP_NONE);
 }
 
+void Edit::OnAutocompOn (wxCommandEvent &WXUNUSED(event)) {
+    if (autocomplete) {
+        autocomplete = false;
+    }
+    else{
+        autocomplete = true;
+    }
+}
+
 void Edit::OnUseCharset (wxCommandEvent &event) {
     int Nr;
     int charset = GetCodePage();
@@ -363,14 +377,16 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         GotoPos(PositionFromLine (currentLine) + lineInd);
     }
     // SKILLO
-    int pos = GetCurrentPos();
-    int start = WordStartPosition(pos, true);
-    if (pos - start > autoCompleteNumber && !AutoCompActive())    // require x characters to show auto-complete
-    {
-//        if (HasWord(GetTextRange(start, pos), m_wordlist))
-            AutoCompShow(pos-start, m_wordlist);
+    if (autocomplete){
+        int pos = GetCurrentPos();
+        int start = WordStartPosition(pos, true);
+        if (pos - start > autoCompleteNumber && !AutoCompActive())    // require x characters to show auto-complete
+        {
+    //        if (HasWord(GetTextRange(start, pos), m_wordlist))
+                AutoCompShow(pos-start, m_wordlist);
+        }
+        // SKILLO
     }
-    // SKILLO
     
 }
 

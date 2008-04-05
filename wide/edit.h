@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.1 2008/03/20 10:37:56 schillacia Exp $
+// RCS-ID:      $Id: edit.h,v 1.2 2008/04/05 07:31:50 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -112,6 +112,9 @@ public:
     // Metodo che imposta le words per l'autocompletion
     void SetWordlist(wxString &wl) { m_wordlist=wl; }   
     void SetAutoCompleteNumber(int n) {autoCompleteNumber = n;};
+    
+    // Custom
+    void OnAutocompOn(wxCommandEvent &event);
 
 private:
     // file
@@ -128,6 +131,7 @@ private:
     int m_DividerID;
     
     int autoCompleteNumber;
+    bool autocomplete;
     
     // Elenco di words per l'auto completion
     wxString m_wordlist;
