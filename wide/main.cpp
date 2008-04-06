@@ -57,8 +57,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.92 beta"
-  #define BUILD " (build 200803290840) "
+  #define VERSIONE "0.92.1 beta"
+  #define BUILD " (build 200804060900) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -95,6 +95,7 @@ class MyFrame : public wxFrame {
         ID_CompileUlx,                
         ID_RunZcode,
         ID_RunUlx,  
+        ID_RunBlb,      // AS
         ID_ZcodeVersion5,
         ID_ZcodeVersion8,        
         ID_Doc1,            
@@ -225,6 +226,7 @@ class MyFrame : public wxFrame {
     // Glulx Menu
     void OnCompileUlx(wxCommandEvent &event);
     void OnRunUlx(wxCommandEvent &event);        
+    void OnRunBlb(wxCommandEvent &event);        
     void OnCreateBlb(wxCommandEvent &event);    
     void OnCreateRes(wxCommandEvent &event);        
     void OnMakeAllBlb(wxCommandEvent &event);
@@ -356,6 +358,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Glulx Menu
     EVT_MENU (ID_CompileUlx,         MyFrame::OnCompileUlx)
     EVT_MENU (ID_RunUlx,             MyFrame::OnRunUlx)
+    EVT_MENU (ID_RunBlb,             MyFrame::OnRunBlb)    
     EVT_MENU (ID_CreateBlb,          MyFrame::OnCreateBlb)    
     EVT_MENU (ID_CreateRes,          MyFrame::OnCreateRes)        
     EVT_MENU (ID_MakeAllBlb,         MyFrame::OnMakeAllBlb)
@@ -907,13 +910,48 @@ void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
 }
 
 
+
+// Run BLB
+void MyFrame::OnRunBlb (wxCommandEvent &event) {
+    if (auinotebook->GetPageCount()==0){ return; }
+    console->Clear();
+    console->AppendText("Running blorb...\n");
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    wxString nome;
+    
+    // Running the MAIN FILE
+    if (mainFile==""){
+        nome = e->GetFilename();
+    }
+    else{
+        console->AppendText("Using MainFile: "+mainFile+"\n");
+        nome = mainFile;
+    }
+    // qui
+    nome.Replace(".inf", "."+bext, true);
+    wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
+    console->AppendText(comando+"\n");
+    wxArrayString output;
+    wxExecute(_T(comando));
+}
+
 // Run Ulx
+// Should I Run the MAIN FILE
 void MyFrame::OnRunUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     console->Clear();
-    console->AppendText("Running zcode...\n");
+    console->AppendText("Running glulx...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
-    wxString nome = e->GetFilename();
+
+    // Running the MAIN FILE
+    wxString nome;
+    if (mainFile==""){
+        nome = e->GetFilename();
+    }
+    else{
+        console->AppendText("Using MainFile: "+mainFile+"\n");
+        nome = mainFile;
+    }        
     nome.Replace(".inf", ".ulx", true);
     wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
     console->AppendText(comando+"\n");
@@ -1596,7 +1634,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     glulx->Append (ID_CreateRes, _("&Create Resources\tF10"));
     glulx->Append (ID_CreateBlb, _("&Create Blorb File\tCtrl+F10"));
     glulx->Append (ID_MakeAllBlb, _("&Build All Blorb File\tF11"));
-    glulx->Append (wxID_ANY, _("&Run Blorb\tCtrl+F11"));
+    glulx->Append (ID_RunBlb, _("&Run Blorb\tCtrl+F11"));
 
 
     // OPTION MENU
