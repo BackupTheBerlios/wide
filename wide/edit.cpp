@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.2 2008/04/05 07:31:50 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.3 2008/04/06 22:29:47 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -143,6 +143,9 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
+    StyleSetForeground(mySTC_TYPE_WORD1, wxColour (_T("DARK GREEN"))); // PL, try
+    StyleSetForeground(mySTC_TYPE_WORD2, wxColour (_T("BROWN")));    // PL, try
+
     InitializePrefs (_T("INFORM"));
 
     // set visibility
@@ -307,12 +310,7 @@ void Edit::OnWrapmodeOn (wxCommandEvent &WXUNUSED(event)) {
 }
 
 void Edit::OnAutocompOn (wxCommandEvent &WXUNUSED(event)) {
-    if (autocomplete) {
-        autocomplete = false;
-    }
-    else{
-        autocomplete = true;
-    }
+    autocomplete = !autocomplete;
 }
 
 void Edit::OnUseCharset (wxCommandEvent &event) {

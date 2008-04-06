@@ -182,6 +182,7 @@ class MyFrame : public wxFrame {
     void OnLoadFile(wxCommandEvent& evt);
     void LoadFile(wxString path, wxString name);    
     bool checkOpenFile(wxString path);          //AS: check if file is opened
+    void setNewStc(Edit* stc);                  //PL: New stc settings
     void OnSaveFile(wxCommandEvent &event); 
     void OnSaveAll(wxCommandEvent &event);       //PL
     void OnExit(wxCommandEvent& evt);
@@ -258,13 +259,12 @@ class MyFrame : public wxFrame {
      bool showClasses;     
      bool showIncludes;     
      bool showVerbs;          
-     bool showLineNumber;          
-     bool wrapMode;   
-     bool autoCompleteSwitch;   
 
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     
-
+     bool autoCompleteSwitch;
+     bool showLineNumber;
+     bool wrapMode;
 
      // INFORM STUFF
      wxString informCompiler;
@@ -429,39 +429,7 @@ void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
         Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
         stc->LoadFile (path);
 
-        // Impostazioni del nuovo stc
-        if (showLineNumber){
-            stc->SetMarginWidth (0, stc->TextWidth (wxSTC_STYLE_LINENUMBER, _T("_999999")));
-        }
-        else{
-            stc->SetMarginWidth (0, 0);
-        }
-        if (wrapMode){
-            stc->SetWrapMode (wxSTC_WRAP_WORD);
-        }
-        else{
-            stc->SetWrapMode (wxSTC_WRAP_NONE);
-        }
-
-        stc->SetCaretLineVisible(true);
-        stc->SetCaretLineBackground(wxColour(152,248,248,wxALPHA_OPAQUE));
-        stc->AutoCompSetIgnoreCase(true);
-        stc->AutoCompSetAutoHide(true);
-
-        // Recupero tutte le wordlist dal file di configurazione
-        pConfig->SetPath(_T("/AUTOCOMPLETIONLIST"));
-        wxString wordlist = "";
-        wxString str;
-        long dummy;
-        bool bCont = pConfig->GetFirstEntry(str, dummy);
-        while(bCont){
-            wxString s = pConfig->Read(_T(str),_T(""));
-            wordlist = wordlist + s + " ";
-            bCont = pConfig->GetNextEntry(str, dummy);
-        }
-        pConfig->SetPath(_T("/"));
-
-        stc->SetWordlist(wordlist);
+        setNewStc(stc);
 
         console->Clear();
 
@@ -1244,14 +1212,14 @@ bool MyFrame::checkOpenFile(wxString path)
     }    
     return result;
 } 
- 
-void MyFrame::LoadFile(wxString path, wxString name)
-{
-    if (checkOpenFile(path)) return;
-    Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
-    stc->LoadFile (path);
 
-    // Impostazioni del nuovo stc
+static int CompareStrings(const wxString& first, const wxString& second)
+{
+    return first.CmpNoCase(second);
+}
+
+void MyFrame::setNewStc(Edit* stc) {
+    // Impostazioni del nuovo stc : PL
     if (showLineNumber){
         stc->SetMarginWidth (0, stc->TextWidth (wxSTC_STYLE_LINENUMBER, _T("_999999")));
     }
@@ -1271,29 +1239,75 @@ void MyFrame::LoadFile(wxString path, wxString name)
     stc->AutoCompSetAutoHide(true);
 
     // Recupero tutte le wordlist per AUTOCOMPLETION dal file di configurazione
-    pConfig->SetPath(_T("/AUTOCOMPLETIONLIST"));
-    wxString wordlist = "";
+    // Recupero le liste separatamente, aggiungendo le parole sia alle varie
+    // liste per la syntax highlighting che all'arraty wlarray
+    bool bCont; 
+    long dummy; 
     wxString str;
-    long dummy;
-    bool bCont = pConfig->GetFirstEntry(str, dummy);
+    wxString s;
+    wxArrayString wlarray;
+    pConfig->SetPath(_T("/STATEMENTS"));
+    wxString statlist = "";
+    bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
-        wxString s = pConfig->Read(_T(str),_T(""));
-        wordlist = wordlist + s + " ";
+        s = pConfig->Read(_T(str),_T(""));
+        statlist = statlist + s + " ";
+        wlarray.Add(s);
         bCont = pConfig->GetNextEntry(str, dummy);
     }
+    pConfig->SetPath(_T("/DIRECTIVES"));
+    wxString direclist = "";
+    bCont = pConfig->GetFirstEntry(str, dummy);
+    while(bCont){
+        s = pConfig->Read(_T(str),_T(""));
+        direclist = direclist + s + " ";
+        wlarray.Add(s);
+        bCont = pConfig->GetNextEntry(str, dummy);
+    }
+    pConfig->SetPath(_T("/OTHERKEYWORDS"));
+    wxString otherlist = "";
+    bCont = pConfig->GetFirstEntry(str, dummy);
+    while(bCont){
+        s = pConfig->Read(_T(str),_T(""));
+        otherlist = otherlist + s + " ";
+        wlarray.Add(s);
+        bCont = pConfig->GetNextEntry(str, dummy);
+    }    
     pConfig->SetPath(_T("/"));
+    //wxString wordlist = statlist+direclist+otherlist;
+    //Ordino l'array e lo copio nella lista per l'autocompletion
+    wlarray.Sort(CompareStrings);
+    wxString wordlist = "";
+    for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + " ";
+    wlarray.Clear();
     stc->SetWordlist(wordlist);
-    stc->SetKeyWords (mySTC_TYPE_DEFAULT, wordlist);
+    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist);
+    stc->SetKeyWords (mySTC_TYPE_WORD1, direclist);
+    stc->SetKeyWords (mySTC_TYPE_WORD2, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
+    stc->SetAutoComplete(autoCompleteSwitch);   
+
+    /*console->Clear();
+    console->AppendText(wordlist);
+    wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); */
+    
+}
+    
+ 
+void MyFrame::LoadFile(wxString path, wxString name)
+{
+    if (checkOpenFile(path)) return;
+    Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
+    stc->LoadFile (path);
+    
+    setNewStc(stc);
+   
     console->Clear();
 
     wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16));
     auinotebook->AddPage(stc  , name, true , page_bmp);
     OnUpdateTree();
 }
- 
- 
- 
  
 void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 {
@@ -1313,40 +1327,8 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
         Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
         stc->LoadFile (path);
         
-        // Impostazioni del nuovo stc
-        if (showLineNumber){
-            stc->SetMarginWidth (0, stc->TextWidth (wxSTC_STYLE_LINENUMBER, _T("_999999")));
-        }
-        else{
-            stc->SetMarginWidth (0, 0);
-        }
-        if (wrapMode){
-            stc->SetWrapMode (wxSTC_WRAP_WORD);
-        }
-        else{
-            stc->SetWrapMode (wxSTC_WRAP_NONE);
-        }
-
-        stc->SetCaretLineVisible(true);
-        stc->SetCaretLineBackground(wxColour(152,248,248,wxALPHA_OPAQUE));
-        stc->AutoCompSetIgnoreCase(true);
-        stc->AutoCompSetAutoHide(true);
-
-        // Recupero tutte le wordlist per AUTOCOMPLETION dal file di configurazione
-        pConfig->SetPath(_T("/AUTOCOMPLETIONLIST"));
-        wxString wordlist = "";
-        wxString str;
-        long dummy;
-        bool bCont = pConfig->GetFirstEntry(str, dummy);
-        while(bCont){
-            wxString s = pConfig->Read(_T(str),_T(""));
-            wordlist = wordlist + s + " ";
-            bCont = pConfig->GetNextEntry(str, dummy);
-        }
-        pConfig->SetPath(_T("/"));
-        stc->SetWordlist(wordlist);
-        stc->SetKeyWords (mySTC_TYPE_DEFAULT, wordlist);
-        stc->SetAutoCompleteNumber(autoCompleteNumber);
+        setNewStc(stc);
+        
         console->Clear();
         
         wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16));
