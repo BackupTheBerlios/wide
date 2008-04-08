@@ -1,6 +1,12 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-07
+- Nel file ini keywords divise in categorie
+- Wide ordina automaticamente le keyword per l'autocompletion
+- Nuova gestione progetti (con keyword aggiuntive e classi
+    che appaiono nell'albero
+
 2008-04-04
 - portato a 8 il numero max di documenti pdf
 - aggiunta voce Build All blorb file
