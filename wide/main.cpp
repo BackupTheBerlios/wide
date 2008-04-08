@@ -77,6 +77,7 @@ class MyFrame : public wxFrame {
         ID_Save_All,        //PL
         ID_NB_Close,
         ID_ShowObject,
+        ID_ShowProject,
         ID_ShowGlobal,
         ID_ShowConstant,
         ID_ShowFunction,
@@ -208,7 +209,7 @@ class MyFrame : public wxFrame {
     // Tree
     void OnUpdateTree();   
     void OnRefreshTree(wxCommandEvent &event);
-    void OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome, wxChar *pattern);
+    void OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome,  wxString pattern);
     
     // Metodi lanciati su stc    
     void OnEdit (wxCommandEvent &event);
@@ -252,7 +253,8 @@ class MyFrame : public wxFrame {
      
      // Impostazioni Object tree
      bool expandAllNodes;
-     bool showObjects;     
+     bool showObjects;    
+     bool showProject; 
      bool showGlobals;     
      bool showConstants;     
      bool showFunctions;     
@@ -275,7 +277,10 @@ class MyFrame : public wxFrame {
      wxString bres;         
      wxString blc;  
      wxString bext;            
+     
      wxString mainFile;      
+     wxArrayString projkeywords;
+     wxArrayString projclasses;
      
      bool inform_error;            
 
@@ -367,6 +372,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Object Tree    
     EVT_MENU (ID_RefreshTree,        MyFrame::OnRefreshTree)    
     EVT_MENU (ID_ShowObject,         MyFrame::OnOptions)
+    EVT_MENU (ID_ShowProject,        MyFrame::OnOptions)
     EVT_MENU (ID_ShowGlobal,         MyFrame::OnOptions)
     EVT_MENU (ID_ShowConstant,       MyFrame::OnOptions)
     EVT_MENU (ID_ShowFunction,       MyFrame::OnOptions)
@@ -577,6 +583,7 @@ void MyFrame::ToggleMarker(wxCommandEvent &event){
 void MyFrame::SaveConfiguration() {
      pConfig->Write(_T("OBJECT_TREE_EXPAND_ALL_NODES"), expandAllNodes);
      pConfig->Write(_T("OBJECT_TREE_SHOW_OBJECTS"), showObjects);
+     pConfig->Write(_T("OBJECT_TREE_SHOW_PROJECT"), showProject);
      pConfig->Write(_T("OBJECT_TREE_SHOW_GLOBALS"), showGlobals);
      pConfig->Write(_T("OBJECT_TREE_SHOW_CONSTANTS"), showConstants);
      pConfig->Write(_T("OBJECT_TREE_SHOW_FUNCTIONS"), showFunctions);
@@ -606,6 +613,7 @@ void MyFrame::SaveConfiguration() {
 void MyFrame::LoadConfiguration() {
      expandAllNodes = pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0;
      showObjects    = pConfig->Read(_T("OBJECT_TREE_SHOW_OBJECTS"), 1l) != 0;
+     showProject    = pConfig->Read(_T("OBJECT_TREE_SHOW_PROJECT"), 1l) != 0;
      showGlobals    = pConfig->Read(_T("OBJECT_TREE_SHOW_GLOBALS"), 1l) != 0;
      showConstants  = pConfig->Read(_T("OBJECT_TREE_SHOW_CONSTANTS"), 1l) != 0;
      showFunctions  = pConfig->Read(_T("OBJECT_TREE_SHOW_FUNCTIONS"), 1l) != 0;
@@ -705,6 +713,7 @@ void MyFrame::OnOptions(wxCommandEvent &event){
     switch (id)
     {
         case ID_ShowObject: showObjects=event.IsChecked(); OnUpdateTree(); break;
+        case ID_ShowProject: showProject=event.IsChecked(); OnUpdateTree(); break;
         case ID_ShowGlobal: showGlobals=event.IsChecked(); OnUpdateTree(); break;        
         case ID_ShowConstant: showConstants=event.IsChecked(); OnUpdateTree(); break;        
         case ID_ShowFunction: showFunctions=event.IsChecked(); OnUpdateTree(); break;        
@@ -1275,6 +1284,17 @@ void MyFrame::setNewStc(Edit* stc) {
     }    
     pConfig->SetPath(_T("/"));
     //wxString wordlist = statlist+direclist+otherlist;
+    // Aggiungo la roba del progetto
+    if ( mainFile != "" ) {
+        for (size_t i = 0; i<projclasses.GetCount(); i++) {
+            direclist = direclist + projclasses[i] + " ";
+            wlarray.Add(projclasses[i]);
+        }
+        for (size_t i = 0; i<projkeywords.GetCount(); i++) {
+            otherlist = otherlist + projkeywords[i] + " ";
+            wlarray.Add(projkeywords[i]);
+        }            
+    }
     //Ordino l'array e lo copio nella lista per l'autocompletion
     wlarray.Sort(CompareStrings);
     wxString wordlist = "";
@@ -1282,12 +1302,12 @@ void MyFrame::setNewStc(Edit* stc) {
     wlarray.Clear();
     stc->SetWordlist(wordlist);
     stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist);
-    stc->SetKeyWords (mySTC_TYPE_WORD1, direclist);
+    stc->SetKeyWords (mySTC_TYPE_COMMENT, direclist);
     stc->SetKeyWords (mySTC_TYPE_WORD2, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
     stc->SetAutoComplete(autoCompleteSwitch);   
 
-    /*console->Clear();
+    /* console->Clear();
     console->AppendText(wordlist);
     wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); */
     
@@ -1339,7 +1359,60 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 } 
 
 // MENU PROJECT
-void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
+
+void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
+    wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","*.wpf",
+    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");    
+    if (fd->ShowModal() == wxID_OK ){
+        wxString path = fd->GetPath();
+        wxString name = fd->GetFilename();        
+        console->Clear();
+        mainFile = "";
+        projclasses.Empty();
+        projkeywords.Empty();
+        
+        wxFileConfig* projfile = new wxFileConfig(
+        NOMEAPPLICAZIONE, NOMEAPPLICAZIONE,
+        path, "", wxCONFIG_USE_RELATIVE_PATH, wxConvUTF8);
+        //wxConfigBase::Set(projfile);
+        //projfile->SetPath(_T("/")); 
+
+        wxString s, str;
+        bool bCont; long dummy;
+        projfile->SetPath(_T("/CLASSES"));
+        bCont = projfile->GetFirstEntry(str, dummy);
+        while(bCont){
+          s = projfile->Read(_T(str),_T(""));
+          projclasses.Add(s);
+          bCont = projfile->GetNextEntry(str, dummy);
+        }        
+        projfile->SetPath(_T("/KEYWORDS"));
+        bCont = projfile->GetFirstEntry(str, dummy);
+        while(bCont){
+          s = projfile->Read(_T(str),_T(""));
+          projkeywords.Add(s);
+          bCont = projfile->GetNextEntry(str, dummy);
+        }        
+        projfile->SetPath(_T("/FILES"));
+        bCont = projfile->GetFirstEntry(str, dummy);
+        while(bCont){
+          s = projfile->Read(_T(str),_T(""));
+          str = path.Mid(0,path.Find('\\',true)+1) + s;
+          LoadFile(str,s);
+          if (mainFile == "") {
+                mainFile = str;
+                console->AppendText("Using Main file ["+mainFile+"] ");
+          }
+          bCont = projfile->GetNextEntry(str, dummy);
+        }
+        //wxMessageBox (_(path), _("Close abort"),  wxOK | wxICON_EXCLAMATION);
+
+    }    
+    //wxConfigBase::Set(pConfig);    
+}
+        
+
+/*void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
 {
     wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","*.wpf",
     wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");
@@ -1369,7 +1442,7 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
             LoadFile(projFile,proj_f);
         }        
     }
-}
+}*/
 
 void MyFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 {
@@ -1377,11 +1450,13 @@ void MyFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
 {
+    projclasses.Empty();
+    projkeywords.Empty();
     if (mainFile!=""){
         wxMessageBox (mainFile, _("Remove Main File"),  wxOK | wxICON_INFORMATION);            
         mainFile="";
         console->Clear();
-        console->AppendText("Main file removed.");        
+        console->AppendText("Main file, classes and keywords removed.");        
     }
     else{
         wxMessageBox (_("No Project opened."),_("Warning"), wxOK | wxICON_WARNING);    
@@ -1433,7 +1508,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 }
  
 // Funzione che aggiunge un nodo alla root con i valori relativi
-void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome, wxChar *pattern_global){
+void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome, wxString pattern_global){
     int contatore=0;    
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
@@ -1472,6 +1547,12 @@ void MyFrame::OnUpdateTree()
 
 
     if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*([A-Za-z0-9_]+)");
+    if (showProject) {
+        for (size_t i = 0; i<projclasses.GetCount(); i++) {
+            wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*([A-Za-z0-9_]+)";
+            OnUpdateTreeRegularExpression(text, root, projclasses[i], regexp);
+        }        
+    }
     if (showGlobals) OnUpdateTreeRegularExpression(text, root, "Global", "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+([A-Za-z0-9_]+)");
     if (showConstants) OnUpdateTreeRegularExpression(text, root, "Constant", "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+([A-Za-z0-9_]+)");
     if (showFunctions) OnUpdateTreeRegularExpression(text, root, "Function", "[;][ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*([A-Za-z0-9_]+).*;");
@@ -1638,6 +1719,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     otree->AppendCheckItem (ID_ExpandAllAlways, _("Expand always all nodes"));
     otree->AppendSeparator();
     otree->AppendCheckItem (ID_ShowObject, _("Show Objects"));
+    otree->AppendCheckItem (ID_ShowProject, _("Show Project Defs"));
     otree->AppendCheckItem (ID_ShowGlobal, _("Show Globals"));
     otree->AppendCheckItem (ID_ShowConstant, _("Show Constants"));
     otree->AppendCheckItem (ID_ShowFunction, _("Show Functions"));
@@ -1648,6 +1730,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     // Load configuration from file    
     otree->Check(ID_ExpandAllAlways, (pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0) );
     otree->Check(ID_ShowObject, (pConfig->Read(_T("OBJECT_TREE_SHOW_OBJECTS"), 1l) != 0) );
+    otree->Check(ID_ShowProject, (pConfig->Read(_T("OBJECT_TREE_SHOW_PROJECT"), 1l) != 0) );
     otree->Check(ID_ShowGlobal, (pConfig->Read(_T("OBJECT_TREE_SHOW_GLOBALS"), 1l) != 0) );
     otree->Check(ID_ShowConstant, (pConfig->Read(_T("OBJECT_TREE_SHOW_CONSTANTS"), 1l) != 0) );    
     otree->Check(ID_ShowFunction, (pConfig->Read(_T("OBJECT_TREE_SHOW_FUNCTIONS"), 1l) != 0) );
