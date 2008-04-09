@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.3 2008/04/06 22:29:47 paolol_it Exp $
+// RCS-ID:      $Id: edit.h,v 1.4 2008/04/09 12:36:03 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -113,9 +113,15 @@ public:
     void SetWordlist(wxString &wl) { m_wordlist=wl; }   
     void SetAutoCompleteNumber(int n) {autoCompleteNumber = n;};
     void SetAutoComplete(bool b) {autocomplete = b;}; //PL
+    void SetHotkeys(bool b) {hotkeys = b;}; // PL
+    
+    void ClearHotkeys() { m_hotkey.Clear(); }
+    void AddHotkey(wxString s) { m_hotkey.Add(s); }
     
     // Custom
     void OnAutocompOn(wxCommandEvent &event);
+    void OnHotkeysOn(wxCommandEvent &event);
+
 
 private:
     // file
@@ -133,10 +139,13 @@ private:
     
     int autoCompleteNumber;
     bool autocomplete;
+    bool hotkeys;
     
     // Elenco di words per l'auto completion
     wxString m_wordlist;
-   
+    
+    // 
+    wxArrayString m_hotkey;
     
     DECLARE_EVENT_TABLE()
 };

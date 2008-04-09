@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-09
+- Inserita sostituzione automatica caratteri
+
 2008-04-07
 - Nel file ini keywords divise in categorie
 - Wide ordina automaticamente le keyword per l'autocompletion

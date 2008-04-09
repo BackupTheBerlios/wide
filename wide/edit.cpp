@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.3 2008/04/06 22:29:47 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.4 2008/04/09 12:36:03 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -105,6 +105,7 @@ BEGIN_EVENT_TABLE (Edit, wxStyledTextCtrl)
     
     // custom
     EVT_MENU (myID_AUTOCOMPON,         Edit::OnAutocompOn)
+    EVT_MENU (myID_HOTKEYSON,          Edit::OnHotkeysOn)
     
 END_EVENT_TABLE()
 
@@ -143,11 +144,11 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
-    StyleSetForeground(mySTC_TYPE_WORD1, wxColour (_T("DARK GREEN"))); // PL, try
-    StyleSetForeground(mySTC_TYPE_WORD2, wxColour (_T("BROWN")));    // PL, try
 
     InitializePrefs (_T("INFORM"));
-
+    StyleSetForeground(mySTC_TYPE_WORD1, wxColour (_T("DARK GREEN"))); // PL, try
+    StyleSetForeground(mySTC_TYPE_WORD2, wxColour (_T("BROWN")));    // PL, try  
+    
     // set visibility
     SetVisiblePolicy (wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
     SetXCaretPolicy (wxSTC_CARET_EVEN|wxSTC_VISIBLE_STRICT|wxSTC_CARET_SLOP, 1);
@@ -313,6 +314,10 @@ void Edit::OnAutocompOn (wxCommandEvent &WXUNUSED(event)) {
     autocomplete = !autocomplete;
 }
 
+void Edit::OnHotkeysOn (wxCommandEvent &WXUNUSED(event)) {
+    hotkeys = !hotkeys;
+}
+
 void Edit::OnUseCharset (wxCommandEvent &event) {
     int Nr;
     int charset = GetCodePage();
@@ -363,6 +368,15 @@ void Edit::OnMarginClick (wxStyledTextEvent &event) {
 
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     char chr = (char)event.GetKey();
+    if (hotkeys) for (size_t i = 0; i<m_hotkey.GetCount(); i++) {
+        wxString s = m_hotkey[i];
+        if (s[0] == chr) {
+            int pos = GetCurrentPos();
+            SetTargetStart(pos - 1); SetTargetEnd(pos);
+            ReplaceTarget("");
+            AddText(s.Mid(1));
+        }
+    }
     int currentLine = GetCurrentLine();
     // Change this if support for mac files with \r is needed
     if (chr == '\n') {
@@ -467,6 +481,9 @@ bool Edit::InitializePrefs (const wxString &name) {
     // set common styles
     StyleSetForeground (wxSTC_STYLE_DEFAULT, wxColour (_T("DARK GREY")));
     StyleSetForeground (wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
+    StyleSetForeground(curInfo->styles[mySTC_TYPE_WORD1].type, wxColour (_T("BROWN")));
+    StyleSetForeground(curInfo->styles[mySTC_TYPE_WORD2].type, wxColour (_T("DARK GREEN")));
+    
 
     // initialize settings
     if (g_CommonPrefs.syntaxEnable) {

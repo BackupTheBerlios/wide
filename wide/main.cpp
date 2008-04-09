@@ -267,6 +267,7 @@ class MyFrame : public wxFrame {
      bool autoCompleteSwitch;
      bool showLineNumber;
      bool wrapMode;
+     bool hotkeysSwitch;
 
      // INFORM STUFF
      wxString informCompiler;
@@ -393,7 +394,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Opzioni
     EVT_MENU (myID_LINENUMBER,       MyFrame::OnEdit)
     EVT_MENU (myID_WRAPMODEON,       MyFrame::OnEdit) 
-    EVT_MENU (myID_AUTOCOMPON,       MyFrame::OnEdit)   
+    EVT_MENU (myID_AUTOCOMPON,       MyFrame::OnEdit) 
+    EVT_MENU (myID_HOTKEYSON,        MyFrame::OnEdit)
     
     // Eventi sull'oggetto TREE
     EVT_TREE_SEL_CHANGED(wxID_ANY, MyFrame::OnSelChanged)
@@ -594,6 +596,7 @@ void MyFrame::SaveConfiguration() {
      pConfig->Write(_T("SHOWLINENUMBERS"), showLineNumber);
      pConfig->Write(_T("WRAPMODE"), wrapMode);
      pConfig->Write(_T("AUTOCOMPLETION"), autoCompleteSwitch);
+     pConfig->Write(_T("REPLACEHOTKEYS"), hotkeysSwitch);
      
      pConfig->Write(_T("AUTOCOMPLETE_NUMBER"), autoCompleteNumber);
      
@@ -624,6 +627,7 @@ void MyFrame::LoadConfiguration() {
      showLineNumber     = pConfig->Read(_T("SHOWLINENUMBERS"), 1l) != 0;
      wrapMode           = pConfig->Read(_T("WRAPMODE"), 1l) != 0; 
      autoCompleteSwitch = pConfig->Read(_T("AUTOCOMPLETION"), 1l) != 0;
+     hotkeysSwitch      = pConfig->Read(_T("REPLACEHOTKEYS"), 1l) != 0;
      
      autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l);
      
@@ -1197,6 +1201,7 @@ void MyFrame::OnEdit (wxCommandEvent &event) {
         case myID_LINENUMBER: showLineNumber=event.IsChecked(); break;
         case myID_WRAPMODEON: wrapMode=event.IsChecked(); break;
         case myID_AUTOCOMPON: autoCompleteSwitch=event.IsChecked(); break;
+        case myID_HOTKEYSON:  hotkeysSwitch=event.IsChecked(); break;
     }    
     
     int pannelli = auinotebook->GetPageCount();
@@ -1247,13 +1252,23 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->AutoCompSetIgnoreCase(true);
     stc->AutoCompSetAutoHide(true);
 
+    bool bCont;
+    long dummy;
+    wxString str, s;
+    // Recupero le hotkey
+    stc->ClearHotkeys();
+    pConfig->SetPath(_T("/HOTKEYS"));
+    bCont = pConfig->GetFirstEntry(str, dummy);
+    while(bCont){
+        s = pConfig->Read(_T(str),_T(""));
+        stc->AddHotkey(_T(str[0])+s);
+        //console->AppendText(_T(str)+" ;  ");
+        bCont = pConfig->GetNextEntry(str, dummy);
+    }   
+
     // Recupero tutte le wordlist per AUTOCOMPLETION dal file di configurazione
     // Recupero le liste separatamente, aggiungendo le parole sia alle varie
     // liste per la syntax highlighting che all'arraty wlarray
-    bool bCont; 
-    long dummy; 
-    wxString str;
-    wxString s;
     wxArrayString wlarray;
     pConfig->SetPath(_T("/STATEMENTS"));
     wxString statlist = "";
@@ -1306,8 +1321,9 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->SetKeyWords (mySTC_TYPE_WORD2, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
     stc->SetAutoComplete(autoCompleteSwitch);   
+    stc->SetHotkeys(hotkeysSwitch);
 
-    /* console->Clear();
+    /*console->Clear();
     console->AppendText(wordlist);
     wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); */
     
@@ -1705,11 +1721,14 @@ wxMenuBar* MyFrame::CreateMenuBar()
     option->AppendCheckItem (myID_LINENUMBER, _("Show line &numbers"));
     option->AppendCheckItem (myID_WRAPMODEON, _("&Wrap mode"));    
     option->AppendCheckItem (myID_AUTOCOMPON, _("&Autocomplete"));
+    option->AppendCheckItem (myID_HOTKEYSON,  _("&Hotkeys Replacing"));
+
     
     
     option->Check(myID_LINENUMBER, showLineNumber);
     option->Check(myID_WRAPMODEON, wrapMode);
     option->Check(myID_AUTOCOMPON, autoCompleteSwitch);
+    option->Check(myID_HOTKEYSON,  hotkeysSwitch);
     
 
     // OBJECT TREE MENU
