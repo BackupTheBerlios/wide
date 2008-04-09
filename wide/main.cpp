@@ -202,7 +202,7 @@ class MyFrame : public wxFrame {
     void GotoLine(wxCommandEvent &event);   
     void Search(wxCommandEvent &event);
     void SearchBack(wxCommandEvent &event);   //PL
-    void SearchReplace(wxCommandEvent &event);   
+    void FindReplace(wxCommandEvent &event);   
     void NextMarker(wxCommandEvent &event);
     void ToggleMarker(wxCommandEvent &event);
    
@@ -349,6 +349,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_FindBack,     MyFrame::SearchBack)    //PL
     EVT_MENU(MyFrame::ID_NextMarker,   MyFrame::NextMarker)
     EVT_MENU(MyFrame::ID_ToggleMarker, MyFrame::ToggleMarker)    
+    EVT_MENU(MyFrame::ID_FindReplace,  MyFrame::FindReplace)    //PL    
+
     
     // Project Menu
     EVT_MENU (ID_OpenProject,            MyFrame::OnOpenProject)
@@ -484,6 +486,10 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
             }
         }                
     }
+}
+
+void MyFrame::FindReplace(wxCommandEvent &event){   
+    wxMessageBox ("Not yet implemented.", _("Message"),  wxOK | wxICON_INFORMATION);           
 }
 
 void MyFrame::SearchBack(wxCommandEvent &event){   //PL
