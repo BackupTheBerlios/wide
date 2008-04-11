@@ -424,7 +424,7 @@ END_EVENT_TABLE()
 // MENU FILE ****************
 void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileDialog* fd = new wxFileDialog(this, "New File","","","*.*",
+    wxFileDialog* fd = new wxFileDialog(this, "New File","","","Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*",
     wxFD_SAVE,wxDefaultPosition,wxDefaultSize,"filedlg");
     wxString path,name;
     if (fd->ShowModal() == wxID_OK ){
@@ -1358,7 +1358,7 @@ void MyFrame::LoadFile(wxString path, wxString name)
  
 void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileDialog* fd = new wxFileDialog(this, "Open File","","","*.*",
+    wxFileDialog* fd = new wxFileDialog(this, "Open File","","","Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*",
     wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");
     wxString path,name;
     if (fd->ShowModal() == wxID_OK ){
@@ -1388,7 +1388,7 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 // MENU PROJECT
 
 void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
-    wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","*.wpf",
+    wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","Wide Project Files (*.wpf)|*.wpf|All Files (*.*)|*.*",
     wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");    
     if (fd->ShowModal() == wxID_OK ){
         wxString path = fd->GetPath();
@@ -1437,39 +1437,8 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
     }    
     //wxConfigBase::Set(pConfig);    
 }
-        
+  
 
-/*void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event))
-{
-    wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","*.wpf",
-    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");
-    wxString path,name;
-    if (fd->ShowModal() == wxID_OK ){
-        path = fd->GetPath();
-        name = fd->GetFilename();        
-        // Per ora leggo solo la prima riga del file
-        wxTextFile file(path);
-        file.Open();
-        wxString main_f = file.GetFirstLine();
-        mainFile = path.Mid(0,path.Find('\\',true)+1) + main_f;
-//        wxMessageBox ("Using main file ["+mainFile+"]", _("Main File"),  wxOK | wxICON_INFORMATION);
-        console->Clear();
-        console->AppendText("Using Main file ["+mainFile+"] ");
-        
-        // Apro il file
-        LoadFile(mainFile,main_f);
-        
-        // PL: Leggo le altre righe, apro gli altri file
-        wxString proj_f;
-        wxString projFile;
-        for (;;) {
-            proj_f = file.GetNextLine();
-            if (file.Eof()) break;
-            projFile = path.Mid(0,path.Find('\\',true)+1) + proj_f;
-            LoadFile(projFile,proj_f);
-        }        
-    }
-}*/
 
 void MyFrame::OnSaveProject(wxCommandEvent& WXUNUSED(event))
 {
