@@ -904,9 +904,9 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
     console->Clear();
     console->AppendText("Running blorb...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
-    wxString nome;
     
     // Running the MAIN FILE
+    wxString nome;
     if (mainFile==""){
         nome = e->GetFilename();
     }
@@ -914,7 +914,6 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
         console->AppendText("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
     }
-    // qui
     nome.Replace(".inf", "."+bext, true);
     wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
     console->AppendText(comando+"\n");
@@ -1019,6 +1018,12 @@ void MyFrame::OnRunZcode (wxCommandEvent &event) {
     console->AppendText("Running zcode...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome = e->GetFilename();
+    if (mainFile=="") {
+        nome = e->GetFilename();
+    } else {
+        console->AppendText("Using MainFile: "+mainFile+"\n");
+        nome = mainFile;
+    }
     nome.Replace(".inf", zcodeversion, true);    
     wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
     console->AppendText(comando+"\n");
