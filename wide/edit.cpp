@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.4 2008/04/09 12:36:03 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.5 2008/04/13 08:36:22 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -112,9 +112,10 @@ END_EVENT_TABLE()
 Edit::Edit (wxWindow *parent, wxWindowID id,
             const wxPoint &pos,
             const wxSize &size,
-            long style)
+            long style,
+            wxString &filename)
     : wxStyledTextCtrl (parent, id, pos, size, style) {
-
+    // PL: filename e' usato solo per settare il lexer
     m_filename = wxEmptyString;
 
     m_LineNrID = 0;
@@ -145,9 +146,8 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
 
-    InitializePrefs (_T("INFORM"));
-    StyleSetForeground(mySTC_TYPE_WORD1, wxColour (_T("DARK GREEN"))); // PL, try
-    StyleSetForeground(mySTC_TYPE_WORD2, wxColour (_T("BROWN")));    // PL, try  
+    m_languagename = DeterminePrefs(filename);
+    InitializePrefs (_T(m_languagename));
     
     // set visibility
     SetVisiblePolicy (wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
@@ -311,11 +311,11 @@ void Edit::OnWrapmodeOn (wxCommandEvent &WXUNUSED(event)) {
 }
 
 void Edit::OnAutocompOn (wxCommandEvent &WXUNUSED(event)) {
-    autocomplete = !autocomplete;
+    autocomplete = (!autocomplete) && autocompletemain;
 }
 
 void Edit::OnHotkeysOn (wxCommandEvent &WXUNUSED(event)) {
-    hotkeys = !hotkeys;
+    hotkeys = (!hotkeys) && hotkeysmain;
 }
 
 void Edit::OnUseCharset (wxCommandEvent &event) {
@@ -481,8 +481,6 @@ bool Edit::InitializePrefs (const wxString &name) {
     // set common styles
     StyleSetForeground (wxSTC_STYLE_DEFAULT, wxColour (_T("DARK GREY")));
     StyleSetForeground (wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
-    StyleSetForeground(curInfo->styles[mySTC_TYPE_WORD1].type, wxColour (_T("BROWN")));
-    StyleSetForeground(curInfo->styles[mySTC_TYPE_WORD2].type, wxColour (_T("DARK GREEN")));
     
 
     // initialize settings

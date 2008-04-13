@@ -436,7 +436,7 @@ void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
         }
         wxFile file;        
         file.Create(path, false, wxS_DEFAULT);
-        Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
+        Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER, path);
         stc->LoadFile (path);
 
         setNewStc(stc);
@@ -1263,6 +1263,13 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->AutoCompSetIgnoreCase(true);
     stc->AutoCompSetAutoHide(true);
 
+    //wxString languagename = stc->QueryLanguage();
+    if (stc->QueryLanguage() != "INFORM") {
+        stc->ClearHotkeys();
+        stc->SetAutoComplete(false, false);
+        stc->SetHotkeys(false, false);   
+        return;     
+    }
     bool bCont;
     long dummy;
     wxString str, s;
@@ -1327,12 +1334,12 @@ void MyFrame::setNewStc(Edit* stc) {
     for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + " ";
     wlarray.Clear();
     stc->SetWordlist(wordlist);
-    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist);
-    stc->SetKeyWords (mySTC_TYPE_COMMENT, direclist);
-    stc->SetKeyWords (mySTC_TYPE_WORD2, otherlist);   
+    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist+direclist+otherlist);
+    //stc->SetKeyWords (mySTC_TYPE_OPERATOR, direclist);
+    //stc->SetKeyWords (128, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
-    stc->SetAutoComplete(autoCompleteSwitch);   
-    stc->SetHotkeys(hotkeysSwitch);
+    stc->SetAutoComplete(autoCompleteSwitch, true);   
+    stc->SetHotkeys(hotkeysSwitch, true);
 
     /*console->Clear();
     console->AppendText(wordlist);
@@ -1344,7 +1351,7 @@ void MyFrame::setNewStc(Edit* stc) {
 void MyFrame::LoadFile(wxString path, wxString name)
 {
     if (checkOpenFile(path)) return;
-    Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
+    Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER, path);
     stc->LoadFile (path);
     
     setNewStc(stc);
@@ -1371,7 +1378,7 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
            return;
         }
         
-        Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER);
+        Edit* stc = new Edit( auinotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxNO_BORDER, path);
         stc->LoadFile (path);
         
         setNewStc(stc);

@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-14
+- Risolto bug apertura file non inform
+
 2008-04-09
 - Inserita sostituzione automatica caratteri
 

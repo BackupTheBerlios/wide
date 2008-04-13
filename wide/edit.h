@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.4 2008/04/09 12:36:03 paolol_it Exp $
+// RCS-ID:      $Id: edit.h,v 1.5 2008/04/13 08:36:22 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,8 @@ public:
     Edit (wxWindow *parent, wxWindowID id = wxID_ANY,
           const wxPoint &pos = wxDefaultPosition,
           const wxSize &size = wxDefaultSize,
-          long style = wxSUNKEN_BORDER|wxVSCROLL
+          long style = wxSUNKEN_BORDER|wxVSCROLL,
+          wxString& filename = ""
          );
 
     //! destructor
@@ -112,8 +113,8 @@ public:
     // Metodo che imposta le words per l'autocompletion
     void SetWordlist(wxString &wl) { m_wordlist=wl; }   
     void SetAutoCompleteNumber(int n) {autoCompleteNumber = n;};
-    void SetAutoComplete(bool b) {autocomplete = b;}; //PL
-    void SetHotkeys(bool b) {hotkeys = b;}; // PL
+    void SetAutoComplete(bool b, bool g) {autocomplete = b && g; autocompletemain = g;}; //PL
+    void SetHotkeys(bool b, bool g) {hotkeys = b && g; hotkeysmain = g;}; // PL
     
     void ClearHotkeys() { m_hotkey.Clear(); }
     void AddHotkey(wxString s) { m_hotkey.Add(s); }
@@ -121,7 +122,7 @@ public:
     // Custom
     void OnAutocompOn(wxCommandEvent &event);
     void OnHotkeysOn(wxCommandEvent &event);
-
+    wxString QueryLanguage() { return m_languagename; }
 
 private:
     // file
@@ -129,6 +130,7 @@ private:
 
     // lanugage properties
     LanguageInfo const* m_language;
+    wxString m_languagename;
 
     // margin variables
     int m_LineNrID;
@@ -139,7 +141,9 @@ private:
     
     int autoCompleteNumber;
     bool autocomplete;
+    bool autocompletemain;
     bool hotkeys;
+    bool hotkeysmain;
     
     // Elenco di words per l'auto completion
     wxString m_wordlist;
