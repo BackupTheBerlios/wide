@@ -1,6 +1,10 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-16
+- Risolto bug commenti inizianti per # (usato lexer MatLab)
+- Risolto bug autocompletion dentro virgolette
+
 2008-04-14
 - Risolto bug apertura file non inform
 
