@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.5 2008/04/13 08:36:22 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.6 2008/04/16 13:33:49 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -367,11 +367,12 @@ void Edit::OnMarginClick (wxStyledTextEvent &event) {
 }
 
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
+    int pos = GetCurrentPos();
+
     char chr = (char)event.GetKey();
     if (hotkeys) for (size_t i = 0; i<m_hotkey.GetCount(); i++) {
         wxString s = m_hotkey[i];
         if (s[0] == chr) {
-            int pos = GetCurrentPos();
             SetTargetStart(pos - 1); SetTargetEnd(pos);
             ReplaceTarget("");
             AddText(s.Mid(1));
@@ -389,8 +390,8 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         GotoPos(PositionFromLine (currentLine) + lineInd);
     }
     // SKILLO
-    if (autocomplete){
-        int pos = GetCurrentPos();
+    int style = GetStyleAt(pos);
+    if (autocomplete && style != 5 && style != 8) {    // Valori trovati per tentativi
         int start = WordStartPosition(pos, true);
         if (pos - start > autoCompleteNumber && !AutoCompActive())    // require x characters to show auto-complete
         {

@@ -60,11 +60,11 @@ const CommonInfo g_CommonPrefs = {
 //----------------------------------------------------------------------------
 // keywordlists
 // C++
-wxChar* CppWordlist1 =
+wxChar* InformWordlist1 =
     _T("");
-wxChar* CppWordlist2 =
+wxChar* InformWordlist2 =
     _T("");
-wxChar* CppWordlist3 =
+wxChar* InformWordlist3 =
     _T("");
 
 
@@ -76,13 +76,14 @@ const LanguageInfo g_LanguagePrefs [] = {
     // C++
     {_T("INFORM"),
      _T("*.h;*.inf;*.INF;*.H"),
-     wxSTC_LEX_OCTAVE,
+     //wxSTC_LEX_OCTAVE,
+     wxSTC_LEX_MATLAB,
      {{mySTC_TYPE_DEFAULT, NULL},
       {mySTC_TYPE_COMMENT, NULL},
       {mySTC_TYPE_COMMENT_LINE, NULL},
       {mySTC_TYPE_COMMENT_DOC, NULL},
       {mySTC_TYPE_NUMBER, NULL},
-      {mySTC_TYPE_WORD1, CppWordlist1}, // KEYWORDS
+      {mySTC_TYPE_WORD1, InformWordlist1}, // KEYWORDS
       {mySTC_TYPE_STRING, NULL},
       {mySTC_TYPE_CHARACTER, NULL},
       {mySTC_TYPE_UUID, NULL},
@@ -93,8 +94,8 @@ const LanguageInfo g_LanguagePrefs [] = {
       {mySTC_TYPE_DEFAULT, NULL}, // VERBATIM
       {mySTC_TYPE_REGEX, NULL},
       {mySTC_TYPE_COMMENT_SPECIAL, NULL}, // DOXY
-      {mySTC_TYPE_WORD2, CppWordlist2}, // EXTRA WORDS
-      {mySTC_TYPE_WORD3, CppWordlist3}, // DOXY KEYWORDS
+      {mySTC_TYPE_WORD2, InformWordlist2}, // EXTRA WORDS
+      {mySTC_TYPE_WORD3, InformWordlist3}, // DOXY KEYWORDS
       {mySTC_TYPE_ERROR, NULL}, // KEYWORDS ERROR
       {-1, NULL},
       {-1, NULL},

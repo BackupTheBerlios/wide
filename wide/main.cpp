@@ -1334,9 +1334,9 @@ void MyFrame::setNewStc(Edit* stc) {
     for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + " ";
     wlarray.Clear();
     stc->SetWordlist(wordlist);
-    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist+direclist+otherlist);
-    //stc->SetKeyWords (mySTC_TYPE_OPERATOR, direclist);
-    //stc->SetKeyWords (128, otherlist);   
+    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist + direclist + otherlist);
+    //stc->SetKeyWords (1, direclist);
+    //stc->SetKeyWords (2, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
     stc->SetAutoComplete(autoCompleteSwitch, true);   
     stc->SetHotkeys(hotkeysSwitch, true);
