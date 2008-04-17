@@ -1279,7 +1279,7 @@ void MyFrame::setNewStc(Edit* stc) {
     bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
         s = pConfig->Read(_T(str),_T(""));
-        stc->AddHotkey(_T(str[0])+s);
+        stc->AddHotkey(s);
         //console->AppendText(_T(str)+" ;  ");
         bCont = pConfig->GetNextEntry(str, dummy);
     }   

@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.6 2008/04/16 13:33:49 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.7 2008/04/17 15:42:12 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         if (s[0] == chr) {
             SetTargetStart(pos - 1); SetTargetEnd(pos);
             ReplaceTarget("");
-            AddText(s.Mid(1));
+            AddText(s.Mid(2));
         }
     }
     int currentLine = GetCurrentLine();

@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-04-17
+- Modificata sintassi per sostituzione automatica nel file wide.ini
+
 2008-04-16
 - Risolto bug commenti inizianti per # (usato lexer MatLab)
 - Risolto bug autocompletion dentro virgolette
