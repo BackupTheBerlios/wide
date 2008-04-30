@@ -8,9 +8,12 @@ Contents:
 
 0) Intro
 1) Setup
-2) Tips about using Wide
+2) Projects and project files
+3) Tips about using Wide
 
 
+
+========
 0) Intro
 ========
 Wide is a win32 Editor for Inform6: is an Integrated Development Environment 
@@ -34,6 +37,7 @@ Main Features:
 
 
 
+========
 1) Setup
 ========
 
@@ -60,16 +64,17 @@ These are the position and size of the WIDE window. You shouldn't change them.
 
 ---
 
-SHOWTIPS            1 if you want the tips when wide starts, else 0
 AUTOCOMPLETION      1 to set autocomplete on, else 0
 SHOWLINENUMBERS     1 to have line numbers shown in editor, else 0
 WRAPMODE            1 to have automatic word-wrap, else 0
+REPLACEHOTKEYS      1 to have automati substitution of hotkeys, else 0
 
 These are settable/resettable inside wide.
 
 ---
 
 OBJECT_TREE_SHOW_OBJECTS
+OBJECT_TREE_SHOW_PROJECT
 OBJECT_TREE_SHOW_GLOBALS
 OBJECT_TREE_SHOW_CONSTANTS
 OBJECT_TREE_SHOW_FUNCTIONS
@@ -79,8 +84,10 @@ OBJECT_TREE_SHOW_VERBS
 OBJECT_TREE_EXPAND_ALL_NODES
 
 For every entry, 1 is to have the correspondent kind of inform items shown in 
-the object tree.
+the object tree (OBJECT_TREE_SHOW_PROJECT is for project defined classes, the
+others are self esplicative).
 The last entry is to have the tree automatically expanded.
+
 These are settable/resettable even inside wide.
 
 ---
@@ -124,25 +131,108 @@ appears.
 
 ---
 
-[AUTOCOMPLETIONLIST]
+[HOTKEYS]
 ...
 
-Following [AUTOCOMPLETIONLIST] there's a list of keyword used both for
-autocompletion and for syntax highlighting.
+Following [HOTHEYS] there's a list of entries used for fast keys substitution.
+Entries are in format 
+  <ID>=<KEY>,<STRING>
+where <ID> is an unique identifier, <KEY> is the key to be pressed and
+<STRING> is the string that will replace the pressed key. For example
+  H07=à,@`a
+means that when the à key is pressed, the @`a string will be inserted in the
+edited file.
+
+---
+
+[STATEMENTS]
+...
+[DIRECTIVES]
+...
+[OTHERKEYWORDS]
+...
+
+Following [STATEMENTS], [DIRECTIVES] and [OTHERKEYWORDS] there are three lists 
+of keywords used both for autocompletion and for syntax highlighting. Entries
+are in the format
+  <ID>=<KEYWORD>
+where <ID> is an unique identifier.
+The three lists are, currently, equivalents (there are future plans to have
+them coloured differently).
 
 
-2) Tips about using Wide
+
+==============================
+2) Projects and projects files
+==============================
+
+Wide can handle Inform projects made by different files. Also, in a project
+the user can define classes (so that items of that classes are shown in the 
+object tree) and additional keywords used for autocompletion and for syntax 
+highlighting.
+
+A project is handled with a project file, a text file with .wpf extension and
+and a syntax vaguely similar to wide.ini. You can check the example.wpf file.
+
+---
+
+Here's a description of the entries in a wide project file:
+
+---
+
+[FILES]
+...
+
+Following [Files] there's a list of file that will be automatically opened
+along with the project. All entries are in the format
+  <ID>=<FILENAME>
+where <ID> is an unique identifier.
+The first file of the list is used as "main file". When a project is opened,
+a compiling command will always try to compile the main file, instead of the
+file shown in the editor. Also, the compiled game and resource file names
+depends on main file.
+
+---
+
+[CLASSES]
+...
+
+Following [CLASSES] there's a list of classes used in the object tree. As
+usual, entries are in the format
+  <ID>=<CLASS>
+where <ID> is an unique identifier.
+As an example, if we have the following entries
+  C01=Room
+  C02=Prop
+then objects of the Room and Prop classes will be shown in the object file
+(they won't, otherwise), in separathe branches.
+
+---  
+
+[KEYWORDS]
+...
+
+Following [KEYWORDS] there's a list of keywords used both for autocompletion 
+and for syntax highlighting. These keywords are added to the [OTHERKEYWORDS]
+list defined in the wide.ini file. As usual, entries are in the format
+  <ID>=<KEYWORD>
+where <ID> is an unique identifier.
+
+
+
+========================
+3) Tips about using Wide
 ========================
 
-* You can select block of text by pressing the ALT key while selecting the text with the left mouse.
-* You can add up to 5 pdf documents to the About menu. Simply edit the "wide.ini" file and restart WIDE.
-* Custom autocompletion list. In the "wide.ini" file you can add keywords to the AUTOCOMPLETION feature. 
+* You can select block of text by pressing the ALT key while selecting the 
+  text with the left mouse.
+* You can add up to 5 pdf documents to the About menu. Simply edit the 
+  "wide.ini" file and restart WIDE.
+* Custom autocompletion list. In the "wide.ini" file you can add keywords to 
+  the AUTOCOMPLETION feature. 
   The [AUTOCOMPLETIONLIST] list will enable the syntax highlighting.
 * You can zoom-in/out the font dimension with CTRL+MOUSE SCROLL.
 * You can shift right-left blocks of text using the TAB and SHIFT+TAB keys.
-* It's possible to install WIDE into an USB pen: simply use relative paths for the executables.
-* It's possible to set a Main File for compilation process: create a txt file (in the project directory)
-  with the name of main file (only the name without path). This file must have ".wpf" extension. In 
-  Wide, open this project file: every time you run compilation, WIDE will compile the main file.
-  
+* It's possible to install WIDE into an USB pen: simply use relative paths for
+  the executables.
   

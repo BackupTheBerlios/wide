@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.7 2008/04/17 15:42:12 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.8 2008/04/30 15:34:26 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -393,7 +393,7 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int style = GetStyleAt(pos);
     if (autocomplete && style != 5 && style != 8) {    // Valori trovati per tentativi
         int start = WordStartPosition(pos, true);
-        if (pos - start > autoCompleteNumber && !AutoCompActive())    // require x characters to show auto-complete
+        if (pos - start >= autoCompleteNumber && !AutoCompActive())    // require x characters to show auto-complete
         {
     //        if (HasWord(GetTextRange(start, pos), m_wordlist))
                 AutoCompShow(pos-start, m_wordlist);
