@@ -51,7 +51,7 @@
 //  #include "images/tipicon.xpm"       
   #include "images/addbookm.xpm"       
   #include "images/forward.xpm"       
-//  #include "images/back.xpm"             
+  #include "images/back.xpm"             
                       
 
 
@@ -76,6 +76,8 @@ class MyFrame : public wxFrame {
         ID_Save_File,
         ID_Save_All,        //PL
         ID_NB_Close,
+        ID_NextPage,
+        ID_PreviousPage,
         ID_ShowObject,
         ID_ShowProject,
         ID_ShowGlobal,
@@ -187,6 +189,8 @@ class MyFrame : public wxFrame {
     void OnSaveFile(wxCommandEvent &event); 
     void OnSaveAll(wxCommandEvent &event);       //PL
     void OnExit(wxCommandEvent& evt);
+    void OnNextPage(wxCommandEvent& event);
+    void OnPreviousPage(wxCommandEvent& event);
 
     // MENU EDIT
     
@@ -332,11 +336,13 @@ class MyFrame : public wxFrame {
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // FILE MENU
     EVT_CLOSE (MyFrame::OnClose)
-    EVT_MENU(MyFrame::ID_LoadFile,   MyFrame::OnLoadFile)
-    EVT_MENU(MyFrame::ID_Exit,       MyFrame::OnExit)
-    EVT_MENU(MyFrame::ID_About,      MyFrame::OnAbout)
-    EVT_MENU(MyFrame::ID_License,    MyFrame::OnLicense)
-    EVT_MENU(MyFrame::ID_NewFile,    MyFrame::OnNewFile)
+    EVT_MENU(MyFrame::ID_LoadFile,      MyFrame::OnLoadFile)
+    EVT_MENU(MyFrame::ID_Exit,          MyFrame::OnExit)
+    EVT_MENU(MyFrame::ID_About,         MyFrame::OnAbout)
+    EVT_MENU(MyFrame::ID_License,       MyFrame::OnLicense)
+    EVT_MENU(MyFrame::ID_NewFile,       MyFrame::OnNewFile)
+    EVT_MENU(MyFrame::ID_NextPage,      MyFrame::OnNextPage)
+    EVT_MENU(MyFrame::ID_PreviousPage,  MyFrame::OnPreviousPage)
     
     // MENU EDIT
     EVT_MENU (wxID_CUT,              MyFrame::OnSingleEdit)
@@ -387,7 +393,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Eventi di STC
     EVT_MENU (wxID_FIND,             MyFrame::OnSingleEdit)
     EVT_MENU (myID_INDENTINC,        MyFrame::OnSingleEdit)
-//    EVT_MENU (myID_INDENTRED,        MyFrame::OnSingleEdit)    
+    EVT_MENU (myID_INDENTRED,        MyFrame::OnSingleEdit)    
     EVT_MENU (wxID_UNDO,             MyFrame::OnSingleEdit)
     EVT_MENU (wxID_REDO,             MyFrame::OnSingleEdit)
     EVT_MENU (ID_Save_File,          MyFrame::OnSaveFile)
@@ -585,9 +591,6 @@ void MyFrame::ToggleMarker(wxCommandEvent &event){
 
 
 
-
-
-
 void MyFrame::SaveConfiguration() {
      pConfig->Write(_T("OBJECT_TREE_EXPAND_ALL_NODES"), expandAllNodes);
      pConfig->Write(_T("OBJECT_TREE_SHOW_OBJECTS"), showObjects);
@@ -708,6 +711,23 @@ void MyFrame::OnSaveAll (wxCommandEvent &evt) {     //PL
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
 }
+
+
+void MyFrame::OnNextPage(wxCommandEvent &evt) {
+    int pannelli = auinotebook->GetPageCount();
+    int current = auinotebook->GetSelection();
+    current++; if (current>=pannelli) current=0;
+    auinotebook->SetSelection(current);
+}
+
+
+void MyFrame::OnPreviousPage(wxCommandEvent &evt) {
+    int pannelli = auinotebook->GetPageCount();
+    int current = auinotebook->GetSelection();
+    current--; if (current<0) current=pannelli-1;
+    auinotebook->SetSelection(current);
+}
+
 
 
 
@@ -1622,6 +1642,18 @@ wxMenuBar* MyFrame::CreateMenuBar()
     file->Append(save_all);
     
     file->AppendSeparator();
+
+    //FILE::NEXTPAGE   //PL
+    wxMenuItem *next_page = new wxMenuItem(file, ID_NextPage, _("&Next Tab\tCtrl+F6"));
+    next_page->SetBitmap(forward_xpm);
+    file->Append(next_page);
+    
+    //FILE::PREVIOUSPAGE   //PL
+    wxMenuItem *previous_page = new wxMenuItem(file, ID_PreviousPage, _("&Previous Tab\tCtrl+F5"));
+    previous_page->SetBitmap(back_xpm);
+    file->Append(previous_page);
+
+    file->AppendSeparator();
     
     wxMenuItem *quit = new wxMenuItem(file, ID_Exit, _("&Quit\tCtrl+Q"));
     quit->SetBitmap(quit_xpm);
@@ -1652,13 +1684,13 @@ wxMenuBar* MyFrame::CreateMenuBar()
     
     // EDIT::INDENT
     wxMenuItem *indent_r = new wxMenuItem(edit, myID_INDENTINC, _("&Indent\tTab"));
-    indent_r->SetBitmap(forward_xpm);
+    //indent_r->SetBitmap(forward_xpm);
     edit->Append(indent_r);
 
     // EDIT::UNINDENT
-//    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&Unindent\tShift+Tab"));
-//    indent_l->SetBitmap(back_xpm);
-//    edit->Append(indent_l);
+    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&Unindent\tShift+Tab"));
+    //indent_l->SetBitmap(back_xpm);
+    edit->Append(indent_l);
 
     // SEARCH MENU
     wxMenu* search = new wxMenu;
@@ -1670,7 +1702,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     search->AppendSeparator();
     search->Append(ID_NextMarker, _("&Next Marker\tF2"));
     
-    // EDIT::INDENT
+    // EDIT::TOGGLEMARKER
     wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _("&Toggle Marker\tCtrl+F2"));
     marker->SetBitmap(addbookm_xpm);
     search->Append(marker);        
@@ -1806,7 +1838,11 @@ wxToolBar* MyFrame::CreateToolBarCtrl()
     tb2->AddTool(ID_Save_File, filesave_xpm, "Save File");
     tb2->AddTool(103, filesaveas_xpm, "Save File as...");
     tb2->AddTool(ID_Save_All, filesaveall_xpm, "Save All");
-    tb2->AddSeparator();    
+    tb2->AddSeparator(); 
+    
+    tb2->AddTool(ID_PreviousPage, back_xpm,"Previous Tab");
+    tb2->AddTool(ID_NextPage, forward_xpm,"Next Tab");
+    tb2->AddSeparator();
 
     tb2->AddTool(wxID_UNDO, undo_xpm,"Undo");
     tb2->AddTool(wxID_REDO, redo_xpm,"Redo");

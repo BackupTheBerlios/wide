@@ -1,6 +1,13 @@
 CHANGELOG WIDE
 ==============
 
+2008-05-28
+- Aggiunta gestione "next tab"/"previous tab"
+- Ripristinata voce di menu' per unindent
+
+2008-05-16
+- Rivista la lista delle keywords in wide.ini
+
 2008-04-17
 - Modificata sintassi per sostituzione automatica nel file wide.ini
 

@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.8 2008/04/30 15:34:26 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.9 2008/05/28 13:59:35 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -255,7 +255,7 @@ void Edit::OnEditIndentInc (wxCommandEvent &WXUNUSED(event)) {
 }
 
 void Edit::OnEditIndentRed (wxCommandEvent &WXUNUSED(event)) {
-    CmdKeyExecute (wxSTC_CMD_DELETEBACK);
+    CmdKeyExecute (wxSTC_CMD_BACKTAB);
 }
 
 void Edit::OnEditSelectAll (wxCommandEvent &WXUNUSED(event)) {
