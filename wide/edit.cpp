@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.9 2008/05/28 13:59:35 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.10 2008/06/19 17:18:19 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -310,6 +310,18 @@ void Edit::OnWrapmodeOn (wxCommandEvent &WXUNUSED(event)) {
     SetWrapMode (GetWrapMode() == 0? wxSTC_WRAP_WORD: wxSTC_WRAP_NONE);
 }
 
+void Edit::ClearHotkeys() { m_hotkey.Clear(); }
+void Edit::AddHotkey(wxString s) { 
+    wxString s2;
+    if ( s[1]==',' ) s2 = s;
+    if ( s[2]==',' ) {
+        int k = wxHexToDec(s.Left(2));
+        s2.Printf("%c,",k);
+        s2=s2+s.Mid(3);
+    }
+    m_hotkey.Add(s2); 
+}
+
 void Edit::OnAutocompOn (wxCommandEvent &WXUNUSED(event)) {
     autocomplete = (!autocomplete) && autocompletemain;
 }
@@ -369,7 +381,8 @@ void Edit::OnMarginClick (wxStyledTextEvent &event) {
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int pos = GetCurrentPos();
 
-    char chr = (char)event.GetKey();
+    wxChar chr = (char)event.GetKey();
+    // if (chr < 0) { wxString s; s.Printf("%d",chr); AddText(s); }        
     if (hotkeys) for (size_t i = 0; i<m_hotkey.GetCount(); i++) {
         wxString s = m_hotkey[i];
         if (s[0] == chr) {

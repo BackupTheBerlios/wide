@@ -1300,10 +1300,11 @@ void MyFrame::setNewStc(Edit* stc) {
     while(bCont){
         s = pConfig->Read(_T(str),_T(""));
         stc->AddHotkey(s);
-        //console->AppendText(_T(str)+" ;  ");
+        //console->AppendText(_T(str)+" = "+_T(s)+" ;  ");
         bCont = pConfig->GetNextEntry(str, dummy);
     }   
-
+    //wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); 
+    
     // Recupero tutte le wordlist per AUTOCOMPLETION dal file di configurazione
     // Recupero le liste separatamente, aggiungendo le parole sia alle varie
     // liste per la syntax highlighting che all'arraty wlarray
@@ -1547,6 +1548,7 @@ void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wx
         while (re.GetMatch(&start, &len, n)){
             n+=1;
         }
+        if (text[start-1]=='\"') {start--; len++; }
         wxTreeItemId id = items.Item(i);
         tree->AppendItem(id, text.Mid(start,len),1,-1, new MyTreeItemData(start+contatore,len));
         i++;
@@ -1569,10 +1571,10 @@ void MyFrame::OnUpdateTree()
     wxTreeItemId root = tree->AddRoot(wxT("Object Tree"), 0);
 
 
-    if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*([A-Za-z0-9_]+)");
+    if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+)\"?");
     if (showProject) {
         for (size_t i = 0; i<projclasses.GetCount(); i++) {
-            wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*([A-Za-z0-9_]+)";
+            wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+\"?)";
             OnUpdateTreeRegularExpression(text, root, projclasses[i], regexp);
         }        
     }

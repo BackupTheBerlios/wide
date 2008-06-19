@@ -1,6 +1,10 @@
 CHANGELOG WIDE
 ==============
 
+2008-06-20
+- Risolto bug su albero, ora gestisce anche oggetti senza nome interno
+- Risolto bug su sostituzione automatica, modifica sintassi in wide.ini
+
 2008-05-28
 - Aggiunta gestione "next tab"/"previous tab"
 - Ripristinata voce di menu' per unindent

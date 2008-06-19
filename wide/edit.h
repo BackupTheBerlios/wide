@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.5 2008/04/13 08:36:22 paolol_it Exp $
+// RCS-ID:      $Id: edit.h,v 1.6 2008/06/19 17:18:19 paolol_it Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -116,8 +116,8 @@ public:
     void SetAutoComplete(bool b, bool g) {autocomplete = b && g; autocompletemain = g;}; //PL
     void SetHotkeys(bool b, bool g) {hotkeys = b && g; hotkeysmain = g;}; // PL
     
-    void ClearHotkeys() { m_hotkey.Clear(); }
-    void AddHotkey(wxString s) { m_hotkey.Add(s); }
+    void ClearHotkeys();
+    void AddHotkey(wxString s);
     
     // Custom
     void OnAutocompOn(wxCommandEvent &event);
