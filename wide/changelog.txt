@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-07-14
+- Aggiunta ricerca di oggetti nel file in editing e nei file aperti
+
 2008-06-20
 - Risolto bug su albero, ora gestisce anche oggetti senza nome interno
 - Risolto bug su sostituzione automatica, modifica sintassi in wide.ini

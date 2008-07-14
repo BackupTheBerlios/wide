@@ -42,6 +42,8 @@
   #include "images/findrepl.xpm"   
   #include "images/find.xpm"   
   #include "images/findback.xpm" //PL
+  #include "images/findobject.xpm" //PL
+  #include "images/findobjectg.xpm" //PL
   #include "images/quit.xpm"     
   #include "images/help.xpm"                        
   #include "images/copy.xpm"                      
@@ -91,6 +93,8 @@ class MyFrame : public wxFrame {
         ID_Find,
         ID_FindBack,     //PL
         ID_FindReplace,
+        ID_FindObjectLocal,
+        ID_FindObjectGlobal,
         ID_NextMarker,
         ID_ToggleMarker,
         ID_RefreshTree,
@@ -206,6 +210,10 @@ class MyFrame : public wxFrame {
     void GotoLine(wxCommandEvent &event);   
     void Search(wxCommandEvent &event);
     void SearchBack(wxCommandEvent &event);   //PL
+    void SearchObjectLocal(wxCommandEvent &event) { SearchObject(false); };
+    void SearchObjectGlobal(wxCommandEvent &event) { SearchObject(true); };
+    void SearchObject(bool);   
+    size_t SearchRegularExpression(wxString text, wxString pattern);    
     void FindReplace(wxCommandEvent &event);   
     void NextMarker(wxCommandEvent &event);
     void ToggleMarker(wxCommandEvent &event);
@@ -213,7 +221,7 @@ class MyFrame : public wxFrame {
     // Tree
     void OnUpdateTree();   
     void OnRefreshTree(wxCommandEvent &event);
-    void OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome,  wxString pattern);
+    void OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome,  wxString pattern, bool keepquote);
     
     // Metodi lanciati su stc    
     void OnEdit (wxCommandEvent &event);
@@ -253,6 +261,9 @@ class MyFrame : public wxFrame {
      wxTextCtrl* console;
      wxToolBar* toolbar;
      wxTreeCtrl* tree;
+     
+     wxString lastSearch;
+     wxString lastObSearch;
 
      
      // Impostazioni Object tree
@@ -353,6 +364,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_GotoLine,     MyFrame::GotoLine)    
     EVT_MENU(MyFrame::ID_Find,         MyFrame::Search)
     EVT_MENU(MyFrame::ID_FindBack,     MyFrame::SearchBack)    //PL
+    EVT_MENU(MyFrame::ID_FindObjectLocal,   MyFrame::SearchObjectLocal)    //PL
+    EVT_MENU(MyFrame::ID_FindObjectGlobal,  MyFrame::SearchObjectGlobal)    //PL
     EVT_MENU(MyFrame::ID_NextMarker,   MyFrame::NextMarker)
     EVT_MENU(MyFrame::ID_ToggleMarker, MyFrame::ToggleMarker)    
     EVT_MENU(MyFrame::ID_FindReplace,  MyFrame::FindReplace)    //PL    
@@ -472,7 +485,7 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
             wxTextEntryDialog dialog(this,
                                      _T("Enter a string to find:"),
                                      _T("Search String"),
-                                     _T(""),
+                                     _T(lastSearch),
                                      wxOK | wxCANCEL);
         
             if (dialog.ShowModal() == wxID_OK) {
@@ -482,6 +495,7 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
         }
         // Do the search
         if (selected!="") {
+            lastSearch = selected;
             newpos = e->FindText(position,len,selected,0);
             // If not found, search from beginning 
             if (newpos < 0) newpos = e->FindText(0,position,selected,0);
@@ -513,7 +527,7 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
             wxTextEntryDialog dialog(this,
                                      _T("Enter a string to find:"),
                                      _T("Search String"),
-                                     _T(""),
+                                     _T(lastSearch),
                                      wxOK | wxCANCEL);
 
             if (dialog.ShowModal() == wxID_OK) {
@@ -523,6 +537,7 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
         }
         // Do the search
         if (selected!="") {
+            lastSearch = selected;
             newpos = e->FindText(position-1,0,selected,0);
             // If not found, search from end
             if (newpos < 0) newpos = e->FindText(len,position,selected,0);
@@ -534,20 +549,93 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
         }
     }
 }
-void MyFrame::GotoLine(wxCommandEvent &event){
+
+void MyFrame::SearchObject(bool globalflag){  //PL
+    int position, len, newpos;
+    wxString selected;
+    // If there's a selection WIDE will search the selected String
     if (auinotebook->GetPageCount()==0) return;
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     if (e) {
-        // Richiedo il numero di riga
-        long lineNumber = wxGetNumberFromUser( _T(""),_T("Line number:"), _T("Goto Line number"),
-                             1, 1, 999999999, this );
-        if (lineNumber !=-1){
-            e->GotoLine(lineNumber-1);
-        }                          
+        selected = e->GetSelectedText();
+        position = e->GetSelectionEnd();
+        len = e->GetLength();
+        // Else, open a dialog
+        if (selected=="") {
+            wxString caption = "Search Object";
+            if (globalflag) caption = "Search Object in Files";
+            wxTextEntryDialog dialog(this,
+                                     _T("Enter an object to find:"),
+                                     _T(caption),
+                                     _T(lastObSearch),
+                                     wxOK | wxCANCEL);
+
+            if (dialog.ShowModal() == wxID_OK) {
+                selected = dialog.GetValue();
+                position = e->GetCurrentPos();
+            }
+        }
+        // Do the search
+        if (selected!="") {
+            lastObSearch = selected;
+            int pannelli = auinotebook->GetPageCount();
+            int current = auinotebook->GetSelection();
+            int searched = current;
+            size_t k = 0;
+            Edit* e;
+            for (;;) {
+                //Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+                e = (Edit*) auinotebook->GetPage(searched);
+                wxString text = e->GetText();           
+                if (showObjects) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]");
+                if (showProject) for (size_t i = 0; (k==0) && (i<projclasses.GetCount()); i++) {
+                    wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]";
+                    //wxString regexp = "\n+[ \t\f\v]*NPC[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]";                
+                    k = SearchRegularExpression(text, regexp);
+                }
+                if (showGlobals && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+" + selected + "[= \t\n\r\f\v]");
+                if (showConstants && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+" + selected + "[ \t\n\r\f\v]");
+                if (showFunctions && (k==0)) k = SearchRegularExpression(text, "[\n\r][ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*" + selected + ".*;");
+                if (showClasses && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Class[ \t\n\r\f\v]+" + selected + "[ \t\n\r\f\v]");
+                if (showIncludes && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Include[ \t\f\v]+\"" + selected + "(\x2eh)?\"");
+                if (showVerbs && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Verb[ \t\f\v]+\'" + selected +"\'");                
+                if (k) break;
+                if (!globalflag) break;
+                searched++; if (searched>=pannelli) searched=0;
+                if (searched == current) break;
+            }
+            auinotebook->SetSelection(current);
+
+            //lastSearch = selected;
+            if (k) {
+                if (searched != current) auinotebook->SetSelection(searched);
+                e = (Edit*) auinotebook->GetPage(searched);
+                position = k;
+                len = e->GetLength();
+                newpos = e->FindText(position,len,selected,0);
+                int linea = e->LineFromPosition(newpos);
+                e->GotoLine(linea);
+                e->SetSelection(newpos,newpos+selected.Length());
+            }
+        }
     }
 }
 
-
+size_t MyFrame::SearchRegularExpression(wxString text, wxString pattern_global){
+    wxRegEx re;
+    if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
+        console->AppendText("Errore nella RE");
+        return 0;
+    }
+    if ( re.Matches(text) ){
+        size_t start, len;
+        if (re.GetMatch(&start, &len, 0)){
+          if (text[start-1]=='\"') {start--; len++; }
+          return start;
+        }
+    }
+    return 0;
+}
 
 void MyFrame::NextMarker(wxCommandEvent &event){
     if (auinotebook->GetPageCount()==0) return;
@@ -570,6 +658,19 @@ void MyFrame::NextMarker(wxCommandEvent &event){
             }
         }
     } 
+}
+
+void MyFrame::GotoLine(wxCommandEvent &event){
+    if (auinotebook->GetPageCount()==0) return;
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    if (e) {
+        // Richiedo il numero di riga
+        long lineNumber = wxGetNumberFromUser( _T(""),_T("Line number:"), _T("Goto Line number"),
+                             1, 1, 999999999, this );
+        if (lineNumber !=-1){
+            e->GotoLine(lineNumber-1);
+        }
+    }
 }
 
 void MyFrame::ToggleMarker(wxCommandEvent &event){
@@ -1423,6 +1524,8 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
         wxString name = fd->GetFilename();        
         console->Clear();
         mainFile = "";
+        lastSearch = "";
+        lastObSearch = "";
         projclasses.Empty();
         projkeywords.Empty();
         
@@ -1532,7 +1635,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 }
  
 // Funzione che aggiunge un nodo alla root con i valori relativi
-void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome, wxString pattern_global){
+void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wxString nome, wxString pattern_global, bool keepquote){
     int contatore=0;    
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
@@ -1548,7 +1651,7 @@ void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wx
         while (re.GetMatch(&start, &len, n)){
             n+=1;
         }
-        if (text[start-1]=='\"') {start--; len++; }
+        if (text[start-1]=='\"' && keepquote) {start--; len++; }
         wxTreeItemId id = items.Item(i);
         tree->AppendItem(id, text.Mid(start,len),1,-1, new MyTreeItemData(start+contatore,len));
         i++;
@@ -1571,19 +1674,20 @@ void MyFrame::OnUpdateTree()
     wxTreeItemId root = tree->AddRoot(wxT("Object Tree"), 0);
 
 
-    if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+)\"?");
+    if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+)\"?",true);
     if (showProject) {
         for (size_t i = 0; i<projclasses.GetCount(); i++) {
             wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+\"?)";
-            OnUpdateTreeRegularExpression(text, root, projclasses[i], regexp);
+            OnUpdateTreeRegularExpression(text, root, projclasses[i], regexp, true);
         }        
     }
-    if (showGlobals) OnUpdateTreeRegularExpression(text, root, "Global", "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+([A-Za-z0-9_]+)");
-    if (showConstants) OnUpdateTreeRegularExpression(text, root, "Constant", "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+([A-Za-z0-9_]+)");
-    if (showFunctions) OnUpdateTreeRegularExpression(text, root, "Function", "[;][ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*([A-Za-z0-9_]+).*;");
-    if (showClasses) OnUpdateTreeRegularExpression(text, root, "Class", "\n+[ \t\f\v]*Class[ \t\n\r\f\v]+([A-Za-z0-9_]+)");
-    if (showIncludes) OnUpdateTreeRegularExpression(text, root, "Include", "\n+[ \t\f\v]*Include[ \t\f\v]+\"([A-Za-z0-9_]+)\"");
-    if (showVerbs) OnUpdateTreeRegularExpression(text, root, "Verb", "\n+[ \t\f\v]*Verb[ \t\f\v]+\'([A-Za-z0-9_]+)'");
+    if (showGlobals) OnUpdateTreeRegularExpression(text, root, "Global", "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
+    if (showConstants) OnUpdateTreeRegularExpression(text, root, "Constant", "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
+    if (showFunctions) OnUpdateTreeRegularExpression(text, root, "Function", "\n+[ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*([A-Za-z0-9_]+).*;", false);
+    if (showClasses) OnUpdateTreeRegularExpression(text, root, "Class", "\n+[ \t\f\v]*Class[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
+    //if (showIncludes) OnUpdateTreeRegularExpression(text, root, "Include", "\n+[ \t\f\v]*Include[ \t\f\v]*\"([A-Za-z0-9_]+)(\x2eh)?\"", false);
+    if (showIncludes) OnUpdateTreeRegularExpression(text, root, "Include", "\n+[ \t\f\v]*Include[ \t\f\v]*\"([A-Za-z0-9_]+)", false);
+    if (showVerbs) OnUpdateTreeRegularExpression(text, root, "Verb", "\n+[ \t\f\v]*Verb[ \t\f\v]+\'([A-Za-z0-9_]+)'", false);
 
     if (expandAllNodes) {
         tree->ExpandAll();                
@@ -1699,6 +1803,8 @@ wxMenuBar* MyFrame::CreateMenuBar()
     search->Append (ID_Find, _("&Find\tF3"));
     search->Append (ID_FindBack, _("&Find Backwards\tShift+F3"));   //PL
     search->Append (ID_FindReplace, _("Find and &replace\tCtrl+F3"));
+    search->Append (ID_FindObjectLocal, _("&Find Object\tF4"));
+    search->Append (ID_FindObjectGlobal, _("&Find Object in files\tShift+F4"));
     search->AppendSeparator();
     search->Append(ID_GotoLine, _("&Goto line\tCtrl+L"));
     search->AppendSeparator();
@@ -1856,6 +1962,8 @@ wxToolBar* MyFrame::CreateToolBarCtrl()
     tb2->AddTool(ID_FindBack, findback_xpm,"Find Backwards");   //PL
     tb2->AddTool(ID_Find, find_xpm,"Find");    //PL
     tb2->AddTool(108, findrepl_xpm,"Find and Replace");
+    tb2->AddTool(ID_FindObjectLocal, findobject_xpm,"Find Object");    //PL
+    tb2->AddTool(ID_FindObjectGlobal, findobjectg_xpm,"Find Object");    //PL    
     tb2->AddSeparator();
     
     tb2->AddTool(ID_Compile, compilezcode_xpm, "Compile ZCode");
