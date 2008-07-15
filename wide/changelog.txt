@@ -3,6 +3,7 @@ CHANGELOG WIDE
 
 2008-07-14
 - Aggiunta ricerca di oggetti nel file in editing e nei file aperti
+- Aggiunta gestione del formato zcode nei file di progetto
 
 2008-06-20
 - Risolto bug su albero, ora gestisce anche oggetti senza nome interno

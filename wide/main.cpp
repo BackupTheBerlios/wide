@@ -262,6 +262,8 @@ class MyFrame : public wxFrame {
      wxToolBar* toolbar;
      wxTreeCtrl* tree;
      
+     wxMenu* zcodemenu;
+     
      wxString lastSearch;
      wxString lastObSearch;
 
@@ -1537,6 +1539,20 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
 
         wxString s, str;
         bool bCont; long dummy;
+        int zc = 0;
+        zc = projfile->Read(_T("ZCODEVERSION"), 1l);
+        switch (zc) {
+          case 8:
+            zcodeversion=".z8";
+            zcodeswitch="-v8";
+            zcodemenu->Check(ID_ZcodeVersion8, true);
+            break;
+          case 5:
+            zcodeversion=".z5";
+            zcodeswitch="-v5";
+            zcodemenu->Check(ID_ZcodeVersion5, true);
+            break;
+        }        
         projfile->SetPath(_T("/CLASSES"));
         bCont = projfile->GetFirstEntry(str, dummy);
         while(bCont){
@@ -1830,6 +1846,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     zcode->AppendSeparator();
     zcode->AppendRadioItem (ID_ZcodeVersion5, _("Zcode version 5"));
     zcode->AppendRadioItem (ID_ZcodeVersion8, _("Zcode version 8"));
+    zcodemenu=zcode;
     
     
     // GLULX MENU
