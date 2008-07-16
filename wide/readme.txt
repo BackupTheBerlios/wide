@@ -142,6 +142,8 @@ where <ID> is an unique identifier, <KEY> is the key to be pressed and
   H07=à,@`a
 means that when the à key is pressed, the @`a string will be inserted in the
 edited file.
+Also, <KEY> can be the hexadecimal code identifying the key, as in
+  H07=E0,@`a
 
 ---
 
@@ -177,6 +179,11 @@ and a syntax vaguely similar to wide.ini. You can check the example.wpf file.
 ---
 
 Here's a description of the entries in a wide project file:
+
+---
+
+ZCODEVERSION		Accepted values are 8 and 5. Is the zmachine version used
+                    when compiling zcode (z5 or z8, -v5 or -v8 switches) 
 
 ---
 
