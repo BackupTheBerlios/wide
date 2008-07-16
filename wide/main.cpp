@@ -59,8 +59,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.92.1 beta"
-  #define BUILD " (build 200804060900) "
+  #define VERSIONE "0.93 beta"
+  #define BUILD " (build 200807161721) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -307,6 +307,8 @@ class MyFrame : public wxFrame {
      wxMenuBar* CreateMenuBar();
      wxAuiNotebook* CreateNotebook();
      wxToolBar* CreateToolBarCtrl();
+     
+     bool debugflag;
         
     
      DECLARE_EVENT_TABLE()
@@ -1526,8 +1528,6 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
         wxString name = fd->GetFilename();        
         console->Clear();
         mainFile = "";
-        lastSearch = "";
-        lastObSearch = "";
         projclasses.Empty();
         projkeywords.Empty();
         
@@ -1684,6 +1684,25 @@ void MyFrame::OnUpdateTree()
     }
     
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    
+    wxTreeItemId wroot = tree->GetRootItem();
+    wxTreeItemIdValue ck, ck2;
+    wxTreeItemId cid, cen;
+    wxString cname;
+    wxArrayString memo;
+    cid = tree->GetFirstChild(wroot, ck);
+    while (cid.IsOk()) {
+        if (tree->ItemHasChildren(cid)) {
+          if (tree->IsExpanded(cid)) cname = "+" + tree->GetItemText(cid);
+           else                      cname = "-" + tree->GetItemText(cid);
+          memo.Add(cname);
+    }
+        //console->AppendText(cname);
+        cid = tree->GetNextChild(wroot, ck);
+    }
+    cid = tree->GetFirstVisibleItem();
+    wxString firstvis = tree->GetItemText(cid);
+    
     wxString text = e->GetText();
     tree->DeleteAllItems();    
     wxArrayTreeItemIds items;
@@ -1712,8 +1731,33 @@ void MyFrame::OnUpdateTree()
         tree->Expand(root);     
     }
     
+    wroot = tree->GetRootItem();
+    cid = tree->GetFirstChild(wroot, ck);
+    while (cid.IsOk()) {
+        cname = tree->GetItemText(cid);
+        for (size_t i = 0; i<memo.GetCount(); i++) {
+            if (memo[i] == "+" + cname) { tree->Expand(cid); break; }
+            if (memo[i] == "-" + cname) { tree->Collapse(cid); break; }
+        }
+        cid = tree->GetNextChild(wroot, ck);
+    }
+    
     // Scroll all'inizio dell'albero
     tree->ScrollTo(root);
+    cid = tree->GetFirstChild(wroot, ck);
+    bool brf = false;
+    while (cid.IsOk()) {
+        if ((tree->GetItemText(cid)) == firstvis) { tree->ScrollTo(cid); break; }
+        cen = tree->GetFirstChild(cid, ck2);
+        while (cen.IsOk()) {
+            if ((tree->GetItemText(cen)) == firstvis) { tree->ScrollTo(cen); brf = true; break; }
+            cen = tree->GetNextChild(cid, ck2);
+        }
+        if (brf) break;
+        cid = tree->GetNextChild(wroot, ck);
+    }
+    tree->SetScrollPos(wxHORIZONTAL, 0, true);
+    
 }
  
  

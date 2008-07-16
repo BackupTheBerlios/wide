@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-07-16
+- Aggiornamento dell'albero
+
 2008-07-14
 - Aggiunta ricerca di oggetti nel file in editing e nei file aperti
 - Aggiunta gestione del formato zcode nei file di progetto
