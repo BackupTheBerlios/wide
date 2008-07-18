@@ -97,6 +97,7 @@ class MyFrame : public wxFrame {
         ID_FindObjectGlobal,
         ID_NextMarker,
         ID_ToggleMarker,
+        ID_ResetMarkers,
         ID_RefreshTree,
         ID_Compile,
         ID_CompileUlx,                
@@ -119,7 +120,9 @@ class MyFrame : public wxFrame {
         ID_CloseProject,
         ID_CreateBlb,    
         ID_MakeAllBlb,
-        ID_CreateRes,                               
+        ID_CreateRes,    
+        ID_CreateZBlb,
+        ID_RunZBlb,                           
         ID_Fine = ID_Exit+1000
     };    
     
@@ -217,6 +220,7 @@ class MyFrame : public wxFrame {
     void FindReplace(wxCommandEvent &event);   
     void NextMarker(wxCommandEvent &event);
     void ToggleMarker(wxCommandEvent &event);
+    void ResetMarkers(wxCommandEvent &event);
    
     // Tree
     void OnUpdateTree();   
@@ -236,7 +240,8 @@ class MyFrame : public wxFrame {
     void OnCompile (wxCommandEvent &event);
     void OnRunZcode(wxCommandEvent &event);
     void OnZcodeVersion(wxCommandEvent &event);
-    
+    void OnCreateZBlb(wxCommandEvent &event);
+    void OnRunZBlb(wxCommandEvent &event);
     // Glulx Menu
     void OnCompileUlx(wxCommandEvent &event);
     void OnRunUlx(wxCommandEvent &event);        
@@ -371,7 +376,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_FindObjectLocal,   MyFrame::SearchObjectLocal)    //PL
     EVT_MENU(MyFrame::ID_FindObjectGlobal,  MyFrame::SearchObjectGlobal)    //PL
     EVT_MENU(MyFrame::ID_NextMarker,   MyFrame::NextMarker)
-    EVT_MENU(MyFrame::ID_ToggleMarker, MyFrame::ToggleMarker)    
+    EVT_MENU(MyFrame::ID_ToggleMarker, MyFrame::ToggleMarker)  
+    EVT_MENU(MyFrame::ID_ResetMarkers, MyFrame::ResetMarkers)  
     EVT_MENU(MyFrame::ID_FindReplace,  MyFrame::FindReplace)    //PL    
 
     
@@ -384,7 +390,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (ID_Compile,            MyFrame::OnCompile)
     EVT_MENU (ID_RunZcode,           MyFrame::OnRunZcode)    
     EVT_MENU (ID_ZcodeVersion5,      MyFrame::OnZcodeVersion)    
-    EVT_MENU (ID_ZcodeVersion8,      MyFrame::OnZcodeVersion)        
+    EVT_MENU (ID_ZcodeVersion8,      MyFrame::OnZcodeVersion)
+    EVT_MENU (ID_CreateZBlb,         MyFrame::OnCreateZBlb)
+    EVT_MENU (ID_RunZBlb,            MyFrame::OnRunZBlb)         
     
     // Glulx Menu
     EVT_MENU (ID_CompileUlx,         MyFrame::OnCompileUlx)
@@ -694,6 +702,13 @@ void MyFrame::ToggleMarker(wxCommandEvent &event){
     }
 }
 
+void MyFrame::ResetMarkers(wxCommandEvent &event){
+    if (auinotebook->GetPageCount()==0) return;
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    if (e) {
+        e->MarkerDeleteAll(-1);
+    }
+}
 
 
 void MyFrame::SaveConfiguration() {
@@ -913,7 +928,7 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
 void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     if (event.GetId() != ID_MakeAllBlb) console->Clear();
-    console->AppendText("Creating blb file...\n");
+    console->AppendText("Creating blorb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString blcFile, blbFile;
     if (mainFile==""){
@@ -1136,6 +1151,116 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     }
 }
 
+// Create ZBLB
+void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
+    if (auinotebook->GetPageCount()==0){ return; }
+    console->Clear();
+    console->AppendText("Creating Resources for z-blorb file...\n");
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    wxString idFile;
+    if (mainFile==""){
+        idFile = e->GetFilename();
+    }
+    else{
+        console->AppendText("Using MainFile: "+mainFile+"\n");
+        idFile = mainFile;
+    }
+    idFile.Replace(".inf", "", true);
+    wxString comando =  "\""+bres +"\" \""+idFile+".zres\" \""+idFile+".zblc\" 2del.bli";
+    wxArrayString output;
+    if ( wxExecute(_T(comando), output) != 0 )
+    {
+        console->AppendText(comando);
+        console->AppendText("\n");
+        size_t count = output.GetCount();
+        for ( size_t n = 0; n < count; n++ )
+        {
+            console->AppendText(output[n].c_str());
+            console->AppendText("\n");
+        }
+
+        console->AppendText("ERROR.\n");
+        inform_error = true;
+    }
+    else
+    {
+        console->AppendText(comando);
+        console->AppendText("\n");
+        size_t count = output.GetCount();
+        for ( size_t n = 0; n < count; n++ )
+        {
+            console->AppendText(output[n].c_str());
+            console->AppendText("\n");
+        }
+        console->AppendText("Ok.\n");
+        inform_error = false;
+    }
+    if (inform_error) return;        
+
+    OnCompile(event);
+    if (inform_error) return;    
+
+    console->AppendText("Creating z-blorb file...\n");
+
+    wxString wpath=wxPathOnly(idFile);
+    wxString mpath = wxGetCwd();
+    wxSetWorkingDirectory(wpath);
+
+    comando =  "\""+blc +"\" \""+idFile+".zblc\" \""+idFile+".zblorb\"";
+
+    //wxString comando =  blc +" "+blcFile+" "+blbFile;
+    if ( wxExecute(_T(comando), output) != 0 )
+    {
+        console->AppendText(comando);
+        console->AppendText("\n");
+        size_t count = output.GetCount();
+        for ( size_t n = 0; n < count; n++ )
+        {
+            console->AppendText(output[n].c_str());
+            console->AppendText("\n");
+        }
+        console->AppendText("ERROR.\n");
+        inform_error = true;
+    }
+    else
+    {
+        console->AppendText(comando);
+        console->AppendText("\n");
+        size_t count = output.GetCount();
+        for ( size_t n = 0; n < count; n++ )
+        {
+            console->AppendText(output[n].c_str());
+            console->AppendText("\n");
+        }
+        console->AppendText("Ok.\n");
+        inform_error = false;
+    }
+    wxSetWorkingDirectory(mpath);
+}
+
+// Run ZBLB
+void MyFrame::OnRunZBlb (wxCommandEvent &event) {
+    if (auinotebook->GetPageCount()==0){ return; }
+    console->Clear();
+    console->AppendText("Running z-blorb...\n");
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+
+    // Running the MAIN FILE
+    wxString nome;
+    if (mainFile==""){
+        nome = e->GetFilename();
+    }
+    else{
+        console->AppendText("Using MainFile: "+mainFile+"\n");
+        nome = mainFile;
+    }
+    nome.Replace(".inf", ".zblorb", true);
+    wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
+    console->AppendText(comando+"\n");
+    wxArrayString output;
+    wxExecute(_T(comando));
+}
+
 // Run zcode
 void MyFrame::OnRunZcode (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
@@ -1162,7 +1287,7 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
 
     // Azzero la console
-    console->Clear();
+    if (event.GetId() != ID_CreateZBlb) console->Clear();
 
     // PL: Salvo tutto
     console->AppendText("Saving all...\n");
@@ -1212,7 +1337,7 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
             console->AppendText("\n");
         }
         console->AppendText("Ok.\n");
-        inform_error = true;
+        inform_error = false;
     }
 }
 
@@ -1869,12 +1994,12 @@ wxMenuBar* MyFrame::CreateMenuBar()
     search->Append(ID_GotoLine, _("&Goto line\tCtrl+L"));
     search->AppendSeparator();
     search->Append(ID_NextMarker, _("&Next Marker\tF2"));
-    
-    // EDIT::TOGGLEMARKER
     wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _("&Toggle Marker\tCtrl+F2"));
+    
     marker->SetBitmap(addbookm_xpm);
     search->Append(marker);        
     //search->Append(ID_ToggleMarker, _("&Toggle Marker\tCtrl+F2")); 
+    search->Append(ID_ResetMarkers, _("&Reset Markers\tCtrl+Shift+F2"));
 
     // PROJECT MENU
     wxMenu* project = new wxMenu;
@@ -1890,6 +2015,9 @@ wxMenuBar* MyFrame::CreateMenuBar()
     zcode->AppendSeparator();
     zcode->AppendRadioItem (ID_ZcodeVersion5, _("Zcode version 5"));
     zcode->AppendRadioItem (ID_ZcodeVersion8, _("Zcode version 8"));
+    zcode->AppendSeparator();
+    zcode->Append (ID_CreateZBlb, _("Create Zcode &blorb\tCtrl+Shift+F8"));
+    zcode->Append (ID_RunZBlb, _("R&un Zcode blorb\tShift+F8"));    
     zcodemenu=zcode;
     
     
