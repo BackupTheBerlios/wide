@@ -66,7 +66,33 @@
   #define CONFIG_FILE "wide.ini"  
     
 wxFileConfig *pConfig;       
-    
+
+class MyConsole : public wxTextCtrl {
+  public:
+    MyConsole(wxWindow* parent, const wxSize& size) : wxTextCtrl(parent, -1, _(""), wxDefaultPosition, 
+      size, wxNO_BORDER | wxTE_MULTILINE)
+    {
+        SetEditable(false);
+    }
+    ~MyConsole() {}
+} ;
+
+/*   MyFrame(wxWindow* parent, wxPoint p, int width, int height) : wxFrame(parent, -1,
+        _(NOMEAPPLICAZIONE SEP VERSIONE BUILD),
+                      p, wxSize(width,height),
+                      wxDEFAULT_FRAME_STYLE)
+                      
+     console = new wxTextCtrl(this, -1, _(""),
+                      wxDefaultPosition, wxSize(100,100),
+                      wxNO_BORDER | wxTE_MULTILINE);                      
+                      
+wxTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "", const wxPoint& pos = wxDefaultPosition, 
+  const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, 
+  const wxString& name = wxTextCtrlNameStr)                      
+wxFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, 
+  const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = "frame 
+*/
+
 class MyFrame : public wxFrame {
  enum
     {
@@ -150,10 +176,11 @@ class MyFrame : public wxFrame {
      GetStatusBar()->SetStatusText(_("Ready"));
  
      // create several text controls                                        
-     console = new wxTextCtrl(this, -1, _(""),
+     /*console = new wxTextCtrl(this, -1, _(""),
                       wxDefaultPosition, wxSize(100,100),
                       wxNO_BORDER | wxTE_MULTILINE);
-    console->SetEditable(false);                                        
+     console->SetEditable(false);                                        */
+     console = new MyConsole(this, wxSize(100,100));
                                         
 //     wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window"),
 //                      wxDefaultPosition, wxSize(200,150),
