@@ -1389,7 +1389,7 @@ void MyFrame::OnSelChanged(wxTreeEvent &event)
 // AS: funzione che wrappa la appendText per il problema del readonly
 void MyFrame::OnClear(){
     console->SetReadOnly(false);
-    console->Clear();
+    console->SetText("");
     console->SetReadOnly(true);    
 }
 
@@ -1410,7 +1410,9 @@ void MyFrame::OnConsoleClicked(wxStyledTextEvent &event) {
         if (risultato.Contains(_T("Error"))){
             wxString file = risultato.Mid(0,risultato.Find('('));
             wxString riga = risultato.Mid(risultato.Find('(')+1,risultato.Find(')')-risultato.Find('(')-1);
-            console->HideSelection(true);      
+            console->SetSelectionStart(0);
+            console->SetSelectionEnd(0);
+            console->Clear();
             
             // Se il file non è aperto, lo apro        
             if (!checkOpenFile(file)){
