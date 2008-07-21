@@ -59,23 +59,13 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.93 beta"
-  #define BUILD " (build 200807161721) "
+  #define VERSIONE "0.94 beta"
+  #define BUILD " (build 200807211740) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
     
 wxFileConfig *pConfig;       
-
-/* class MyConsole : public wxTextCtrl {
-  public:
-    MyConsole(wxWindow* parent, const wxSize& size) : wxTextCtrl(parent, -1, _(""), wxDefaultPosition, 
-      size, wxNO_BORDER | wxTE_MULTILINE)
-    {
-        SetEditable(false);
-    }
-    ~MyConsole() {}
-} ; */
 
 class MyFrame : public wxFrame {
  enum
@@ -160,10 +150,16 @@ class MyFrame : public wxFrame {
      GetStatusBar()->SetStatusText(_("Ready"));
  
      // create several text controls                                        
-     console = new wxTextCtrl(this, -1, _(""),
+/*     console = new wxTextCtrl(this, -1, _(""),
                       wxDefaultPosition, wxSize(100,100),
                       wxNO_BORDER | wxTE_MULTILINE);
-     console->SetEditable(false);                                        
+     console->SetEditable(false);        */
+     
+    console = new wxStyledTextCtrl(this, -1,
+                     wxDefaultPosition, wxSize(100,100),
+                     wxNO_BORDER | wxTE_MULTILINE, "console");
+    console->SetReadOnly(true);   
+                                     
      //console = new MyConsole(this, wxSize(100,100));
                                         
 //     wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window"),
@@ -267,6 +263,11 @@ class MyFrame : public wxFrame {
     void OnNotebookPageChanged(wxAuiNotebookEvent& evt);
     void OnSelChanged(wxTreeEvent &event);
     
+    // Metodi della console
+    void OnConsoleClicked(wxStyledTextEvent &event);
+    void OnOutput(wxString string);
+    void OnClear();
+
     // HELP MENU
     void OnViewDoc(wxCommandEvent &event);
    
@@ -274,7 +275,8 @@ class MyFrame : public wxFrame {
      wxAuiManager m_mgr;
 
      wxAuiNotebook* auinotebook;
-     wxTextCtrl* console;
+//     wxTextCtrl* console;
+     wxStyledTextCtrl* console;
      wxToolBar* toolbar;
      wxTreeCtrl* tree;
      
@@ -444,6 +446,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // Eventi sull'oggetto TREE
     EVT_TREE_SEL_CHANGED(wxID_ANY, MyFrame::OnSelChanged)
     
+    // Eventi sulla console
+    EVT_STC_DOUBLECLICK(wxID_ANY, MyFrame::OnConsoleClicked)
+
     // Eventi sull'oggetto notebook
     EVT_AUINOTEBOOK_PAGE_CLOSE(wxID_ANY, MyFrame::OnNotebookPageClose)
     EVT_AUINOTEBOOK_PAGE_CHANGED(wxID_ANY, MyFrame::OnNotebookPageChanged)
@@ -483,7 +488,7 @@ void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
 
         setNewStc(stc);
 
-        console->Clear();
+        OnClear();
 
         wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16));
         auinotebook->AddPage(stc  , name, true , page_bmp);
@@ -647,7 +652,7 @@ void MyFrame::SearchObject(bool globalflag){  //PL
 size_t MyFrame::SearchRegularExpression(wxString text, wxString pattern_global){
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
-        console->AppendText("Errore nella RE");
+        OnOutput("Errore nella RE");
         return 0;
     }
     if ( re.Matches(text) ){
@@ -938,8 +943,8 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
 // Create Blb
 void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    if (event.GetId() != ID_MakeAllBlb) console->Clear();
-    console->AppendText("Creating blorb file...\n");
+    if (event.GetId() != ID_MakeAllBlb) OnClear();
+    OnOutput("Creating blorb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString blcFile, blbFile;
     if (mainFile==""){
@@ -947,7 +952,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         blbFile = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         blcFile = mainFile;
         blbFile = mainFile;
     }
@@ -964,28 +969,28 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     wxArrayString output;
     if ( wxExecute(_T(comando), output) != 0 )
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }    
     wxSetWorkingDirectory(mpath);
@@ -993,15 +998,15 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
 
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    if (event.GetId() != ID_MakeAllBlb) console->Clear();
-    console->AppendText("Creating Resources for blorb file...\n");
+    if (event.GetId() != ID_MakeAllBlb) OnClear();
+    OnOutput("Creating Resources for blorb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString bresFile;
     if (mainFile==""){
         bresFile = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         bresFile = mainFile;
     }
     bresFile.Replace(".inf", "", true);
@@ -1009,29 +1014,29 @@ void MyFrame::OnCreateRes (wxCommandEvent &event) {
     wxArrayString output;
     if ( wxExecute(_T(comando), output) != 0 )
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
 
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }
 }
@@ -1039,7 +1044,7 @@ void MyFrame::OnCreateRes (wxCommandEvent &event) {
 // Make All Blb
 void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
+    OnClear();
     OnCreateRes(event); 
     if (inform_error) return;
     OnCompileUlx(event); 
@@ -1052,8 +1057,8 @@ void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
 // Run BLB
 void MyFrame::OnRunBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Running blorb...\n");
+    OnClear();
+    OnOutput("Running blorb...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     
     // Running the MAIN FILE
@@ -1062,12 +1067,12 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", "."+bext, true);
     wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    console->AppendText(comando+"\n");
+    OnOutput(comando+"\n");
     wxArrayString output;
     wxExecute(_T(comando));
 }
@@ -1076,8 +1081,8 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
 // Should I Run the MAIN FILE
 void MyFrame::OnRunUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Running glulx...\n");
+    OnClear();
+    OnOutput("Running glulx...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
@@ -1086,12 +1091,12 @@ void MyFrame::OnRunUlx (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
     }        
     nome.Replace(".inf", ".ulx", true);
     wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    console->AppendText(comando+"\n");
+    OnOutput(comando+"\n");
     wxArrayString output;
     wxExecute(_T(comando));
 }
@@ -1104,14 +1109,17 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
 
     // Azzero la console
-    if (event.GetId() != ID_MakeAllBlb) console->Clear();
+    if (event.GetId() != ID_MakeAllBlb) OnClear();
+    
+    // AS: pulisco la console
+    OnClear();
     
     // PL: Salvo tutto
-    console->AppendText("Saving all...\n");
+    OnOutput("Saving all...\n");
     //wxCommandEvent subev;
     OnSaveAll(event);
     
-    console->AppendText("Compiling in ULX format...\n");
+    OnOutput("Compiling in ULX format...\n");
     wxArrayString output;
 
     // Recupero il nome del file da compilare
@@ -1122,7 +1130,7 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
         ulx = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
         ulx = mainFile;
     }
@@ -1132,32 +1140,32 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     //if ( wxExecute(_T("./inform.exe twocol.inf"), output) != 0 )
     if ( wxExecute(_T(comando), output) != 0 )
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             //wxPrintf(_T("\t%s\n"), output[n].c_str());
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
 
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
 
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             //wxPrintf(_T("\t%s\n"), output[n].c_str());
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }
 }
@@ -1165,15 +1173,15 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
 // Create ZBLB
 void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Creating Resources for z-blorb file...\n");
+    OnClear();
+    OnOutput("Creating Resources for z-blorb file...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString idFile;
     if (mainFile==""){
         idFile = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         idFile = mainFile;
     }
     idFile.Replace(".inf", "", true);
@@ -1181,29 +1189,29 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     wxArrayString output;
     if ( wxExecute(_T(comando), output) != 0 )
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
 
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }
     if (inform_error) return;        
@@ -1211,7 +1219,7 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     OnCompile(event);
     if (inform_error) return;    
 
-    console->AppendText("Creating z-blorb file...\n");
+    OnOutput("Creating z-blorb file...\n");
 
     wxString wpath=wxPathOnly(idFile);
     wxString mpath = wxGetCwd();
@@ -1222,28 +1230,28 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     //wxString comando =  blc +" "+blcFile+" "+blbFile;
     if ( wxExecute(_T(comando), output) != 0 )
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }
     wxSetWorkingDirectory(mpath);
@@ -1252,8 +1260,8 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
 // Run ZBLB
 void MyFrame::OnRunZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Running z-blorb...\n");
+    OnClear();
+    OnOutput("Running z-blorb...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
@@ -1262,12 +1270,12 @@ void MyFrame::OnRunZBlb (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", ".zblorb", true);
     wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    console->AppendText(comando+"\n");
+    OnOutput(comando+"\n");
     wxArrayString output;
     wxExecute(_T(comando));
 }
@@ -1275,19 +1283,19 @@ void MyFrame::OnRunZBlb (wxCommandEvent &event) {
 // Run zcode
 void MyFrame::OnRunZcode (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
-    console->Clear();
-    console->AppendText("Running zcode...\n");
+    OnClear();
+    OnOutput("Running zcode...\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome = e->GetFilename();
     if (mainFile=="") {
         nome = e->GetFilename();
     } else {
-        console->AppendText("Using MainFile: "+mainFile+"\n");
+        OnOutput("Using MainFile: "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", zcodeversion, true);    
     wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    console->AppendText(comando+"\n");
+    OnOutput(comando+"\n");
     wxArrayString output; 
     wxExecute(_T(comando));
 }
@@ -1298,14 +1306,17 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
 
     // Azzero la console
-    if (event.GetId() != ID_CreateZBlb) console->Clear();
+    if (event.GetId() != ID_CreateZBlb) OnClear();
 
+    // AS: pulisco la console
+    OnClear();
+        
     // PL: Salvo tutto
-    console->AppendText("Saving all...\n");
+    OnOutput("Saving all...\n");
     wxCommandEvent subev;
     OnSaveAll(subev);
         
-    console->AppendText("Compiling Z-Code...\n");
+    OnOutput("Compiling Z-Code...\n");
     wxArrayString output;
     
     // Recupero il nome del file da compilare
@@ -1316,7 +1327,7 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
         zcode = e->GetFilename();
     }
     else{
-        console->AppendText("Using MainFile: "+mainFile+"\n");        
+        OnOutput("Using MainFile: "+mainFile+"\n");        
         nome = mainFile;
         zcode = mainFile;        
     }
@@ -1326,28 +1337,28 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
     //if ( wxExecute(_T("./inform.exe twocol.inf"), output) != 0 )
     if ( wxExecute(_T(comando), output) != 0 )    
     {
-        console->AppendText(comando);
-        console->AppendText("\n");
+        OnOutput(comando);
+        OnOutput("\n");
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("ERROR.\n");
+        OnOutput("ERROR.\n");
         inform_error = true;
     }
     else
     {
-        console->AppendText(comando);
-        console->AppendText("\n");        
+        OnOutput(comando);
+        OnOutput("\n");        
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
-            console->AppendText(output[n].c_str());
-            console->AppendText("\n");
+            OnOutput(output[n].c_str());
+            OnOutput("\n");
         }
-        console->AppendText("Ok.\n");
+        OnOutput("Ok.\n");
         inform_error = false;
     }
 }
@@ -1368,13 +1379,60 @@ void MyFrame::OnSelChanged(wxTreeEvent &event)
         int linea = e->LineFromPosition(start);        
         e->GotoLine(linea);        
         e->SetSelection(start,end);        
-        //console->AppendText(wxString::Format("%d", item->GetPosition())+"\n");        
-        //console->AppendText(wxString::Format("%d", item->GetPosition())
+        //OnOutput(wxString::Format("%d", item->GetPosition())+"\n");        
+        //OnOutput(wxString::Format("%d", item->GetPosition())
         //+" "+"start["+wxString::Format("%d", start)+"]"
         //+" "+"end["+wxString::Format("%d", end)+"]\n");
     }
 }
 
+// AS: funzione che wrappa la appendText per il problema del readonly
+void MyFrame::OnClear(){
+    console->SetReadOnly(false);
+    console->Clear();
+    console->SetReadOnly(true);    
+}
+
+// AS: funzione che wrappa la appendText per il problema del readonly
+void MyFrame::OnOutput(wxString string) {
+    console->SetReadOnly(false);    
+    console->AppendText(string);
+    console->SetReadOnly(true);    
+}
+
+// AS
+void MyFrame::OnConsoleClicked(wxStyledTextEvent &event) {
+    if (event.GetEventObject() == console) {
+        // Recupero la riga selezionata
+        int posizione = console->GetCurrentPos();       
+        wxString risultato = console->GetCurLine(&posizione);
+        // Controllo solo se contiene la stringa ERROR
+        if (risultato.Contains(_T("Error"))){
+            wxString file = risultato.Mid(0,risultato.Find('('));
+            wxString riga = risultato.Mid(risultato.Find('(')+1,risultato.Find(')')-risultato.Find('(')-1);
+            console->HideSelection(true);      
+            
+            // Se il file non è aperto, lo apro        
+            if (!checkOpenFile(file)){
+                wxString nome = file.Mid(file.Find('\\',true)+1,file.Length());
+                LoadFile(file, nome);            
+            }
+            
+            int pannelli = auinotebook->GetPageCount();
+            for (int i=0; i<=pannelli-1 ;i++) {
+                Edit* e = (Edit*) auinotebook->GetPage(i);
+                wxString nome = e->GetFilename();
+                if (file.Cmp(nome)==0){
+                    e->GotoLine(wxAtoi(riga)-1);
+                    int lineStart = e->PositionFromLine (e->GetCurrentLine());
+                    int lineEnd = e->PositionFromLine (e->GetCurrentLine() + 1);
+                    e->SetSelection (lineStart, lineEnd);
+                    auinotebook->SetSelection(i);
+                }
+            }            
+        }
+    }   
+}
 
 
 // EVENTI SU NOTEBOOK
@@ -1407,7 +1465,7 @@ void MyFrame::OnNotebookPageClose(wxAuiNotebookEvent& evt)
         }
     }
     tree->DeleteAllItems(); 
-    console->Clear();     
+    OnClear();     
 }
 
 void MyFrame::OnExit (wxCommandEvent &event) {
@@ -1541,7 +1599,7 @@ void MyFrame::setNewStc(Edit* stc) {
     while(bCont){
         s = pConfig->Read(_T(str),_T(""));
         stc->AddHotkey(s);
-        //console->AppendText(_T(str)+" = "+_T(s)+" ;  ");
+        //OnOutput(_T(str)+" = "+_T(s)+" ;  ");
         bCont = pConfig->GetNextEntry(str, dummy);
     }   
     //wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); 
@@ -1603,8 +1661,8 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->SetAutoComplete(autoCompleteSwitch, true);   
     stc->SetHotkeys(hotkeysSwitch, true);
 
-    /*console->Clear();
-    console->AppendText(wordlist);
+    /*OnClear();
+    OnOutput(wordlist);
     wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); */
     
 }
@@ -1618,7 +1676,7 @@ void MyFrame::LoadFile(wxString path, wxString name)
     
     setNewStc(stc);
    
-    console->Clear();
+    OnClear();
 
     wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16));
     auinotebook->AddPage(stc  , name, true , page_bmp);
@@ -1645,7 +1703,7 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
         
         setNewStc(stc);
         
-        console->Clear();
+        OnClear();
         
         wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, wxSize(16,16));
         auinotebook->AddPage(stc  , name, true , page_bmp);
@@ -1662,7 +1720,7 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
     if (fd->ShowModal() == wxID_OK ){
         wxString path = fd->GetPath();
         wxString name = fd->GetFilename();        
-        console->Clear();
+        OnClear();
         mainFile = "";
         projclasses.Empty();
         projkeywords.Empty();
@@ -1711,7 +1769,7 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
           LoadFile(str,s);
           if (mainFile == "") {
                 mainFile = str;
-                console->AppendText("Using Main file ["+mainFile+"] ");
+                OnOutput("Using Main file ["+mainFile+"] ");
           }
           bCont = projfile->GetNextEntry(str, dummy);
         }
@@ -1734,8 +1792,8 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
     if (mainFile!=""){
         wxMessageBox (mainFile, _("Remove Main File"),  wxOK | wxICON_INFORMATION);            
         mainFile="";
-        console->Clear();
-        console->AppendText("Main file, classes and keywords removed.");        
+        OnClear();
+        OnOutput("Main file, classes and keywords removed.");        
     }
     else{
         wxMessageBox (_("No Project opened."),_("Warning"), wxOK | wxICON_WARNING);    
@@ -1791,7 +1849,7 @@ void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wx
     int contatore=0;    
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
-        console->AppendText("Errore nella RE");
+        OnOutput("Errore nella RE");
         return;
     }
     wxArrayTreeItemIds items;
@@ -1833,7 +1891,7 @@ void MyFrame::OnUpdateTree()
            else                      cname = "-" + tree->GetItemText(cid);
           memo.Add(cname);
     }
-        //console->AppendText(cname);
+        //OnOutput(cname);
         cid = tree->GetNextChild(wroot, ck);
     }
     cid = tree->GetFirstVisibleItem();
