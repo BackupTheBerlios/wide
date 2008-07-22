@@ -59,8 +59,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.94 beta"
-  #define BUILD " (build 200807211740) "
+  #define VERSIONE "0.95 beta"
+  #define BUILD " (build 200807221436) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -74,6 +74,8 @@ class MyFrame : public wxFrame {
         ID_NewFile,        
         ID_Exit,
         ID_About,
+        ID_Comment,
+        ID_Uncomment,        
         ID_License,
         ID_Save_File,
         ID_Save_All,        //PL
@@ -149,22 +151,15 @@ class MyFrame : public wxFrame {
      CreateStatusBar();
      GetStatusBar()->SetStatusText(_("Ready"));
  
-     // create several text controls                                        
 /*     console = new wxTextCtrl(this, -1, _(""),
                       wxDefaultPosition, wxSize(100,100),
                       wxNO_BORDER | wxTE_MULTILINE);
      console->SetEditable(false);        */
      
-    console = new wxStyledTextCtrl(this, -1,
+     console = new wxStyledTextCtrl(this, -1,
                      wxDefaultPosition, wxSize(100,100),
                      wxNO_BORDER | wxTE_MULTILINE, "console");
-    console->SetReadOnly(true);   
-                                     
-     //console = new MyConsole(this, wxSize(100,100));
-                                        
-//     wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window"),
-//                      wxDefaultPosition, wxSize(200,150),
-//                      wxNO_BORDER | wxTE_MULTILINE);
+     console->SetReadOnly(true);   
          
      // add the panes to the manager
      tree = CreateTreeCtrl();
@@ -207,7 +202,8 @@ class MyFrame : public wxFrame {
     void OnPreviousPage(wxCommandEvent& event);
 
     // MENU EDIT
-    
+    void OnComment(wxCommandEvent& event);
+    void OnUncomment(wxCommandEvent& event);    
                 
     // MENU ABOUT
     void OnAbout(wxCommandEvent& evt);
@@ -378,9 +374,12 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_PreviousPage,  MyFrame::OnPreviousPage)
     
     // MENU EDIT
-    EVT_MENU (wxID_CUT,              MyFrame::OnSingleEdit)
-    EVT_MENU (wxID_COPY,             MyFrame::OnSingleEdit)
-    EVT_MENU (wxID_PASTE,            MyFrame::OnSingleEdit)
+    EVT_MENU (wxID_CUT,                MyFrame::OnSingleEdit)
+    EVT_MENU (wxID_COPY,               MyFrame::OnSingleEdit)
+    EVT_MENU (wxID_PASTE,              MyFrame::OnSingleEdit)
+    
+    EVT_MENU (MyFrame::ID_Comment,     MyFrame::OnComment)    
+    EVT_MENU (MyFrame::ID_Uncomment,   MyFrame::OnUncomment)        
     
     // Search
     EVT_MENU(MyFrame::ID_GotoLine,     MyFrame::GotoLine)    
@@ -468,6 +467,70 @@ END_EVENT_TABLE()
 
 
 // Funzioni di classe ---------------------------------------------------------
+
+// MENU EDIT: UNCOMMENT
+// NON E' FINALE: cambiare l'algoritmo
+void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
+    if (auinotebook->GetPageCount()==0) return;
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+
+    // Recupero il testo selezionato e lo modifico, aggiungendo ! all'inizio di ogni riga
+    wxString selezionato = e->GetSelectedText();
+    if (selezionato.Length() ==0) return;
+
+    // Recupero la selezione corretta anche nel caso in cui non ho selezionato
+    int iniziale = e->GetSelectionStart();
+    int finale   = e->GetSelectionEnd();
+
+    if (
+        (e->GetCharAt(iniziale-1)=='\0' && e->GetCharAt(finale+1)=='\0') ||
+        (e->GetCharAt(iniziale-1)=='\r' && e->GetCharAt(finale+1)=='\r') ||
+        (e->GetCharAt(iniziale-1)=='\n' && e->GetCharAt(finale+1)=='\n')
+        ){
+        // REMOVE COMMENT
+        selezionato.Replace("!","",true);
+        e->ReplaceSelection(selezionato);
+    }
+    else{
+        wxMessageBox (_("Wrong selection for uncomment command"), _("Selection Error"),  wxOK | wxICON_ERROR);
+    }
+}
+
+// MENU EDIT: COMMENT
+void MyFrame::OnComment(wxCommandEvent& WXUNUSED(event)){
+    if (auinotebook->GetPageCount()==0) return;
+    Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
+    
+    // Recupero il testo selezionato e lo modifico, aggiungendo ! all'inizio di ogni riga
+    wxString selezionato = e->GetSelectedText();
+    if (selezionato.Length() ==0) return;
+
+    // Recupero la selezione corretta anche nel caso in cui non ho selezionato 
+    int iniziale = e->GetSelectionStart();
+    int finale   = e->GetSelectionEnd();    
+
+    if (
+        (e->GetCharAt(iniziale-1)=='\0' && e->GetCharAt(finale+1)=='\0') || 
+        (e->GetCharAt(iniziale-1)=='\r' && e->GetCharAt(finale+1)=='\r') ||        
+        (e->GetCharAt(iniziale-1)=='\n' && e->GetCharAt(finale+1)=='\n')                 
+        ){
+        // ADD COMMENT
+        wxString commentato = "!";
+        commentato = commentato.Append(selezionato);
+        // La sostituzione serve perchè non so da dove arriva il file
+        // Se editato con altri editor potrei avere solo \n al posto di \r\n
+        commentato.Replace("\r\n", "\n", true);
+        commentato.Replace("\n", "\r\n", true);
+        commentato.Replace("\r\n", "\r\n!", true);
+        e->ReplaceSelection(commentato);
+    }
+    else{
+        wxMessageBox (_("Wrong selection for comment command"), _("Selection Error"),  wxOK | wxICON_ERROR);
+    }    
+}
+
+
+
 // MENU FILE ****************
 void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
 {
@@ -2053,6 +2116,19 @@ wxMenuBar* MyFrame::CreateMenuBar()
     wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&Unindent\tShift+Tab"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(indent_l);
+    edit->AppendSeparator();
+
+    // EDIT::COMMENT
+    wxMenuItem *comment = new wxMenuItem(edit, ID_Comment, _("&Comment\tCtrl+Shift+C"));
+    //indent_l->SetBitmap(back_xpm);
+    edit->Append(comment);
+
+    // EDIT::UNCOMMENT
+    wxMenuItem *uncomment = new wxMenuItem(edit, ID_Uncomment, _("&Unomment\tCtrl+Shift+U"));
+    //indent_l->SetBitmap(back_xpm);
+    edit->Append(uncomment);
+
+
 
     // SEARCH MENU
     wxMenu* search = new wxMenu;
