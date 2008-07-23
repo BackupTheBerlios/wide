@@ -474,6 +474,28 @@ void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
     if (auinotebook->GetPageCount()==0) return;
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
+    int start = e->GetSelectionStart();
+    int end   = e->GetSelectionEnd();    
+    int firstline = e->LineFromPosition(start);
+    int lastline = e->LineFromPosition(end);
+    bool doit = true;
+    for (int i = firstline; i <= lastline; i++)  {
+        int linestart = e->PositionFromLine(i);
+        int lineend = e->GetLineEndPosition(i);
+        wxString tline = e->GetTextRange(linestart, lineend);
+        for (int j = 0; j < tline.Len(); j++) {
+            if (tline[j] == '!') { tline.Remove(j,1); end--; break; }
+            if (tline[j] != ' ' && tline[j] != '\t') break;
+        }
+        //wxString tline = e->GetLine(i);
+        e->SetTargetStart(linestart);
+        e->SetTargetEnd(lineend);
+        e->ReplaceTarget(tline);
+        //if (tline.Replace("!","",false)) e->ReplaceTarget(tline);
+    }    
+    e->SetSelection(start, end);
+
+/*
     // Recupero il testo selezionato e lo modifico, aggiungendo ! all'inizio di ogni riga
     wxString selezionato = e->GetSelectedText();
     if (selezionato.Length() ==0) return;
@@ -488,12 +510,12 @@ void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
         (e->GetCharAt(iniziale-1)=='\n' && e->GetCharAt(finale+1)=='\n')
         ){
         // REMOVE COMMENT
-        selezionato.Replace("!","",true);
+        selezionato.Replace("!","",false);
         e->ReplaceSelection(selezionato);
     }
     else{
         wxMessageBox (_("Wrong selection for uncomment command"), _("Selection Error"),  wxOK | wxICON_ERROR);
-    }
+    } */
 }
 
 // MENU EDIT: COMMENT
@@ -501,6 +523,15 @@ void MyFrame::OnComment(wxCommandEvent& WXUNUSED(event)){
     if (auinotebook->GetPageCount()==0) return;
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     
+    int start = e->GetSelectionStart();
+    int end   = e->GetSelectionEnd();
+    int firstline = e->LineFromPosition(start);
+    int lastline = e->LineFromPosition(end);
+    for (int i = firstline; i <= lastline; i++) e->InsertText(e->PositionFromLine(i), "!");
+    end = end + lastline - firstline + 1;
+    e->SetSelection(start, end);
+
+/*
     // Recupero il testo selezionato e lo modifico, aggiungendo ! all'inizio di ogni riga
     wxString selezionato = e->GetSelectedText();
     if (selezionato.Length() ==0) return;
@@ -526,7 +557,7 @@ void MyFrame::OnComment(wxCommandEvent& WXUNUSED(event)){
     }
     else{
         wxMessageBox (_("Wrong selection for comment command"), _("Selection Error"),  wxOK | wxICON_ERROR);
-    }    
+    }  */  
 }
 
 
