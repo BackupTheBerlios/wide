@@ -300,6 +300,30 @@ class MyFrame : public wxFrame {
      bool wrapMode;
      bool hotkeysSwitch;
 
+     // TRANSLATION STUFF
+     wxString language;
+     wxString MENU_FILE;
+     wxString MENU_FILE_NEWFILE; 
+     wxString MENU_FILE_OPENFILE;   
+     wxString MENU_FILE_SAVEFILE;   
+     wxString MENU_FILE_SAVEALL;
+     wxString MENU_FILE_NEXTTAB;    
+     wxString MENU_FILE_PREVIOUSTAB;
+     wxString MENU_FILE_QUIT;    
+     
+     wxString MENU_EDIT;             
+     wxString MENU_EDIT_COPY;            
+     wxString MENU_EDIT_CUT;
+     wxString MENU_EDIT_PASTE;
+     wxString MENU_EDIT_UNDO;
+     wxString MENU_EDIT_REDO;
+     wxString MENU_EDIT_INDENT;
+     wxString MENU_EDIT_UNINDENT;
+     wxString MENU_EDIT_COMMENT;
+     wxString MENU_EDIT_UNCOMMENT;
+
+
+     
      // INFORM STUFF
      wxString informCompiler;
      wxString libraryPath;     
@@ -478,12 +502,11 @@ void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
     int end   = e->GetSelectionEnd();    
     int firstline = e->LineFromPosition(start);
     int lastline = e->LineFromPosition(end);
-    bool doit = true;
     for (int i = firstline; i <= lastline; i++)  {
         int linestart = e->PositionFromLine(i);
         int lineend = e->GetLineEndPosition(i);
         wxString tline = e->GetTextRange(linestart, lineend);
-        for (int j = 0; j < tline.Len(); j++) {
+        for (size_t j = 0; j < tline.Length(); j++) {
             if (tline[j] == '!') { tline.Remove(j,1); end--; break; }
             if (tline[j] != ' ' && tline[j] != '\t') break;
         }
@@ -878,7 +901,33 @@ void MyFrame::LoadConfiguration() {
                 pConfig->Read("LIBRARYPATH3", _T(""));                
     bres = pConfig->Read("BRESPATH", _T(""));                
     blc  = pConfig->Read("BLCPATH", _T(""));
-    bext = pConfig->Read("BLORBEXTENSION", _T(""));                              
+    bext = pConfig->Read("BLORBEXTENSION", _T(""));
+    
+    // carico le stringhe in lingua
+    language = pConfig->Read("LANGUAGE", _T(""));
+    
+    // MENU_FILE    
+    MENU_FILE             = pConfig->Read(_T(language+"_"+"MENU_FILE"),_T(""));
+    MENU_FILE_QUIT        = pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T(""));
+    MENU_FILE_NEWFILE     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T(""));
+    MENU_FILE_OPENFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T(""));
+    MENU_FILE_SAVEFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T(""));
+    MENU_FILE_SAVEALL     = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T(""));
+    MENU_FILE_NEXTTAB     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T(""));
+    MENU_FILE_PREVIOUSTAB = pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T(""));
+    
+    // MENU EDIT
+    MENU_EDIT             = pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T(""));
+    MENU_EDIT_COPY        = pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T(""));
+    MENU_EDIT_CUT         = pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T(""));
+    MENU_EDIT_PASTE       = pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T(""));
+    MENU_EDIT_UNDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T(""));
+    MENU_EDIT_REDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T(""));
+    MENU_EDIT_INDENT      = pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T(""));
+    MENU_EDIT_UNINDENT    = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T(""));
+    MENU_EDIT_COMMENT     = pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T(""));
+    MENU_EDIT_UNCOMMENT   = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T(""));
+                                  
 }
 
 
@@ -2075,91 +2124,88 @@ wxMenuBar* MyFrame::CreateMenuBar()
 {
     wxMenuBar* mb = new wxMenuBar;
 
-    // FILE MENU
+    // FILE MENU ----------------------------------------------------------------------------
     wxMenu* file = new wxMenu;    
     // FILE::NEW
-    wxMenuItem *new_file = new wxMenuItem(file, ID_NewFile, _("&New file\tCtrl+N"));
+    wxMenuItem *new_file = new wxMenuItem(file, ID_NewFile, _("&"+MENU_FILE_NEWFILE+"\tCtrl+N"));
     new_file->SetBitmap(new_xpm);
     file->Append(new_file);    
     
     // FILE::LOAD
-    wxMenuItem *load_file = new wxMenuItem(file, ID_LoadFile, _("&Open file\tCtrl+O"));
+    wxMenuItem *load_file = new wxMenuItem(file, ID_LoadFile, _("&"+MENU_FILE_OPENFILE+"\tCtrl+O"));
     load_file->SetBitmap(fileopen_xpm);
     file->Append(load_file);
 
     // FILE::SAVE
-    wxMenuItem *save_file = new wxMenuItem(file, ID_Save_File, _("&Save File\tCtrl+S"));
+    wxMenuItem *save_file = new wxMenuItem(file, ID_Save_File, _("&"+MENU_FILE_SAVEFILE+"\tCtrl+S"));
     save_file->SetBitmap(filesave_xpm);
     file->Append(save_file);
     
     //FILE::SAVEALL   //PL
-    wxMenuItem *save_all = new wxMenuItem(file, ID_Save_All, _("&Save All\tCtrl+Shift+S"));
+    wxMenuItem *save_all = new wxMenuItem(file, ID_Save_All, _("&"+MENU_FILE_SAVEALL+"\tCtrl+Shift+S"));
     save_all->SetBitmap(filesaveall_xpm);
     file->Append(save_all);
     
     file->AppendSeparator();
 
     //FILE::NEXTPAGE   //PL
-    wxMenuItem *next_page = new wxMenuItem(file, ID_NextPage, _("&Next Tab\tCtrl+F6"));
+    wxMenuItem *next_page = new wxMenuItem(file, ID_NextPage, _("&"+MENU_FILE_NEXTTAB+"\tCtrl+F6"));
     next_page->SetBitmap(forward_xpm);
     file->Append(next_page);
     
     //FILE::PREVIOUSPAGE   //PL
-    wxMenuItem *previous_page = new wxMenuItem(file, ID_PreviousPage, _("&Previous Tab\tCtrl+F5"));
+    wxMenuItem *previous_page = new wxMenuItem(file, ID_PreviousPage, _("&"+MENU_FILE_PREVIOUSTAB+"\tCtrl+F5"));
     previous_page->SetBitmap(back_xpm);
     file->Append(previous_page);
 
     file->AppendSeparator();
     
-    wxMenuItem *quit = new wxMenuItem(file, ID_Exit, _("&Quit\tCtrl+Q"));
+    wxMenuItem *quit = new wxMenuItem(file, ID_Exit, _("&"+MENU_FILE_QUIT+"\tCtrl+Q"));
     quit->SetBitmap(quit_xpm);
     file->Append(quit);
 
-    // EDIT MENU
+    // EDIT MENU -------------------------------------------------------------------------
     wxMenu* edit = new wxMenu;
-
     // EDIT::COPY
-    wxMenuItem *copy = new wxMenuItem(edit, wxID_COPY, _("&Copy\tCtrl+C"));
+    wxMenuItem *copy = new wxMenuItem(edit, wxID_COPY, _("&"+MENU_EDIT_COPY+"\tCtrl+C"));
     copy->SetBitmap(copy_xpm);
     edit->Append(copy);
 
     // EDIT::CUT
-    wxMenuItem *cut = new wxMenuItem(edit, wxID_CUT, _("Cu&t\tCtrl+X"));
+    wxMenuItem *cut = new wxMenuItem(edit, wxID_CUT, _("&"+MENU_EDIT_CUT+"\tCtrl+X"));
     cut->SetBitmap(cut_xpm);
     edit->Append(cut);
     
     // EDIT::PASTE
-    wxMenuItem *paste = new wxMenuItem(edit, wxID_PASTE, _("&Paste\tCtrl+V"));
+    wxMenuItem *paste = new wxMenuItem(edit, wxID_PASTE, _("&"+MENU_EDIT_PASTE+"\tCtrl+V"));
     paste->SetBitmap(paste_xpm);
     edit->Append(paste);    
     edit->AppendSeparator();
 
-    edit->Append(wxID_UNDO, _("&Undo\tCtrl+Z"));
-    edit->Append(wxID_REDO, _("&Redo\tCtrl+Y"));
+    edit->Append(wxID_UNDO, _("&"+MENU_EDIT_UNDO+"\tCtrl+Z"));
+    edit->Append(wxID_REDO, _("&"+MENU_EDIT_REDO+"\tCtrl+Y"));
     edit->AppendSeparator();
     
     // EDIT::INDENT
-    wxMenuItem *indent_r = new wxMenuItem(edit, myID_INDENTINC, _("&Indent\tTab"));
+    wxMenuItem *indent_r = new wxMenuItem(edit, myID_INDENTINC, _("&"+MENU_EDIT_INDENT+"\tTab"));
     //indent_r->SetBitmap(forward_xpm);
     edit->Append(indent_r);
 
     // EDIT::UNINDENT
-    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&Unindent\tShift+Tab"));
+    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&"+MENU_EDIT_UNINDENT+"\tShift+Tab"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(indent_l);
     edit->AppendSeparator();
 
     // EDIT::COMMENT
-    wxMenuItem *comment = new wxMenuItem(edit, ID_Comment, _("&Comment\tCtrl+Shift+C"));
+    wxMenuItem *comment = new wxMenuItem(edit, ID_Comment, _("&"+MENU_EDIT_COMMENT+"\tCtrl+Shift+C"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(comment);
 
     // EDIT::UNCOMMENT
-    wxMenuItem *uncomment = new wxMenuItem(edit, ID_Uncomment, _("&Unomment\tCtrl+Shift+U"));
+    wxMenuItem *uncomment = new wxMenuItem(edit, ID_Uncomment, _("&"+MENU_EDIT_UNCOMMENT+"\tCtrl+Shift+U"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(uncomment);
-
-
 
     // SEARCH MENU
     wxMenu* search = new wxMenu;
@@ -2272,8 +2318,8 @@ wxMenuBar* MyFrame::CreateMenuBar()
     about->SetBitmap(help_xpm);
     help->Append(about);
     
-    mb->Append(file, _("File"));
-    mb->Append(edit, _("Edit"));
+    mb->Append(file, _(MENU_FILE));
+    mb->Append(edit, _(MENU_EDIT));
     mb->Append(search, _("Search"));        
     mb->Append(project , _("Project"));            
     mb->Append(zcode, _("ZCode"));
