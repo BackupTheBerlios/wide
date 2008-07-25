@@ -1550,7 +1550,7 @@ void MyFrame::OnConsoleClicked(wxStyledTextEvent &event) {
         int posizione = console->GetCurrentPos();       
         wxString risultato = console->GetCurLine(&posizione);
         // Controllo solo se contiene la stringa ERROR
-        if (risultato.Contains(_T("Error"))){
+        if (risultato.Contains(_T("Error")) || risultato.Contains(_T("Warning"))) {
             wxString file = risultato.Mid(0,risultato.Find('('));
             wxString riga = risultato.Mid(risultato.Find('(')+1,risultato.Find(')')-risultato.Find('(')-1);
             console->SetSelectionStart(0);
