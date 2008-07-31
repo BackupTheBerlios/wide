@@ -322,6 +322,16 @@ class MyFrame : public wxFrame {
      wxString MENU_EDIT_COMMENT;
      wxString MENU_EDIT_UNCOMMENT;
 
+     wxString MENU_SEARCH;             
+     wxString MENU_SEARCH_FIND;                  
+     wxString MENU_SEARCH_FIND_BACKWARDS;                       
+     wxString MENU_SEARCH_FIND_REPLACE;                       
+     wxString MENU_SEARCH_FIND_OBJECT;
+     wxString MENU_SEARCH_FIND_OBJECT_IN_FILE;                                         
+     wxString MENU_SEARCH_FIND_GOTO_LINE;                       
+     wxString MENU_SEARCH_FIND_NEXT_MARKER;                       
+     wxString MENU_SEARCH_FIND_TOGGLE_MARKER;                            
+     wxString MENU_SEARCH_FIND_RESET_MARKERS;                            
 
      
      // INFORM STUFF
@@ -907,26 +917,40 @@ void MyFrame::LoadConfiguration() {
     language = pConfig->Read("LANGUAGE", _T(""));
     
     // MENU_FILE    
-    MENU_FILE             = pConfig->Read(_T(language+"_"+"MENU_FILE"),_T(""));
-    MENU_FILE_QUIT        = pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T(""));
-    MENU_FILE_NEWFILE     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T(""));
-    MENU_FILE_OPENFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T(""));
-    MENU_FILE_SAVEFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T(""));
-    MENU_FILE_SAVEALL     = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T(""));
-    MENU_FILE_NEXTTAB     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T(""));
-    MENU_FILE_PREVIOUSTAB = pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T(""));
+    MENU_FILE             = pConfig->Read(_T(language+"_"+"MENU_FILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_FILE"),_T("")):"File";
+    MENU_FILE_QUIT        = pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T("")):"Quit";
+    MENU_FILE_NEWFILE     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T("")):"New File";
+    MENU_FILE_OPENFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T("")):"Open File";
+    MENU_FILE_SAVEFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T("")):"Save File";
+    MENU_FILE_SAVEALL     = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T("")):"Save All";
+    MENU_FILE_NEXTTAB     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T("")):"Next Tab";
+    MENU_FILE_PREVIOUSTAB = pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T("")) !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T("")):"Previous Tab";
     
     // MENU EDIT
-    MENU_EDIT             = pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T(""));
-    MENU_EDIT_COPY        = pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T(""));
-    MENU_EDIT_CUT         = pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T(""));
-    MENU_EDIT_PASTE       = pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T(""));
-    MENU_EDIT_UNDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T(""));
-    MENU_EDIT_REDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T(""));
-    MENU_EDIT_INDENT      = pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T(""));
-    MENU_EDIT_UNINDENT    = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T(""));
-    MENU_EDIT_COMMENT     = pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T(""));
-    MENU_EDIT_UNCOMMENT   = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T(""));
+    MENU_EDIT             = pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T("")):"Edit";
+    MENU_EDIT_COPY        = pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T("")):"Copy";
+    MENU_EDIT_CUT         = pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T(""))         !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T("")):"Cut";
+    MENU_EDIT_PASTE       = pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T(""))       !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T("")):"Paste";
+    MENU_EDIT_UNDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T("")):"Undo";
+    MENU_EDIT_REDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T("")):"Redo";
+    MENU_EDIT_INDENT      = pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T(""))      !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T("")):"Indent";
+    MENU_EDIT_UNINDENT    = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T("")):"Unindent";
+    MENU_EDIT_COMMENT     = pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T("")):"Comment";
+    MENU_EDIT_UNCOMMENT   = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T(""))   !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T("")):"Uncomment";
+    
+    // SEARCH MENU
+    MENU_SEARCH                     = pConfig->Read(_T(language+"_"+"MENU_SEARCH"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH"),_T("")):"Search";
+    MENU_SEARCH_FIND                = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND"),_T("")):"Find";
+    MENU_SEARCH_FIND_BACKWARDS      = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_BACKWARDS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_BACKWARDS"),_T("")):"Find Backwards";
+    MENU_SEARCH_FIND_REPLACE        = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_REPLACE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_REPLACE"),_T("")):"Find & Replace";
+    MENU_SEARCH_FIND_OBJECT         = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT"),_T("")):"Find Object";
+    MENU_SEARCH_FIND_OBJECT_IN_FILE = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T("")):"Find Object in File";
+    MENU_SEARCH_FIND_GOTO_LINE      = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_GOTO_LINE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_GOTO_LINE"),_T("")):"Goto Line";
+    MENU_SEARCH_FIND_NEXT_MARKER    = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_NEXT_MARKER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_NEXT_MARKER"),_T("")):"Next Marker";
+    MENU_SEARCH_FIND_TOGGLE_MARKER  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T("")):"Toggle Marker";
+    MENU_SEARCH_FIND_RESET_MARKERS  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T("")):"Reset Markers";
+    
+    
                                   
 }
 
