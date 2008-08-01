@@ -333,6 +333,26 @@ class MyFrame : public wxFrame {
      wxString MENU_SEARCH_FIND_TOGGLE_MARKER;                            
      wxString MENU_SEARCH_FIND_RESET_MARKERS;                            
 
+     wxString MENU_PROJECT;
+     wxString MENU_PROJECT_OPEN;
+     wxString MENU_PROJECT_SAVE;
+     wxString MENU_PROJECT_CLOSE;          
+     
+     wxString MENU_ZCODE;
+     wxString MENU_ZCODE_COMPILEZCODE;
+     wxString MENU_ZCODE_RUNZCODE;
+     wxString MENU_ZCODE_ZCODE5;
+     wxString MENU_ZCODE_ZCODE8;
+     wxString MENU_ZCODE_COMPILEZCODE_BLORB;
+     wxString MENU_ZCODE_RUNZCODE_BLORB;
+     
+     wxString MENU_GLULX;
+     wxString MENU_GLULX_COMPILEULX;
+     wxString MENU_GLULX_RUNULX;
+     wxString MENU_GLULX_CREATERESOURCES;
+     wxString MENU_GLULX_CREATEBLORBFILE;
+     wxString MENU_GLULX_BUILDALLBLORBFILE;
+     wxString MENU_GLULX_RUNBLORB;
      
      // INFORM STUFF
      wxString informCompiler;
@@ -913,6 +933,7 @@ void MyFrame::LoadConfiguration() {
     blc  = pConfig->Read("BLCPATH", _T(""));
     bext = pConfig->Read("BLORBEXTENSION", _T(""));
     
+    // TRANSLATION MESSAGES AND MENUES
     // carico le stringhe in lingua
     language = pConfig->Read("LANGUAGE", _T(""));
     
@@ -950,10 +971,32 @@ void MyFrame::LoadConfiguration() {
     MENU_SEARCH_FIND_TOGGLE_MARKER  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T("")):"Toggle Marker";
     MENU_SEARCH_FIND_RESET_MARKERS  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T("")):"Reset Markers";
     
+    // PROJECT MENU
+    MENU_PROJECT                    = pConfig->Read(_T(language+"_"+"MENU_PROJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT"),_T("")):"Project";
+    MENU_PROJECT_OPEN               = pConfig->Read(_T(language+"_"+"MENU_PROJECT_OPEN"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_OPEN"),_T("")):"Open Project"; 
+    MENU_PROJECT_SAVE               = pConfig->Read(_T(language+"_"+"MENU_PROJECT_SAVE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_SAVE"),_T("")):"Save Project"; 
+    MENU_PROJECT_CLOSE              = pConfig->Read(_T(language+"_"+"MENU_PROJECT_CLOSE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_CLOSE"),_T("")):"Close Project";
     
-                                  
-}
+    // ZCODE MENU
+    MENU_ZCODE                      = pConfig->Read(_T(language+"_"+"MENU_ZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE"),_T("")):"Zcode";               
+    MENU_ZCODE_COMPILEZCODE         = pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE"),_T("")):"Compile Zcode";  
+    MENU_ZCODE_RUNZCODE             = pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE"),_T("")):"Run Zcode";      
+    MENU_ZCODE_ZCODE5               = pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE5"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE5"),_T("")):"ZCode version 5";        
+    MENU_ZCODE_ZCODE8               = pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE8"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE8"),_T("")):"ZCode version 8";        
+    MENU_ZCODE_COMPILEZCODE_BLORB   = pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE_BLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE_BLORB"),_T("")):"Create Zcode blorb";
+    MENU_ZCODE_RUNZCODE_BLORB       = pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE_BLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE_BLORB"),_T("")):"Run Zcode blorb";
 
+    // GLULX MENU
+    MENU_GLULX                      = pConfig->Read(_T(language+"_"+"MENU_GLULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX"),_T("")):"Glulx";
+    MENU_GLULX_COMPILEULX           = pConfig->Read(_T(language+"_"+"MENU_GLULX_COMPILEULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_COMPILEULX"),_T("")):"Compile Ulx";
+    MENU_GLULX_RUNULX               = pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNULX"),_T("")):"Run Ulx";
+    MENU_GLULX_CREATERESOURCES      = pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATERESOURCES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATERESOURCES"),_T("")):"Create Resources";
+    MENU_GLULX_CREATEBLORBFILE      = pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T("")):"Create Blorb File";
+    MENU_GLULX_BUILDALLBLORBFILE    = pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T("")):"Build all Blorb file";
+    MENU_GLULX_RUNBLORB             = pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T("")):"Run Blorb";
+                                
+}   
+    
 
 // Eventi sul singolo EDIT
 void MyFrame::OnSingleEdit (wxCommandEvent &evt) {
@@ -2010,6 +2053,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.AddDeveloper(_T("Alessandro Schillaci"));
     info.AddDeveloper(_T("Paolo Lucchesi"));
+    info.AddTranslator(_T("Urbatain (Spanish)"));
     wxAboutBox(info);    
 }
  
@@ -2231,54 +2275,50 @@ wxMenuBar* MyFrame::CreateMenuBar()
     //indent_l->SetBitmap(back_xpm);
     edit->Append(uncomment);
 
-    // SEARCH MENU
+    // SEARCH MENU                     
     wxMenu* search = new wxMenu;
-    search->Append (ID_Find, _("&Find\tF3"));
-    search->Append (ID_FindBack, _("&Find Backwards\tShift+F3"));   //PL
-    search->Append (ID_FindReplace, _("Find and &replace\tCtrl+F3"));
-    search->Append (ID_FindObjectLocal, _("&Find Object\tF4"));
-    search->Append (ID_FindObjectGlobal, _("&Find Object in files\tShift+F4"));
+    search->Append (ID_Find, _("&"+MENU_SEARCH_FIND+"\tF3"));
+    search->Append (ID_FindBack, _("&"+MENU_SEARCH_FIND_BACKWARDS+"\tShift+F3"));   //PL
+    search->Append (ID_FindReplace, _(MENU_SEARCH_FIND_REPLACE+"\tCtrl+F3"));
+    search->Append (ID_FindObjectLocal, _("&"+MENU_SEARCH_FIND_OBJECT+"\tF4"));
+    search->Append (ID_FindObjectGlobal, _("&"+MENU_SEARCH_FIND_OBJECT_IN_FILE+"\tShift+F4"));
     search->AppendSeparator();
-    search->Append(ID_GotoLine, _("&Goto line\tCtrl+L"));
+    search->Append(ID_GotoLine, _("&"+MENU_SEARCH_FIND_GOTO_LINE+"\tCtrl+L"));
     search->AppendSeparator();
-    search->Append(ID_NextMarker, _("&Next Marker\tF2"));
-    wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _("&Toggle Marker\tCtrl+F2"));
+    search->Append(ID_NextMarker, _("&"+MENU_SEARCH_FIND_NEXT_MARKER+"\tF2"));
+    wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _("&"+MENU_SEARCH_FIND_TOGGLE_MARKER+"\tCtrl+F2"));
     
     marker->SetBitmap(addbookm_xpm);
     search->Append(marker);        
-    //search->Append(ID_ToggleMarker, _("&Toggle Marker\tCtrl+F2")); 
-    search->Append(ID_ResetMarkers, _("&Reset Markers\tCtrl+Shift+F2"));
+    search->Append(ID_ResetMarkers, _("&"+MENU_SEARCH_FIND_RESET_MARKERS+"\tCtrl+Shift+F2"));
 
     // PROJECT MENU
     wxMenu* project = new wxMenu;
-    project->Append (ID_OpenProject, _("&Open Project\tCtrl+P"));
-    project->Append (ID_SaveProject, _("&Save Project"));
-    project->Append (ID_CloseProject, _("&Close Project"));
-    
-    
+    project->Append (ID_OpenProject, _("&"+MENU_PROJECT_OPEN+"\tCtrl+P"));
+    project->Append (ID_SaveProject, _("&"+MENU_PROJECT_SAVE));
+    project->Append (ID_CloseProject, _("&"+MENU_PROJECT_CLOSE));
+       
     // ZCODE MENU
     wxMenu* zcode = new wxMenu;
-    zcode->Append (ID_Compile, _("&Compile Zcode\tF8"));
-    zcode->Append (ID_RunZcode, _("&Run Zcode\tCtrl+F8"));
+    zcode->Append (ID_Compile, _("&"+MENU_ZCODE_COMPILEZCODE+"\tF8"));
+    zcode->Append (ID_RunZcode, _("&"+MENU_ZCODE_RUNZCODE+"\tCtrl+F8"));
     zcode->AppendSeparator();
-    zcode->AppendRadioItem (ID_ZcodeVersion5, _("Zcode version 5"));
-    zcode->AppendRadioItem (ID_ZcodeVersion8, _("Zcode version 8"));
+    zcode->AppendRadioItem (ID_ZcodeVersion5, _(MENU_ZCODE_ZCODE5));
+    zcode->AppendRadioItem (ID_ZcodeVersion8, _(MENU_ZCODE_ZCODE8));
     zcode->AppendSeparator();
-    zcode->Append (ID_CreateZBlb, _("Create Zcode &blorb\tCtrl+Shift+F8"));
-    zcode->Append (ID_RunZBlb, _("R&un Zcode blorb\tShift+F8"));    
+    zcode->Append (ID_CreateZBlb, _(MENU_ZCODE_COMPILEZCODE_BLORB+"\tCtrl+Shift+F8"));
+    zcode->Append (ID_RunZBlb, _(MENU_ZCODE_RUNZCODE_BLORB+"\tShift+F8"));    
     zcodemenu=zcode;
-    
     
     // GLULX MENU
     wxMenu* glulx = new wxMenu;
-    glulx->Append (ID_CompileUlx, _("&Compile Ulx\tF9"));            
-    glulx->Append (ID_RunUlx, _("&Run Ulx\tCtrl+F9"));
+    glulx->Append (ID_CompileUlx, _("&"+MENU_GLULX_COMPILEULX+"\tF9"));            
+    glulx->Append (ID_RunUlx, _("&"+MENU_GLULX_RUNULX+"\tCtrl+F9"));
     glulx->AppendSeparator();
-    glulx->Append (ID_CreateRes, _("&Create Resources\tF10"));
-    glulx->Append (ID_CreateBlb, _("&Create Blorb File\tCtrl+F10"));
-    glulx->Append (ID_MakeAllBlb, _("&Build All Blorb File\tF11"));
-    glulx->Append (ID_RunBlb, _("&Run Blorb\tCtrl+F11"));
-
+    glulx->Append (ID_CreateRes, _("&"+MENU_GLULX_CREATERESOURCES+"\tF10"));
+    glulx->Append (ID_CreateBlb, _("&"+MENU_GLULX_CREATEBLORBFILE+"\tCtrl+F10"));
+    glulx->Append (ID_MakeAllBlb, _("&"+MENU_GLULX_BUILDALLBLORBFILE+"\tF11"));
+    glulx->Append (ID_RunBlb, _("&"+MENU_GLULX_RUNBLORB+"\tCtrl+F11"));
 
     // OPTION MENU
     wxMenu* option = new wxMenu;
@@ -2344,10 +2384,10 @@ wxMenuBar* MyFrame::CreateMenuBar()
     
     mb->Append(file, _(MENU_FILE));
     mb->Append(edit, _(MENU_EDIT));
-    mb->Append(search, _("Search"));        
-    mb->Append(project , _("Project"));            
-    mb->Append(zcode, _("ZCode"));
-    mb->Append(glulx, _("Glulx"));    
+    mb->Append(search, _(MENU_SEARCH));        
+    mb->Append(project , _(MENU_PROJECT));            
+    mb->Append(zcode, _(MENU_ZCODE));
+    mb->Append(glulx, _(MENU_GLULX));    
     mb->Append(otree, _("Object Tree"));
     mb->Append(option, _("Options"));
     mb->Append(docs, _("Documents"));        
