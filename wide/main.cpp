@@ -31,7 +31,7 @@
   #include "images/wide.xpm"
   #include "images/fileopen.xpm"
   #include "images/filesave.xpm"  
-  #include "images/filesaveas.xpm"
+//  #include "images/filesaveas.xpm"
   #include "images/filesaveall.xpm" //PL
   #include "images/compilezcode.xpm"    
   #include "images/compileulx.xpm"      
@@ -39,7 +39,7 @@
   #include "images/exeglulx.xpm"      
   #include "images/undo.xpm"      
   #include "images/redo.xpm"     
-  #include "images/findrepl.xpm"   
+//  #include "images/findrepl.xpm"   
   #include "images/find.xpm"   
   #include "images/findback.xpm" //PL
   #include "images/findobject.xpm" //PL
@@ -59,8 +59,8 @@
 
 // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.95 beta"
-  #define BUILD " (build 200807221436) "
+  #define VERSIONE "0.96 beta"
+  #define BUILD " (build 200808231118) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -149,7 +149,7 @@ class MyFrame : public wxFrame {
      // Aggiungo la menubar
      SetMenuBar(CreateMenuBar());
      CreateStatusBar();
-     GetStatusBar()->SetStatusText(_("Ready"));
+     GetStatusBar()->SetStatusText(_(MESSAGES_READY));
  
 /*     console = new wxTextCtrl(this, -1, _(""),
                       wxDefaultPosition, wxSize(100,100),
@@ -163,9 +163,9 @@ class MyFrame : public wxFrame {
          
      // add the panes to the manager
      tree = CreateTreeCtrl();
-     m_mgr.AddPane(tree, wxLEFT, wxT("Object tree"));
+     m_mgr.AddPane(tree, wxLEFT, wxT(MENU_OBJECTTREE));
      m_mgr.AddPane(auinotebook=CreateNotebook(), wxCENTER);
-     m_mgr.AddPane(console, wxBOTTOM, wxT("Ouput window"));
+     m_mgr.AddPane(console, wxBOTTOM, wxT(MESSAGES_OUTPUTWINDOW));
                         
     // TOOL BAR
     toolbar = CreateToolBarCtrl();
@@ -353,6 +353,71 @@ class MyFrame : public wxFrame {
      wxString MENU_GLULX_CREATEBLORBFILE;
      wxString MENU_GLULX_BUILDALLBLORBFILE;
      wxString MENU_GLULX_RUNBLORB;
+     
+     wxString MENU_OBJECTTREE;
+     wxString MENU_OBJECTTREE_REFRESHTREE;
+     wxString MENU_OBJECTTREE_EXPAND_NODES;
+     wxString MENU_OBJECTTREE_SHOW_OBJECTS;
+     wxString MENU_OBJECTTREE_SHOW_PROJECT_DEFS;
+     wxString MENU_OBJECTTREE_SHOW_GLOBALS;
+     wxString MENU_OBJECTTREE_SHOW_CONSTANTS;
+     wxString MENU_OBJECTTREE_SHOW_FUNCTIONS;                              
+     wxString MENU_OBJECTTREE_SHOW_CLASSES;                              
+     wxString MENU_OBJECTTREE_SHOW_INCLUDES;                              
+     wxString MENU_OBJECTTREE_SHOW_VERBS;                              
+     
+     wxString MENU_OPTIONS;
+     wxString MENU_OPTIONS_SHOWLINENUMBER;
+     wxString MENU_OPTIONS_WRAPMODE;
+     wxString MENU_OPTIONS_AUTOCOMPLETE;
+     wxString MENU_OPTIONS_HOTKEYSREPLACING;
+     
+     wxString MENU_DOCUMENTS;
+     
+     wxString MENU_HELP;
+     wxString MENU_HELP_LICENSE;
+     wxString MENU_HELP_ABOUT;     
+     
+     
+     // GENERIC MESSAGES AND ERRORS
+    wxString MESSAGES_READY;
+    wxString MESSAGES_OUTPUTWINDOW;
+    wxString MESSAGES_SEARCH_ENTERSTRING;
+    wxString MESSAGES_SEARCH_SEARCHSTRING;
+    wxString MESSAGES_MESSAGE;
+    wxString MESSAGES_SEARCHOBJECT;
+    wxString MESSAGES_SEARCHOBJECTFILES;
+    wxString MESSAGES_SEARCHOBJECT_ENTEROBJECT;
+    wxString MESSAGES_LINENUMBER;
+    wxString MESSAGES_GOTOLINENUMBER;
+    wxString MESSAGES_FILESAVED;
+    wxString MESSAGES_TEXTNOTSAVED;
+    wxString MESSAGES_FILEOPENED;
+    wxString MESSAGES_WARNING;
+    wxString MESSAGES_REMOVEMAINFILE;
+    wxString MESSAGES_MAINFILEREMOVED;
+    wxString MESSAGES_NOPROJECTOPENED;
+    wxString MESSAGES_COMPILEULX;
+    wxString MESSAGES_COMPILEZCODE;
+    wxString MESSAGES_CREATINGBLORB;
+    wxString MESSAGES_CREATINGRESOURCEZBLORB;
+    wxString MESSAGES_CREATINGZBLORB;
+    wxString MESSAGES_CREATINGRESOURCEBLORB;
+    wxString MESSAGES_RUNZBLORB;
+    wxString MESSAGES_RUNZCODE;
+    wxString MESSAGES_RUNBLORB;
+    wxString MESSAGES_RUNGLULX;
+    wxString MESSAGES_SAVINGALL;
+    wxString MESSAGES_USINGMAINFILE;
+    wxString ERRORS_ERROR;
+    wxString ERRORS_RE;
+    wxString ERRORS_FILEEXISTS;
+    wxString ERRORS_FILEACCESSERROR;
+    wxString ERRORS_NOTIMPLEMENTED;
+    wxString ERRORS_NOMARKERS;
+    wxString ERRORS_SAVEERROR;
+    wxString ERRORS_CLOSEABORT;
+     
      
      // INFORM STUFF
      wxString informCompiler;
@@ -625,7 +690,7 @@ void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
         path = fd->GetPath();
         name = fd->GetFilename();        
         if (wxFile::Exists(path)){
-            wxMessageBox (_("The file already exists."), _("File access Error"),  wxOK | wxICON_ERROR);
+            wxMessageBox (_(ERRORS_FILEEXISTS), _(ERRORS_FILEACCESSERROR),  wxOK | wxICON_ERROR);
             return;
         }
         wxFile file;        
@@ -658,8 +723,8 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
         // Else, open a dialog
         if (selected=="") {
             wxTextEntryDialog dialog(this,
-                                     _T("Enter a string to find:"),
-                                     _T("Search String"),
+                                     _T(MESSAGES_SEARCH_ENTERSTRING),
+                                     _T(MESSAGES_SEARCH_SEARCHSTRING),
                                      _T(lastSearch),
                                      wxOK | wxCANCEL);
         
@@ -684,7 +749,7 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
 }
 
 void MyFrame::FindReplace(wxCommandEvent &event){   
-    wxMessageBox ("Not yet implemented.", _("Message"),  wxOK | wxICON_INFORMATION);           
+    wxMessageBox (ERRORS_NOTIMPLEMENTED, _(MESSAGES_MESSAGE),  wxOK | wxICON_INFORMATION);           
 }
 
 void MyFrame::SearchBack(wxCommandEvent &event){   //PL
@@ -700,8 +765,8 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
         // Else, open a dialog
         if (selected=="") {
             wxTextEntryDialog dialog(this,
-                                     _T("Enter a string to find:"),
-                                     _T("Search String"),
+                                     _T(MESSAGES_SEARCH_ENTERSTRING),
+                                     _T(MESSAGES_SEARCH_SEARCHSTRING),
                                      _T(lastSearch),
                                      wxOK | wxCANCEL);
 
@@ -737,10 +802,10 @@ void MyFrame::SearchObject(bool globalflag){  //PL
         len = e->GetLength();
         // Else, open a dialog
         if (selected=="") {
-            wxString caption = "Search Object";
-            if (globalflag) caption = "Search Object in Files";
+            wxString caption = MESSAGES_SEARCHOBJECT;
+            if (globalflag) caption = MESSAGES_SEARCHOBJECTFILES;
             wxTextEntryDialog dialog(this,
-                                     _T("Enter an object to find:"),
+                                     _T(MESSAGES_SEARCHOBJECT_ENTEROBJECT),
                                      _T(caption),
                                      _T(lastObSearch),
                                      wxOK | wxCANCEL);
@@ -799,7 +864,7 @@ void MyFrame::SearchObject(bool globalflag){  //PL
 size_t MyFrame::SearchRegularExpression(wxString text, wxString pattern_global){
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
-        OnOutput("Errore nella RE");
+        OnOutput(ERRORS_RE);
         return 0;
     }
     if ( re.Matches(text) ){
@@ -829,7 +894,7 @@ void MyFrame::NextMarker(wxCommandEvent &event){
                 e->GotoLine(line);                
             }
             else{
-                wxMessageBox ("No Markers found.", _("Message"),  wxOK | wxICON_INFORMATION);           
+                wxMessageBox (ERRORS_NOMARKERS, _(MESSAGES_WARNING),  wxOK | wxICON_INFORMATION);           
             }
         }
     } 
@@ -840,7 +905,7 @@ void MyFrame::GotoLine(wxCommandEvent &event){
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     if (e) {
         // Richiedo il numero di riga
-        long lineNumber = wxGetNumberFromUser( _T(""),_T("Line number:"), _T("Goto Line number"),
+        long lineNumber = wxGetNumberFromUser( _T(""),_T(MESSAGES_LINENUMBER), _T(MESSAGES_GOTOLINENUMBER),
                              1, 1, 999999999, this );
         if (lineNumber !=-1){
             e->GotoLine(lineNumber-1);
@@ -994,10 +1059,78 @@ void MyFrame::LoadConfiguration() {
     MENU_GLULX_CREATEBLORBFILE      = pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T("")):"Create Blorb File";
     MENU_GLULX_BUILDALLBLORBFILE    = pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T("")):"Build all Blorb file";
     MENU_GLULX_RUNBLORB             = pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T("")):"Run Blorb";
+                         
+    // Object Tree Menu
+    MENU_OBJECTTREE                 = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE"),_T("")):"Object Tree";
+    MENU_OBJECTTREE_REFRESHTREE     = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_REFRESHTREE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_REFRESHTREE"),_T("")):"Refresh tree";
+    MENU_OBJECTTREE_EXPAND_NODES    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_EXPAND_NODES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_EXPAND_NODES"),_T("")):"Expand always all nodes";
+    MENU_OBJECTTREE_SHOW_OBJECTS    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_OBJECTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_OBJECTS"),_T("")):"Show Objects";
+    MENU_OBJECTTREE_SHOW_PROJECT_DEFS= pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T("")):"Show Project Defs";        
+    MENU_OBJECTTREE_SHOW_GLOBALS    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_GLOBALS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_GLOBALS"),_T("")):"Show Globals";
+    MENU_OBJECTTREE_SHOW_CONSTANTS  = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CONSTANTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CONSTANTS"),_T("")):"Show Constants";
+    MENU_OBJECTTREE_SHOW_FUNCTIONS  = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T("")):"Show Functions";
+    MENU_OBJECTTREE_SHOW_CLASSES    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CLASSES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CLASSES"),_T("")):"Show Classes";             
+    MENU_OBJECTTREE_SHOW_INCLUDES   = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_INCLUDES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_INCLUDES"),_T("")):"Show Includes";
+    MENU_OBJECTTREE_SHOW_VERBS      = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_VERBS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_VERBS"),_T("")):"Show Verbs";
+
+    // Options Menu                      
+    MENU_OPTIONS                    = pConfig->Read(_T(language+"_"+"MENU_OPTIONS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS"),_T("")):"Options";
+    MENU_OPTIONS_SHOWLINENUMBER     = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_SHOWLINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_SHOWLINENUMBER"),_T("")):"Show line numbers";
+    MENU_OPTIONS_WRAPMODE           = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_WRAPMODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_WRAPMODE"),_T("")):"Wrap Mode";
+    MENU_OPTIONS_AUTOCOMPLETE       = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_AUTOCOMPLETE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_AUTOCOMPLETE"),_T("")):"Autocomplete";
+    MENU_OPTIONS_HOTKEYSREPLACING   = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_HOTKEYSREPLACING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_HOTKEYSREPLACING"),_T("")):"Hotkeys replacing";
+                      
+    // Documents Menu
+    MENU_DOCUMENTS                  = pConfig->Read(_T(language+"_"+"MENU_DOCUMENTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_DOCUMENTS"),_T("")):"Documents";
+
+    // Help Menu    
+    MENU_HELP                       = pConfig->Read(_T(language+"_"+"MENU_HELP"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP"),_T("")):"Help";    
+    MENU_HELP_LICENSE               = pConfig->Read(_T(language+"_"+"MENU_HELP_LICENSE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP_LICENSE"),_T("")):"License";
+    MENU_HELP_ABOUT                 = pConfig->Read(_T(language+"_"+"MENU_HELP_ABOUT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP_ABOUT"),_T("")):"About Wide";
+                   
+                   
+    // GENERIC MESSAGES AND ERRORS
+    MESSAGES_READY                  = pConfig->Read(_T(language+"_"+"MESSAGES_READY"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_READY"),_T("")):"Ready";    
+    MESSAGES_OUTPUTWINDOW           = pConfig->Read(_T(language+"_"+"MESSAGES_OUTPUTWINDOW"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_OUTPUTWINDOW"),_T("")):"Output Window";    
+    MESSAGES_SEARCH_ENTERSTRING     = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_ENTERSTRING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_ENTERSTRING"),_T("")):"Enter a string to find:";    
+    MESSAGES_SEARCH_SEARCHSTRING    = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_SEARCHSTRING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_SEARCHSTRING"),_T("")):"Search String";    
+    MESSAGES_MESSAGE                = pConfig->Read(_T(language+"_"+"MESSAGES_MESSAGE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_MESSAGE"),_T("")):"Message";    
+    MESSAGES_SEARCHOBJECT           = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT"),_T("")):"Search Object";    
+    MESSAGES_SEARCHOBJECTFILES      = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECTFILES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECTFILES"),_T("")):"Search Object in files";    
+    MESSAGES_SEARCHOBJECT_ENTEROBJECT= pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T("")):"Enter an object to find:";    
+    MESSAGES_LINENUMBER             = pConfig->Read(_T(language+"_"+"MESSAGES_LINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_LINENUMBER"),_T("")):"Line number:";    
+    MESSAGES_GOTOLINENUMBER         = pConfig->Read(_T(language+"_"+"MESSAGES_GOTOLINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_GOTOLINENUMBER"),_T("")):"Goto Line number";    
+    MESSAGES_FILESAVED              = pConfig->Read(_T(language+"_"+"MESSAGES_FILESAVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_FILESAVED"),_T("")):"File saved";    
+    MESSAGES_TEXTNOTSAVED           = pConfig->Read(_T(language+"_"+"MESSAGES_TEXTNOTSAVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_TEXTNOTSAVED"),_T("")):"Text is not saved, save before closing?";    
+    MESSAGES_FILEOPENED             = pConfig->Read(_T(language+"_"+"MESSAGES_FILEOPENED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_FILEOPENED"),_T("")):"File is already opened";    
+    MESSAGES_WARNING                = pConfig->Read(_T(language+"_"+"MESSAGES_WARNING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_WARNING"),_T("")):"Warning";    
+    MESSAGES_REMOVEMAINFILE         = pConfig->Read(_T(language+"_"+"MESSAGES_REMOVEMAINFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_REMOVEMAINFILE"),_T("")):"Remove Main File";    
+    MESSAGES_MAINFILEREMOVED        = pConfig->Read(_T(language+"_"+"MESSAGES_MAINFILEREMOVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_MAINFILEREMOVED"),_T("")):"Main file, classes and keywords removed";    
+    MESSAGES_NOPROJECTOPENED        = pConfig->Read(_T(language+"_"+"MESSAGES_NOPROJECTOPENED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_NOPROJECTOPENED"),_T("")):"No Project opened";    
+    MESSAGES_COMPILEULX             = pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEULX"),_T("")):"Compiling in ULX format...";    
+    MESSAGES_COMPILEZCODE           = pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEZCODE"),_T("")):"Compiling Z-Code...";    
+    MESSAGES_CREATINGBLORB          = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGBLORB"),_T("")):"Creating blorb file...";    
+    MESSAGES_CREATINGRESOURCEZBLORB = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEZBLORB"),_T("")):"Creating Resources for z-blorb file...";    
+    MESSAGES_CREATINGZBLORB         = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGZBLORB"),_T("")):"Creating z-blorb file...";    
+    MESSAGES_CREATINGRESOURCEBLORB  = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEBLORB"),_T("")):"Creating Resources for blorb file...";    
+    MESSAGES_RUNZBLORB              = pConfig->Read(_T(language+"_"+"MESSAGES_RUNZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNZBLORB"),_T("")):"Running z-blorb...";    
+    MESSAGES_RUNZCODE               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNZCODE"),_T("")):"Running zcode...";    
+    MESSAGES_RUNBLORB               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNBLORB"),_T("")):"Running blorb...";    
+    MESSAGES_RUNGLULX               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNGLULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNGLULX"),_T("")):"Running glulx...";    
+    MESSAGES_SAVINGALL              = pConfig->Read(_T(language+"_"+"MESSAGES_SAVINGALL"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SAVINGALL"),_T("")):"Saving all...";    
+    MESSAGES_USINGMAINFILE          = pConfig->Read(_T(language+"_"+"MESSAGES_USINGMAINFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_USINGMAINFILE"),_T("")):"Using MainFile:";    
+    ERRORS_ERROR                    = pConfig->Read(_T(language+"_"+"ERRORS_ERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_ERROR"),_T("")):"Error";    
+    ERRORS_RE                       = pConfig->Read(_T(language+"_"+"ERRORS_RE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_RE"),_T("")):"Errors in Regular Expression";    
+    ERRORS_FILEEXISTS               = pConfig->Read(_T(language+"_"+"ERRORS_FILEEXISTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_FILEEXISTS"),_T("")):"The file already exists";    
+    ERRORS_FILEACCESSERROR          = pConfig->Read(_T(language+"_"+"ERRORS_FILEACCESSERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_FILEACCESSERROR"),_T("")):"File access Error";    
+    ERRORS_NOTIMPLEMENTED           = pConfig->Read(_T(language+"_"+"ERRORS_NOTIMPLEMENTED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_NOTIMPLEMENTED"),_T("")):"Not yet implemented";    
+    ERRORS_NOMARKERS                = pConfig->Read(_T(language+"_"+"ERRORS_NOMARKERS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_NOMARKERS"),_T("")):"No Markers found";    
+    ERRORS_SAVEERROR                = pConfig->Read(_T(language+"_"+"ERRORS_SAVEERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_SAVEERROR"),_T("")):"Text could not be saved!";    
+    ERRORS_CLOSEABORT               = pConfig->Read(_T(language+"_"+"ERRORS_CLOSEABORT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_CLOSEABORT"),_T("")):"Close abort";    
                                 
 }   
     
-
+    
 // Eventi sul singolo EDIT
 void MyFrame::OnSingleEdit (wxCommandEvent &evt) {
     // Recupero l'edit attuale e processo l'evento
@@ -1031,7 +1164,7 @@ void MyFrame::OnSaveFile (wxCommandEvent &evt) {
     }
     
     // Aggiorno la status bar
-    GetStatusBar()->SetStatusText(_("File saved."));
+    GetStatusBar()->SetStatusText(_(MESSAGES_FILESAVED));
     
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
@@ -1045,14 +1178,14 @@ void MyFrame::OnSaveAll (wxCommandEvent &evt) {     //PL
         if (e) {
             if (e->Modified()) e->SaveFile();
             if (e->Modified()) {
-                wxMessageBox (_("Text could not be saved!"), _("Close abort"),
+                wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
                  wxOK | wxICON_EXCLAMATION);
                 continue;
             }
         }
     }
     // Aggiorno la status bar
-    GetStatusBar()->SetStatusText(_("Files saved."));
+    GetStatusBar()->SetStatusText(_(MESSAGES_FILESAVED));
 
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
@@ -1154,7 +1287,7 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
 void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     if (event.GetId() != ID_MakeAllBlb) OnClear();
-    OnOutput("Creating blorb file...\n");
+    OnOutput(MESSAGES_CREATINGBLORB+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString blcFile, blbFile;
     if (mainFile==""){
@@ -1162,7 +1295,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         blbFile = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         blcFile = mainFile;
         blbFile = mainFile;
     }
@@ -1187,7 +1320,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
             OnOutput(output[n].c_str());
             OnOutput("\n");
         }
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+".\n");
         inform_error = true;
     }
     else
@@ -1209,14 +1342,14 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     if (event.GetId() != ID_MakeAllBlb) OnClear();
-    OnOutput("Creating Resources for blorb file...\n");
+    OnOutput(MESSAGES_CREATINGRESOURCEBLORB+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString bresFile;
     if (mainFile==""){
         bresFile = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         bresFile = mainFile;
     }
     bresFile.Replace(".inf", "", true);
@@ -1233,7 +1366,7 @@ void MyFrame::OnCreateRes (wxCommandEvent &event) {
             OnOutput("\n");
         }
 
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+".\n");
         inform_error = true;
     }
     else
@@ -1268,7 +1401,7 @@ void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
 void MyFrame::OnRunBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput("Running blorb...\n");
+    OnOutput(MESSAGES_RUNBLORB+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     
     // Running the MAIN FILE
@@ -1277,7 +1410,7 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", "."+bext, true);
@@ -1292,7 +1425,7 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
 void MyFrame::OnRunUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput("Running glulx...\n");
+    OnOutput(MESSAGES_RUNGLULX+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
@@ -1301,7 +1434,7 @@ void MyFrame::OnRunUlx (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         nome = mainFile;
     }        
     nome.Replace(".inf", ".ulx", true);
@@ -1325,11 +1458,11 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     OnClear();
     
     // PL: Salvo tutto
-    OnOutput("Saving all...\n");
+    OnOutput(MESSAGES_SAVINGALL+"\n");
     //wxCommandEvent subev;
     OnSaveAll(event);
     
-    OnOutput("Compiling in ULX format...\n");
+    OnOutput(MESSAGES_COMPILEULX+"\n");
     wxArrayString output;
 
     // Recupero il nome del file da compilare
@@ -1340,7 +1473,7 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
         ulx = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         nome = mainFile;
         ulx = mainFile;
     }
@@ -1360,7 +1493,7 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
             OnOutput("\n");
         }
 
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+".\n");
         inform_error = true;
 
     }
@@ -1384,14 +1517,14 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
 void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput("Creating Resources for z-blorb file...\n");
+    OnOutput(MESSAGES_CREATINGRESOURCEZBLORB+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString idFile;
     if (mainFile==""){
         idFile = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         idFile = mainFile;
     }
     idFile.Replace(".inf", "", true);
@@ -1408,7 +1541,7 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
             OnOutput("\n");
         }
 
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+".\n");
         inform_error = true;
     }
     else
@@ -1429,7 +1562,7 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     OnCompile(event);
     if (inform_error) return;    
 
-    OnOutput("Creating z-blorb file...\n");
+    OnOutput(MESSAGES_CREATINGZBLORB+"\n");
 
     wxString wpath=wxPathOnly(idFile);
     wxString mpath = wxGetCwd();
@@ -1448,7 +1581,7 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
             OnOutput(output[n].c_str());
             OnOutput("\n");
         }
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+"\n");
         inform_error = true;
     }
     else
@@ -1471,7 +1604,7 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
 void MyFrame::OnRunZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput("Running z-blorb...\n");
+    OnOutput(MESSAGES_RUNZBLORB+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
@@ -1480,7 +1613,7 @@ void MyFrame::OnRunZBlb (wxCommandEvent &event) {
         nome = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", ".zblorb", true);
@@ -1494,13 +1627,13 @@ void MyFrame::OnRunZBlb (wxCommandEvent &event) {
 void MyFrame::OnRunZcode (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput("Running zcode...\n");
+    OnOutput(MESSAGES_RUNZCODE+"\n");
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome = e->GetFilename();
     if (mainFile=="") {
         nome = e->GetFilename();
     } else {
-        OnOutput("Using MainFile: "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
         nome = mainFile;
     }
     nome.Replace(".inf", zcodeversion, true);    
@@ -1522,11 +1655,11 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
     OnClear();
         
     // PL: Salvo tutto
-    OnOutput("Saving all...\n");
+    OnOutput(MESSAGES_SAVINGALL+"\n");
     wxCommandEvent subev;
     OnSaveAll(subev);
         
-    OnOutput("Compiling Z-Code...\n");
+    OnOutput(MESSAGES_COMPILEZCODE+"\n");
     wxArrayString output;
     
     // Recupero il nome del file da compilare
@@ -1537,7 +1670,7 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
         zcode = e->GetFilename();
     }
     else{
-        OnOutput("Using MainFile: "+mainFile+"\n");        
+        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");        
         nome = mainFile;
         zcode = mainFile;        
     }
@@ -1555,7 +1688,7 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
             OnOutput(output[n].c_str());
             OnOutput("\n");
         }
-        OnOutput("ERROR.\n");
+        OnOutput(ERRORS_ERROR+".\n");
         inform_error = true;
     }
     else
@@ -1661,13 +1794,13 @@ void MyFrame::OnNotebookPageClose(wxAuiNotebookEvent& evt)
         Edit* e = (Edit*) ctrl->GetPage(evt.GetSelection());
         wxString titolo = ctrl->GetPageText(evt.GetSelection());
         if (e->Modified()) {
-            int risposta = wxMessageBox (_("Text is not saved, save before closing?"), titolo,
+            int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
             wxYES_NO | wxCANCEL | wxICON_QUESTION);
 
             if (risposta == wxYES) {
                 e->SaveFile();
                 if (e->Modified()) {
-                    wxMessageBox (_("Text could not be saved!"), _("Close abort"),
+                    wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
                     wxOK | wxICON_EXCLAMATION);
                 }
             }
@@ -1687,12 +1820,12 @@ void MyFrame::OnExit (wxCommandEvent &event) {
         wxString titolo = auinotebook->GetPageText(i);
         if (e) {
             if (e->Modified()) {
-                int risposta = wxMessageBox (_("Text is not saved, save before closing?"), titolo,
+                int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
                     wxYES_NO | wxCANCEL | wxICON_QUESTION);
                 if (risposta == wxYES) {
                     e->SaveFile();
                     if (e->Modified()) {
-                        wxMessageBox (_("Text could not be saved!"), _("Close abort"),
+                        wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
                         wxOK | wxICON_EXCLAMATION);
                         continue;
                     }
@@ -1713,12 +1846,12 @@ void MyFrame::OnClose (wxCloseEvent &event) {
         wxString titolo = auinotebook->GetPageText(i);
         if (e) {
             if (e->Modified()) {
-                int risposta = wxMessageBox (_("Text is not saved, save before closing?"), titolo,
+                int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
                     wxYES_NO | wxCANCEL | wxICON_QUESTION);
                 if (risposta == wxYES) {
                     e->SaveFile();
                     if (e->Modified()) {
-                        wxMessageBox (_("Text could not be saved!"), _("Close abort"),
+                        wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
                         wxOK | wxICON_EXCLAMATION);
                         continue;
                     }
@@ -1906,7 +2039,7 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
         
         // Check if file is already opened
         if (checkOpenFile(path)){
-           wxMessageBox (_("File is already opened."),_("Warning"), wxOK | wxICON_WARNING);    
+           wxMessageBox (_(MESSAGES_FILEOPENED),_(MESSAGES_WARNING), wxOK | wxICON_WARNING);    
            return;
         }
         
@@ -1981,7 +2114,7 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
           LoadFile(str,s);
           if (mainFile == "") {
                 mainFile = str;
-                OnOutput("Using Main file ["+mainFile+"] ");
+                OnOutput(MESSAGES_USINGMAINFILE+" ["+mainFile+"] ");
           }
           bCont = projfile->GetNextEntry(str, dummy);
         }
@@ -2002,13 +2135,13 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
     projclasses.Empty();
     projkeywords.Empty();
     if (mainFile!=""){
-        wxMessageBox (mainFile, _("Remove Main File"),  wxOK | wxICON_INFORMATION);            
+        wxMessageBox (mainFile, _(MESSAGES_REMOVEMAINFILE),  wxOK | wxICON_INFORMATION);            
         mainFile="";
         OnClear();
-        OnOutput("Main file, classes and keywords removed.");        
+        OnOutput(MESSAGES_MAINFILEREMOVED);        
     }
     else{
-        wxMessageBox (_("No Project opened."),_("Warning"), wxOK | wxICON_WARNING);    
+        wxMessageBox (_(MESSAGES_NOPROJECTOPENED),_(MESSAGES_WARNING), wxOK | wxICON_WARNING);    
     }
 }
 
@@ -2022,8 +2155,7 @@ void MyFrame::OnLicense(wxCommandEvent& WXUNUSED(event))
     info.SetCopyright(_T("(C) 2008 - Alessandro Schillaci"));
     info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.SetDescription(wxString::FromAscii(
-"GNU GPL LICENSE\n"
-"===============\n"
+"\nGNU GPL LICENSE\n"
 "\n"
 "  This program is free software; you can redistribute it and/or modify\n"
 "  it under the terms of the GNU General Public License as published by\n"
@@ -2062,7 +2194,7 @@ void MyFrame::OnUpdateTreeRegularExpression(wxString text, wxTreeItemId root, wx
     int contatore=0;    
     wxRegEx re;
     if (!re.Compile(pattern_global, wxRE_ICASE|wxRE_NEWLINE) ){
-        OnOutput("Errore nella RE");
+        OnOutput(ERRORS_RE);
         return;
     }
     wxArrayTreeItemIds items;
@@ -2320,47 +2452,43 @@ wxMenuBar* MyFrame::CreateMenuBar()
     glulx->Append (ID_MakeAllBlb, _("&"+MENU_GLULX_BUILDALLBLORBFILE+"\tF11"));
     glulx->Append (ID_RunBlb, _("&"+MENU_GLULX_RUNBLORB+"\tCtrl+F11"));
 
+    // OBJECT TREE MENU
+    wxMenu* otree = new wxMenu;
+    otree->Append (ID_RefreshTree, _(MENU_OBJECTTREE_REFRESHTREE+"\tENTER"));
+    otree->AppendCheckItem (ID_ExpandAllAlways, _(MENU_OBJECTTREE_EXPAND_NODES));
+    otree->AppendSeparator();
+    otree->AppendCheckItem (ID_ShowObject, _(MENU_OBJECTTREE_SHOW_OBJECTS));
+    otree->AppendCheckItem (ID_ShowProject, _(MENU_OBJECTTREE_SHOW_PROJECT_DEFS));
+    otree->AppendCheckItem (ID_ShowGlobal, _(MENU_OBJECTTREE_SHOW_GLOBALS));
+    otree->AppendCheckItem (ID_ShowConstant, _(MENU_OBJECTTREE_SHOW_CONSTANTS));
+    otree->AppendCheckItem (ID_ShowFunction, _(MENU_OBJECTTREE_SHOW_FUNCTIONS));
+    otree->AppendCheckItem (ID_ShowClass, _(MENU_OBJECTTREE_SHOW_CLASSES));
+    otree->AppendCheckItem (ID_ShowInclude, _(MENU_OBJECTTREE_SHOW_INCLUDES));
+    otree->AppendCheckItem (ID_ShowVerb, _(MENU_OBJECTTREE_SHOW_VERBS));
+
+    // OBJECT TREE MENU - Load configuration from file
+    otree->Check(ID_ExpandAllAlways, (pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0) );
+    otree->Check(ID_ShowObject, (pConfig->Read(_T("OBJECT_TREE_SHOW_OBJECTS"), 1l) != 0) );
+    otree->Check(ID_ShowProject, (pConfig->Read(_T("OBJECT_TREE_SHOW_PROJECT"), 1l) != 0) );
+    otree->Check(ID_ShowGlobal, (pConfig->Read(_T("OBJECT_TREE_SHOW_GLOBALS"), 1l) != 0) );
+    otree->Check(ID_ShowConstant, (pConfig->Read(_T("OBJECT_TREE_SHOW_CONSTANTS"), 1l) != 0) );
+    otree->Check(ID_ShowFunction, (pConfig->Read(_T("OBJECT_TREE_SHOW_FUNCTIONS"), 1l) != 0) );
+    otree->Check(ID_ShowClass, (pConfig->Read(_T("OBJECT_TREE_SHOW_CLASSES"), 1l) != 0) );
+    otree->Check(ID_ShowInclude, (pConfig->Read(_T("OBJECT_TREE_SHOW_INCLUDES"), 1l) != 0) );
+    otree->Check(ID_ShowVerb, (pConfig->Read(_T("OBJECT_TREE_SHOW_VERBS"), 1l) != 0) );
+    
     // OPTION MENU
     wxMenu* option = new wxMenu;
-    option->AppendCheckItem (myID_LINENUMBER, _("Show line &numbers"));
-    option->AppendCheckItem (myID_WRAPMODEON, _("&Wrap mode"));    
-    option->AppendCheckItem (myID_AUTOCOMPON, _("&Autocomplete"));
-    option->AppendCheckItem (myID_HOTKEYSON,  _("&Hotkeys Replacing"));
-
-    
-    
+    option->AppendCheckItem (myID_LINENUMBER, _(MENU_OPTIONS_SHOWLINENUMBER));
+    option->AppendCheckItem (myID_WRAPMODEON, _("&"+MENU_OPTIONS_WRAPMODE));    
+    option->AppendCheckItem (myID_AUTOCOMPON, _("&"+MENU_OPTIONS_AUTOCOMPLETE));
+    option->AppendCheckItem (myID_HOTKEYSON,  _("&"+MENU_OPTIONS_HOTKEYSREPLACING));
     option->Check(myID_LINENUMBER, showLineNumber);
     option->Check(myID_WRAPMODEON, wrapMode);
     option->Check(myID_AUTOCOMPON, autoCompleteSwitch);
     option->Check(myID_HOTKEYSON,  hotkeysSwitch);
     
-
-    // OBJECT TREE MENU
-    wxMenu* otree = new wxMenu;
-
-    otree->Append (ID_RefreshTree, _("Refresh Tree\tENTER"));
-    otree->AppendCheckItem (ID_ExpandAllAlways, _("Expand always all nodes"));
-    otree->AppendSeparator();
-    otree->AppendCheckItem (ID_ShowObject, _("Show Objects"));
-    otree->AppendCheckItem (ID_ShowProject, _("Show Project Defs"));
-    otree->AppendCheckItem (ID_ShowGlobal, _("Show Globals"));
-    otree->AppendCheckItem (ID_ShowConstant, _("Show Constants"));
-    otree->AppendCheckItem (ID_ShowFunction, _("Show Functions"));
-    otree->AppendCheckItem (ID_ShowClass, _("Show Classes"));
-    otree->AppendCheckItem (ID_ShowInclude, _("Show Includes"));
-    otree->AppendCheckItem (ID_ShowVerb, _("Show Verbs"));
-    
-    // Load configuration from file    
-    otree->Check(ID_ExpandAllAlways, (pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0) );
-    otree->Check(ID_ShowObject, (pConfig->Read(_T("OBJECT_TREE_SHOW_OBJECTS"), 1l) != 0) );
-    otree->Check(ID_ShowProject, (pConfig->Read(_T("OBJECT_TREE_SHOW_PROJECT"), 1l) != 0) );
-    otree->Check(ID_ShowGlobal, (pConfig->Read(_T("OBJECT_TREE_SHOW_GLOBALS"), 1l) != 0) );
-    otree->Check(ID_ShowConstant, (pConfig->Read(_T("OBJECT_TREE_SHOW_CONSTANTS"), 1l) != 0) );    
-    otree->Check(ID_ShowFunction, (pConfig->Read(_T("OBJECT_TREE_SHOW_FUNCTIONS"), 1l) != 0) );
-    otree->Check(ID_ShowClass, (pConfig->Read(_T("OBJECT_TREE_SHOW_CLASSES"), 1l) != 0) );
-    otree->Check(ID_ShowInclude, (pConfig->Read(_T("OBJECT_TREE_SHOW_INCLUDES"), 1l) != 0) );
-    otree->Check(ID_ShowVerb, (pConfig->Read(_T("OBJECT_TREE_SHOW_VERBS"), 1l) != 0) );
-
+    // DOCUMENTS MENU
     wxMenu* docs = new wxMenu;
     if (pConfig->Read("PDF1_NAME", _T(""))!=""){docs->Append(ID_Doc1, pConfig->Read("PDF1_NAME", _T("")));}
     if (pConfig->Read("PDF2_NAME", _T(""))!=""){docs->Append(ID_Doc2, pConfig->Read("PDF2_NAME", _T("")));}
@@ -2370,28 +2498,26 @@ wxMenuBar* MyFrame::CreateMenuBar()
     if (pConfig->Read("PDF6_NAME", _T(""))!=""){docs->Append(ID_Doc6, pConfig->Read("PDF6_NAME", _T("")));}
     if (pConfig->Read("PDF7_NAME", _T(""))!=""){docs->Append(ID_Doc7, pConfig->Read("PDF7_NAME", _T("")));}
     if (pConfig->Read("PDF8_NAME", _T(""))!=""){docs->Append(ID_Doc8, pConfig->Read("PDF8_NAME", _T("")));}
-    
 
-
+    // HELP MENU
     wxMenu* help = new wxMenu;
-    help->Append(ID_License, _("License"));    
+    help->Append(ID_License, _(MENU_HELP_LICENSE));    
     help->AppendSeparator();
-    
-    // HELP::ABOUT
-    wxMenuItem *about = new wxMenuItem(help, ID_About, _("About Wide"));
+    wxMenuItem *about = new wxMenuItem(help, ID_About, _(MENU_HELP_ABOUT));
     about->SetBitmap(help_xpm);
     help->Append(about);
-    
+
+    // Main MenuBar    
     mb->Append(file, _(MENU_FILE));
     mb->Append(edit, _(MENU_EDIT));
     mb->Append(search, _(MENU_SEARCH));        
     mb->Append(project , _(MENU_PROJECT));            
     mb->Append(zcode, _(MENU_ZCODE));
     mb->Append(glulx, _(MENU_GLULX));    
-    mb->Append(otree, _("Object Tree"));
-    mb->Append(option, _("Options"));
-    mb->Append(docs, _("Documents"));        
-    mb->Append(help, _("Help"));    
+    mb->Append(otree, _(MENU_OBJECTTREE));
+    mb->Append(option, _(MENU_OPTIONS));
+    mb->Append(docs, _(MENU_DOCUMENTS));        
+    mb->Append(help, _(MENU_HELP));    
     
     return mb;
 }
@@ -2418,41 +2544,42 @@ wxToolBar* MyFrame::CreateToolBarCtrl()
                                    wxTB_FLAT | wxTB_NODIVIDER);
     tb2->SetToolBitmapSize(wxSize(16,16));
    
-    tb2->AddTool(ID_LoadFile, fileopen_xpm,"Open File");
-    tb2->AddTool(ID_NewFile, new_xpm,"New File");    
-    tb2->AddTool(ID_Save_File, filesave_xpm, "Save File");
-    tb2->AddTool(103, filesaveas_xpm, "Save File as...");
-    tb2->AddTool(ID_Save_All, filesaveall_xpm, "Save All");
+   
+    tb2->AddTool(ID_LoadFile, fileopen_xpm,MENU_FILE_OPENFILE);
+    tb2->AddTool(ID_NewFile, new_xpm,MENU_FILE_NEWFILE);    
+    tb2->AddTool(ID_Save_File, filesave_xpm, MENU_FILE_SAVEFILE);
+//    tb2->AddTool(103, filesaveas_xpm, "Save File as...");
+    tb2->AddTool(ID_Save_All, filesaveall_xpm, MENU_FILE_SAVEALL);
     tb2->AddSeparator(); 
     
-    tb2->AddTool(ID_PreviousPage, back_xpm,"Previous Tab");
-    tb2->AddTool(ID_NextPage, forward_xpm,"Next Tab");
+    tb2->AddTool(ID_PreviousPage, back_xpm,MENU_FILE_PREVIOUSTAB);
+    tb2->AddTool(ID_NextPage, forward_xpm,MENU_FILE_NEXTTAB);
     tb2->AddSeparator();
 
-    tb2->AddTool(wxID_UNDO, undo_xpm,"Undo");
-    tb2->AddTool(wxID_REDO, redo_xpm,"Redo");
+    tb2->AddTool(wxID_UNDO, undo_xpm,MENU_EDIT_UNDO);
+    tb2->AddTool(wxID_REDO, redo_xpm,MENU_EDIT_REDO);
     tb2->AddSeparator(); 
     
-    tb2->AddTool(wxID_COPY, copy_xpm,"Copy");
-    tb2->AddTool(wxID_CUT, cut_xpm,"Cut");
-    tb2->AddTool(wxID_PASTE, paste_xpm,"Paste");
-    tb2->AddTool(ID_FindBack, findback_xpm,"Find Backwards");   //PL
-    tb2->AddTool(ID_Find, find_xpm,"Find");    //PL
-    tb2->AddTool(108, findrepl_xpm,"Find and Replace");
-    tb2->AddTool(ID_FindObjectLocal, findobject_xpm,"Find Object");    //PL
-    tb2->AddTool(ID_FindObjectGlobal, findobjectg_xpm,"Find Object");    //PL    
+    tb2->AddTool(wxID_COPY, copy_xpm,MENU_EDIT_COPY);
+    tb2->AddTool(wxID_CUT, cut_xpm,MENU_EDIT_CUT);
+    tb2->AddTool(wxID_PASTE, paste_xpm,MENU_EDIT_PASTE);
+    tb2->AddTool(ID_FindBack, findback_xpm,MENU_SEARCH_FIND_BACKWARDS);   //PL
+    tb2->AddTool(ID_Find, find_xpm,MENU_SEARCH_FIND);    //PL
+//    tb2->AddTool(108, findrepl_xpm,"Find and Replace");
+    tb2->AddTool(ID_FindObjectLocal, findobject_xpm,MENU_SEARCH_FIND_OBJECT);    //PL
+    tb2->AddTool(ID_FindObjectGlobal, findobjectg_xpm,MENU_SEARCH_FIND_OBJECT_IN_FILE);    //PL    
     tb2->AddSeparator();
     
-    tb2->AddTool(ID_Compile, compilezcode_xpm, "Compile ZCode");
-    tb2->AddTool(ID_RunZcode, exezcode_xpm, "Execute ZCode");
+    tb2->AddTool(ID_Compile, compilezcode_xpm, MESSAGES_COMPILEZCODE);
+    tb2->AddTool(ID_RunZcode, exezcode_xpm, MESSAGES_RUNZCODE);
     tb2->AddSeparator();
     
-    tb2->AddTool(ID_CompileUlx, compileulx_xpm, "Compile Glulx");
-    tb2->AddTool(ID_RunUlx, exeglulx_xpm, "Execute Glulx");        
+    tb2->AddTool(ID_CompileUlx, compileulx_xpm, MESSAGES_COMPILEULX);
+    tb2->AddTool(ID_RunUlx, exeglulx_xpm, MESSAGES_RUNGLULX);        
     tb2->AddSeparator();
     
-    tb2->AddTool(ID_About, help_xpm, "About");
-    tb2->AddTool(ID_Exit, quit_xpm, "Quit the program");
+    tb2->AddTool(ID_About, help_xpm, MENU_HELP_ABOUT);
+    tb2->AddTool(ID_Exit, quit_xpm, MENU_FILE_QUIT);
     tb2->Realize();
     
     return tb2;
