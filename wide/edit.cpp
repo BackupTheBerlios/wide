@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.10 2008/06/19 17:18:19 paolol_it Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.11 2008/08/28 22:45:52 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
             const wxPoint &pos,
             const wxSize &size,
             long style,
-            wxString &filename)
+            wxString filename)
     : wxStyledTextCtrl (parent, id, pos, size, style) {
     // PL: filename e' usato solo per settare il lexer
     m_filename = wxEmptyString;
@@ -146,8 +146,8 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
 
-    m_languagename = DeterminePrefs(filename);
-    InitializePrefs (_T(m_languagename));
+    wxString m_languagename = DeterminePrefs(filename);
+    InitializePrefs (m_languagename);
     
     // set visibility
     SetVisiblePolicy (wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
@@ -316,7 +316,7 @@ void Edit::AddHotkey(wxString s) {
     if ( s[1]==',' ) s2 = s;
     if ( s[2]==',' ) {
         int k = wxHexToDec(s.Left(2));
-        s2.Printf("%c,",k);
+        s2.Printf(_T("%c,"),k);
         s2=s2+s.Mid(3);
     }
     m_hotkey.Add(s2); 
@@ -387,7 +387,7 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         wxString s = m_hotkey[i];
         if (s[0] == chr) {
             SetTargetStart(pos - 1); SetTargetEnd(pos);
-            ReplaceTarget("");
+            ReplaceTarget(_T(""));
             AddText(s.Mid(2));
         }
     }

@@ -1,6 +1,9 @@
 CHANGELOG WIDE
 ==============
 
+2008-08-29
+- compatibilità con linux
+
 2008-07-18
 - Creazione dei file z-blorb
 - Aggiunta voce "reset markers"

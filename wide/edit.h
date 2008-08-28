@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.6 2008/06/19 17:18:19 paolol_it Exp $
+// RCS-ID:      $Id: edit.h,v 1.7 2008/08/28 22:45:52 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ public:
           const wxPoint &pos = wxDefaultPosition,
           const wxSize &size = wxDefaultSize,
           long style = wxSUNKEN_BORDER|wxVSCROLL,
-          wxString& filename = ""
+          wxString filename = wxT("")
          );
 
     //! destructor

@@ -14,7 +14,7 @@
   #include "wx/aboutdlg.h" // Per la Dialog di About
   #include "wx/filedlg.h"  // Per il file chooser
   #include "wx/toolbar.h"  // tool bar principale
-  
+  #include "wx/imaglist.h"  
 
   #include "wx/regex.h"    // Regular expressions
   #include "defsext.h"     // Additional definitions
@@ -136,10 +136,10 @@ class MyFrame : public wxFrame {
                       wxDEFAULT_FRAME_STYLE)                              
    {
      untitled=0;
-     mainFile="";
+     mainFile=_T("");
      LoadConfiguration();
-     zcodeversion=".z5";
-     zcodeswitch="-v5";
+     zcodeversion=_T(".z5");
+     zcodeswitch=_T("-v5");
      
      // notify wxAUI which frame to use
      m_mgr.SetManagedWindow(this);
@@ -149,7 +149,7 @@ class MyFrame : public wxFrame {
      // Aggiungo la menubar
      SetMenuBar(CreateMenuBar());
      CreateStatusBar();
-     GetStatusBar()->SetStatusText(_(MESSAGES_READY));
+     GetStatusBar()->SetStatusText(MESSAGES_READY);
  
 /*     console = new wxTextCtrl(this, -1, _(""),
                       wxDefaultPosition, wxSize(100,100),
@@ -158,14 +158,14 @@ class MyFrame : public wxFrame {
      
      console = new wxStyledTextCtrl(this, -1,
                      wxDefaultPosition, wxSize(100,100),
-                     wxNO_BORDER | wxTE_MULTILINE, "console");
+                     wxNO_BORDER | wxTE_MULTILINE, _T("console"));
      console->SetReadOnly(true);   
          
      // add the panes to the manager
      tree = CreateTreeCtrl();
-     m_mgr.AddPane(tree, wxLEFT, wxT(MENU_OBJECTTREE));
+     m_mgr.AddPane(tree, wxLEFT, MENU_OBJECTTREE);
      m_mgr.AddPane(auinotebook=CreateNotebook(), wxCENTER);
-     m_mgr.AddPane(console, wxBOTTOM, wxT(MESSAGES_OUTPUTWINDOW));
+     m_mgr.AddPane(console, wxBOTTOM, MESSAGES_OUTPUTWINDOW);
                         
     // TOOL BAR
     toolbar = CreateToolBarCtrl();
@@ -457,10 +457,10 @@ class MyFrame : public wxFrame {
    {
      // Load config file
      pConfig = new wxFileConfig(
-        NOMEAPPLICAZIONE,
-        NOMEAPPLICAZIONE,
-        CONFIG_FILE,
-        "",
+        _T(NOMEAPPLICAZIONE),
+        _T(NOMEAPPLICAZIONE),
+        _T(CONFIG_FILE),
+        _T(""),
         wxCONFIG_USE_RELATIVE_PATH,
         wxConvUTF8);
      wxConfigBase::Set(pConfig);     
@@ -645,7 +645,7 @@ void MyFrame::OnComment(wxCommandEvent& WXUNUSED(event)){
     int end   = e->GetSelectionEnd();
     int firstline = e->LineFromPosition(start);
     int lastline = e->LineFromPosition(end);
-    for (int i = firstline; i <= lastline; i++) e->InsertText(e->PositionFromLine(i), "!");
+    for (int i = firstline; i <= lastline; i++) e->InsertText(e->PositionFromLine(i), _T("!"));
     end = end + lastline - firstline + 1;
     e->SetSelection(start, end);
 
@@ -683,14 +683,14 @@ void MyFrame::OnComment(wxCommandEvent& WXUNUSED(event)){
 // MENU FILE ****************
 void MyFrame::OnNewFile(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileDialog* fd = new wxFileDialog(this, "New File","","","Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*",
-    wxFD_SAVE,wxDefaultPosition,wxDefaultSize,"filedlg");
+    wxFileDialog* fd = new wxFileDialog(this, _T("New File"),_T(""),_T(""),_T("Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*"),
+    wxFD_SAVE,wxDefaultPosition,wxDefaultSize,_T("filedlg"));
     wxString path,name;
     if (fd->ShowModal() == wxID_OK ){
         path = fd->GetPath();
         name = fd->GetFilename();        
         if (wxFile::Exists(path)){
-            wxMessageBox (_(ERRORS_FILEEXISTS), _(ERRORS_FILEACCESSERROR),  wxOK | wxICON_ERROR);
+            wxMessageBox (ERRORS_FILEEXISTS, ERRORS_FILEACCESSERROR,  wxOK | wxICON_ERROR);
             return;
         }
         wxFile file;        
@@ -721,11 +721,11 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
         position = e->GetSelectionEnd(); 
         len = e->GetLength();
         // Else, open a dialog
-        if (selected=="") {
+        if (selected==_T("")) {
             wxTextEntryDialog dialog(this,
-                                     _T(MESSAGES_SEARCH_ENTERSTRING),
-                                     _T(MESSAGES_SEARCH_SEARCHSTRING),
-                                     _T(lastSearch),
+                                     MESSAGES_SEARCH_ENTERSTRING,
+                                     MESSAGES_SEARCH_SEARCHSTRING,
+                                     lastSearch,
                                      wxOK | wxCANCEL);
         
             if (dialog.ShowModal() == wxID_OK) {
@@ -734,7 +734,7 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
             }
         }
         // Do the search
-        if (selected!="") {
+        if (selected!=_T("")) {
             lastSearch = selected;
             newpos = e->FindText(position,len,selected,0);
             // If not found, search from beginning 
@@ -749,7 +749,7 @@ void MyFrame::Search(wxCommandEvent &event){  //PL
 }
 
 void MyFrame::FindReplace(wxCommandEvent &event){   
-    wxMessageBox (ERRORS_NOTIMPLEMENTED, _(MESSAGES_MESSAGE),  wxOK | wxICON_INFORMATION);           
+    wxMessageBox (ERRORS_NOTIMPLEMENTED, MESSAGES_MESSAGE,  wxOK | wxICON_INFORMATION);           
 }
 
 void MyFrame::SearchBack(wxCommandEvent &event){   //PL
@@ -763,11 +763,11 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
         position = e->GetSelectionStart();
         len = e->GetLength();
         // Else, open a dialog
-        if (selected=="") {
+        if (selected==_T("")) {
             wxTextEntryDialog dialog(this,
-                                     _T(MESSAGES_SEARCH_ENTERSTRING),
-                                     _T(MESSAGES_SEARCH_SEARCHSTRING),
-                                     _T(lastSearch),
+                                     MESSAGES_SEARCH_ENTERSTRING,
+                                     MESSAGES_SEARCH_SEARCHSTRING,
+                                     lastSearch,
                                      wxOK | wxCANCEL);
 
             if (dialog.ShowModal() == wxID_OK) {
@@ -776,7 +776,7 @@ void MyFrame::SearchBack(wxCommandEvent &event){   //PL
             }
         }
         // Do the search
-        if (selected!="") {
+        if (selected!=_T("")) {
             lastSearch = selected;
             newpos = e->FindText(position-1,0,selected,0);
             // If not found, search from end
@@ -801,13 +801,13 @@ void MyFrame::SearchObject(bool globalflag){  //PL
         position = e->GetSelectionEnd();
         len = e->GetLength();
         // Else, open a dialog
-        if (selected=="") {
+        if (selected==_T("")) {
             wxString caption = MESSAGES_SEARCHOBJECT;
             if (globalflag) caption = MESSAGES_SEARCHOBJECTFILES;
             wxTextEntryDialog dialog(this,
-                                     _T(MESSAGES_SEARCHOBJECT_ENTEROBJECT),
-                                     _T(caption),
-                                     _T(lastObSearch),
+                                     MESSAGES_SEARCHOBJECT_ENTEROBJECT,
+                                     caption,
+                                     lastObSearch,
                                      wxOK | wxCANCEL);
 
             if (dialog.ShowModal() == wxID_OK) {
@@ -816,7 +816,7 @@ void MyFrame::SearchObject(bool globalflag){  //PL
             }
         }
         // Do the search
-        if (selected!="") {
+        if (selected!=_T("")) {
             lastObSearch = selected;
             int pannelli = auinotebook->GetPageCount();
             int current = auinotebook->GetSelection();
@@ -827,18 +827,18 @@ void MyFrame::SearchObject(bool globalflag){  //PL
                 //Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
                 e = (Edit*) auinotebook->GetPage(searched);
                 wxString text = e->GetText();           
-                if (showObjects) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]");
+                if (showObjects) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*") + selected + _T("[ \t\n\r\f\v]"));
                 if (showProject) for (size_t i = 0; (k==0) && (i<projclasses.GetCount()); i++) {
-                    wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]";
+                    wxString regexp = _T("\n+[ \t\f\v]*")+projclasses[i]+_T("[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*") + selected + _T("[ \t\n\r\f\v]");
                     //wxString regexp = "\n+[ \t\f\v]*NPC[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*" + selected + "[ \t\n\r\f\v]";                
                     k = SearchRegularExpression(text, regexp);
                 }
-                if (showGlobals && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+" + selected + "[= \t\n\r\f\v]");
-                if (showConstants && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+" + selected + "[ \t\n\r\f\v]");
-                if (showFunctions && (k==0)) k = SearchRegularExpression(text, "[\n\r][ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*" + selected + ".*;");
-                if (showClasses && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Class[ \t\n\r\f\v]+" + selected + "[ \t\n\r\f\v]");
-                if (showIncludes && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Include[ \t\f\v]+\"" + selected + "(\x2eh)?\"");
-                if (showVerbs && (k==0)) k = SearchRegularExpression(text, "\n+[ \t\f\v]*Verb[ \t\f\v]+\'" + selected +"\'");                
+                if (showGlobals && (k==0)) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Global[ \t\n\r\f\v]+") + selected + _T("[= \t\n\r\f\v]"));
+                if (showConstants && (k==0)) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+") + selected + _T("[ \t\n\r\f\v]"));
+                if (showFunctions && (k==0)) k = SearchRegularExpression(text, _T("[\n\r][ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*") + selected + _T(".*;"));
+                if (showClasses && (k==0)) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Class[ \t\n\r\f\v]+") + selected + _T("[ \t\n\r\f\v]"));
+                if (showIncludes && (k==0)) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Include[ \t\f\v]+\"") + selected + _T("(\x2eh)?\""));
+                if (showVerbs && (k==0)) k = SearchRegularExpression(text, _T("\n+[ \t\f\v]*Verb[ \t\f\v]+\'") + selected +_T("\'"));                
                 if (k) break;
                 if (!globalflag) break;
                 searched++; if (searched>=pannelli) searched=0;
@@ -894,7 +894,7 @@ void MyFrame::NextMarker(wxCommandEvent &event){
                 e->GotoLine(line);                
             }
             else{
-                wxMessageBox (ERRORS_NOMARKERS, _(MESSAGES_WARNING),  wxOK | wxICON_INFORMATION);           
+                wxMessageBox (ERRORS_NOMARKERS, MESSAGES_WARNING,  wxOK | wxICON_INFORMATION);           
             }
         }
     } 
@@ -905,7 +905,7 @@ void MyFrame::GotoLine(wxCommandEvent &event){
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     if (e) {
         // Richiedo il numero di riga
-        long lineNumber = wxGetNumberFromUser( _T(""),_T(MESSAGES_LINENUMBER), _T(MESSAGES_GOTOLINENUMBER),
+        long lineNumber = wxGetNumberFromUser( _T(""),MESSAGES_LINENUMBER, MESSAGES_GOTOLINENUMBER,
                              1, 1, 999999999, this );
         if (lineNumber !=-1){
             e->GotoLine(lineNumber-1);
@@ -989,145 +989,146 @@ void MyFrame::LoadConfiguration() {
      autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l);
      
      // Inform Stuff
-     informCompiler = pConfig->Read("INFORMCOMPILER", _T(""));
-     libraryPath="+include_path="+ 
-                pConfig->Read("LIBRARYPATH1", _T(""))+_T(",")+
-                pConfig->Read("LIBRARYPATH2", _T(""))+_T(",")+
-                pConfig->Read("LIBRARYPATH3", _T(""));                
-    bres = pConfig->Read("BRESPATH", _T(""));                
-    blc  = pConfig->Read("BLCPATH", _T(""));
-    bext = pConfig->Read("BLORBEXTENSION", _T(""));
+     informCompiler = pConfig->Read(_T("INFORMCOMPILER"), _T(""));
+     libraryPath=_T("+include_path=")+ 
+                pConfig->Read(_T("LIBRARYPATH1"), _T(""))+_T(",")+
+                pConfig->Read(_T("LIBRARYPATH2"), _T(""))+_T(",")+
+                pConfig->Read(_T("LIBRARYPATH3"), _T(""));                
+    bres = pConfig->Read(_T("BRESPATH"), _T(""));                
+    blc  = pConfig->Read(_T("BLCPATH"), _T(""));
+    bext = pConfig->Read(_T("BLORBEXTENSION"), _T(""));
     
     // TRANSLATION MESSAGES AND MENUES
     // carico le stringhe in lingua
-    language = pConfig->Read("LANGUAGE", _T(""));
-    
+    language = pConfig->Read(_T("LANGUAGE"), _T(""));
+
     // MENU_FILE    
-    MENU_FILE             = pConfig->Read(_T(language+"_"+"MENU_FILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_FILE"),_T("")):"File";
-    MENU_FILE_QUIT        = pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_QUIT"),_T("")):"Quit";
-    MENU_FILE_NEWFILE     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_NEWFILE"),_T("")):"New File";
-    MENU_FILE_OPENFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_OPENFILE"),_T("")):"Open File";
-    MENU_FILE_SAVEFILE    = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEFILE"),_T("")):"Save File";
-    MENU_FILE_SAVEALL     = pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_SAVEALL"),_T("")):"Save All";
-    MENU_FILE_NEXTTAB     = pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_NEXTTAB"),_T("")):"Next Tab";
-    MENU_FILE_PREVIOUSTAB = pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T("")) !=""?pConfig->Read(_T(language+"_"+"MENU_FILE_PREVIOUSTAB"),_T("")):"Previous Tab";
+    MENU_FILE             = pConfig->Read(language+_T("_")+_T("MENU_FILE"),_T(""))             !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE"),_T("")):_T("File");
+    MENU_FILE_QUIT        = pConfig->Read(language+_T("_")+_T("MENU_FILE_QUIT"),_T(""))        !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_QUIT"),_T("")):_T("Quit");
+    MENU_FILE_NEWFILE     = pConfig->Read(language+_T("_")+_T("MENU_FILE_NEWFILE"),_T(""))     !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_NEWFILE"),_T("")):_T("New File");
+    MENU_FILE_OPENFILE    = pConfig->Read(language+_T("_")+_T("MENU_FILE_OPENFILE"),_T(""))    !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_OPENFILE"),_T("")):_T("Open File");
+    MENU_FILE_SAVEFILE    = pConfig->Read(language+_T("_")+_T("MENU_FILE_SAVEFILE"),_T(""))    !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_SAVEFILE"),_T("")):_T("Save File");
+    MENU_FILE_SAVEALL     = pConfig->Read(language+_T("_")+_T("MENU_FILE_SAVEALL"),_T(""))     !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_SAVEALL"),_T("")):_T("Save All");
+    MENU_FILE_NEXTTAB     = pConfig->Read(language+_T("_")+_T("MENU_FILE_NEXTTAB"),_T(""))     !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_NEXTTAB"),_T("")):_T("Next Tab");
+    MENU_FILE_PREVIOUSTAB = pConfig->Read(language+_T("_")+_T("MENU_FILE_PREVIOUSTAB"),_T("")) !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_FILE_PREVIOUSTAB"),_T("")):_T("Previous Tab");
     
     // MENU EDIT
-    MENU_EDIT             = pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT"),_T("")):"Edit";
-    MENU_EDIT_COPY        = pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_COPY"),_T("")):"Copy";
-    MENU_EDIT_CUT         = pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T(""))         !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_CUT"),_T("")):"Cut";
-    MENU_EDIT_PASTE       = pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T(""))       !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_PASTE"),_T("")):"Paste";
-    MENU_EDIT_UNDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNDO"),_T("")):"Undo";
-    MENU_EDIT_REDO        = pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T(""))        !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_REDO"),_T("")):"Redo";
-    MENU_EDIT_INDENT      = pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T(""))      !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_INDENT"),_T("")):"Indent";
-    MENU_EDIT_UNINDENT    = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T(""))    !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNINDENT"),_T("")):"Unindent";
-    MENU_EDIT_COMMENT     = pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T(""))     !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_COMMENT"),_T("")):"Comment";
-    MENU_EDIT_UNCOMMENT   = pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T(""))   !=""?pConfig->Read(_T(language+"_"+"MENU_EDIT_UNCOMMENT"),_T("")):"Uncomment";
-    
+    MENU_EDIT             = pConfig->Read(language+_T("_")+_T("MENU_EDIT"),_T(""))             !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT"),_T("")):_T("Edit");
+    MENU_EDIT_COPY        = pConfig->Read(language+_T("_")+_T("MENU_EDIT_COPY"),_T(""))        !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_COPY"),_T("")):_T("Copy");
+    MENU_EDIT_CUT         = pConfig->Read(language+_T("_")+_T("MENU_EDIT_CUT"),_T(""))         !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_CUT"),_T("")):_T("Cut");
+    MENU_EDIT_PASTE       = pConfig->Read(language+_T("_")+_T("MENU_EDIT_PASTE"),_T(""))       !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_PASTE"),_T("")):_T("Paste");
+    MENU_EDIT_UNDO        = pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNDO"),_T(""))        !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNDO"),_T("")):_T("Undo");
+    MENU_EDIT_REDO        = pConfig->Read(language+_T("_")+_T("MENU_EDIT_REDO"),_T(""))        !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_REDO"),_T("")):_T("Redo");
+    MENU_EDIT_INDENT      = pConfig->Read(language+_T("_")+_T("MENU_EDIT_INDENT"),_T(""))      !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_INDENT"),_T("")):_T("Indent");
+    MENU_EDIT_UNINDENT    = pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNINDENT"),_T(""))    !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNINDENT"),_T("")):_T("Unindent");
+    MENU_EDIT_COMMENT     = pConfig->Read(language+_T("_")+_T("MENU_EDIT_COMMENT"),_T(""))     !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_COMMENT"),_T("")):_T("Comment");
+    MENU_EDIT_UNCOMMENT   = pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNCOMMENT"),_T(""))   !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_EDIT_UNCOMMENT"),_T("")):_T("Uncomment");
+
+
     // SEARCH MENU
-    MENU_SEARCH                     = pConfig->Read(_T(language+"_"+"MENU_SEARCH"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH"),_T("")):"Search";
-    MENU_SEARCH_FIND                = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND"),_T("")):"Find";
-    MENU_SEARCH_FIND_BACKWARDS      = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_BACKWARDS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_BACKWARDS"),_T("")):"Find Backwards";
-    MENU_SEARCH_FIND_REPLACE        = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_REPLACE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_REPLACE"),_T("")):"Find & Replace";
-    MENU_SEARCH_FIND_OBJECT         = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT"),_T("")):"Find Object";
-    MENU_SEARCH_FIND_OBJECT_IN_FILE = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T("")):"Find Object in File";
-    MENU_SEARCH_FIND_GOTO_LINE      = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_GOTO_LINE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_GOTO_LINE"),_T("")):"Goto Line";
-    MENU_SEARCH_FIND_NEXT_MARKER    = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_NEXT_MARKER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_NEXT_MARKER"),_T("")):"Next Marker";
-    MENU_SEARCH_FIND_TOGGLE_MARKER  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_TOGGLE_MARKER"),_T("")):"Toggle Marker";
-    MENU_SEARCH_FIND_RESET_MARKERS  = pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_SEARCH_FIND_RESET_MARKERS"),_T("")):"Reset Markers";
-    
+    MENU_SEARCH = pConfig->Read(language+_T("_")+_T("MENU_SEARCH"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH"),_T("")):_T("Search");
+    MENU_SEARCH_FIND = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND"),_T("")):_T("Find");
+    MENU_SEARCH_FIND_BACKWARDS = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_BACKWARDS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_BACKWARDS"),_T("")):_T("Find Backwards");
+    MENU_SEARCH_FIND_REPLACE = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_REPLACE"),_T("")) !=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_REPLACE"),_T("")):_T("Find & Replace");
+    MENU_SEARCH_FIND_OBJECT = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_OBJECT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_OBJECT"),_T("")):_T("Find Object");
+    MENU_SEARCH_FIND_OBJECT_IN_FILE = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_OBJECT_IN_FILE"),_T("")):_T("Find Object in File");
+
+    MENU_SEARCH_FIND_GOTO_LINE = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_GOTO_LINE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_GOTO_LINE"),_T("")):_T("Goto Line");
+    MENU_SEARCH_FIND_NEXT_MARKER = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_NEXT_MARKER"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_NEXT_MARKER"),_T("")):_T("Next Marker");
+    MENU_SEARCH_FIND_TOGGLE_MARKER = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_TOGGLE_MARKER"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_TOGGLE_MARKER"),_T("")):_T("Toggle Marker");
+    MENU_SEARCH_FIND_RESET_MARKERS = pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_RESET_MARKERS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_SEARCH_FIND_RESET_MARKERS"),_T("")):_T("Reset Markers");
+
     // PROJECT MENU
-    MENU_PROJECT                    = pConfig->Read(_T(language+"_"+"MENU_PROJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT"),_T("")):"Project";
-    MENU_PROJECT_OPEN               = pConfig->Read(_T(language+"_"+"MENU_PROJECT_OPEN"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_OPEN"),_T("")):"Open Project"; 
-    MENU_PROJECT_SAVE               = pConfig->Read(_T(language+"_"+"MENU_PROJECT_SAVE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_SAVE"),_T("")):"Save Project"; 
-    MENU_PROJECT_CLOSE              = pConfig->Read(_T(language+"_"+"MENU_PROJECT_CLOSE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_PROJECT_CLOSE"),_T("")):"Close Project";
-    
+    MENU_PROJECT = pConfig->Read(language+_T("_")+_T("MENU_PROJECT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT"),_T("")):_T("Project");
+    MENU_PROJECT_OPEN = pConfig->Read(language+_T("_")+_T("MENU_PROJECT_OPEN"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT_OPEN"),_T("")):_T("Open Project"); 
+    MENU_PROJECT_SAVE = pConfig->Read(language+_T("_")+_T("MENU_PROJECT_SAVE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT_SAVE"),_T("")):_T("Save Project"); 
+    MENU_PROJECT_CLOSE = pConfig->Read(language+_T("_")+_T("MENU_PROJECT_CLOSE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT_CLOSE"),_T("")):_T("Close Project");
+
     // ZCODE MENU
-    MENU_ZCODE                      = pConfig->Read(_T(language+"_"+"MENU_ZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE"),_T("")):"Zcode";               
-    MENU_ZCODE_COMPILEZCODE         = pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE"),_T("")):"Compile Zcode";  
-    MENU_ZCODE_RUNZCODE             = pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE"),_T("")):"Run Zcode";      
-    MENU_ZCODE_ZCODE5               = pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE5"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE5"),_T("")):"ZCode version 5";        
-    MENU_ZCODE_ZCODE8               = pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE8"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_ZCODE8"),_T("")):"ZCode version 8";        
-    MENU_ZCODE_COMPILEZCODE_BLORB   = pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE_BLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_COMPILEZCODE_BLORB"),_T("")):"Create Zcode blorb";
-    MENU_ZCODE_RUNZCODE_BLORB       = pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE_BLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_ZCODE_RUNZCODE_BLORB"),_T("")):"Run Zcode blorb";
+    MENU_ZCODE = pConfig->Read(language+_T("_")+_T("MENU_ZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE"),_T("")):_T("Zcode");               
+    MENU_ZCODE_COMPILEZCODE = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE"),_T("")):_T("Compile Zcode");  
+    MENU_ZCODE_RUNZCODE = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_RUNZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_RUNZCODE"),_T("")):_T("Run Zcode");      
+    MENU_ZCODE_ZCODE5 = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_ZCODE5"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_ZCODE5"),_T("")):_T("ZCode version 5");        
+    MENU_ZCODE_ZCODE8 = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_ZCODE8"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_ZCODE8"),_T("")):_T("ZCode version 8");        
+    MENU_ZCODE_COMPILEZCODE_BLORB = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE_BLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE_BLORB"),_T("")):_T("Create Zcode blorb");
+    MENU_ZCODE_RUNZCODE_BLORB = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_RUNZCODE_BLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_RUNZCODE_BLORB"),_T("")):_T("Run Zcode blorb");
 
     // GLULX MENU
-    MENU_GLULX                      = pConfig->Read(_T(language+"_"+"MENU_GLULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX"),_T("")):"Glulx";
-    MENU_GLULX_COMPILEULX           = pConfig->Read(_T(language+"_"+"MENU_GLULX_COMPILEULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_COMPILEULX"),_T("")):"Compile Ulx";
-    MENU_GLULX_RUNULX               = pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNULX"),_T("")):"Run Ulx";
-    MENU_GLULX_CREATERESOURCES      = pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATERESOURCES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATERESOURCES"),_T("")):"Create Resources";
-    MENU_GLULX_CREATEBLORBFILE      = pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_CREATEBLORBFILE"),_T("")):"Create Blorb File";
-    MENU_GLULX_BUILDALLBLORBFILE    = pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_BUILDALLBLORBFILE"),_T("")):"Build all Blorb file";
-    MENU_GLULX_RUNBLORB             = pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_GLULX_RUNBLORB"),_T("")):"Run Blorb";
-                         
+    MENU_GLULX = pConfig->Read(language+_T("_")+_T("MENU_GLULX"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX"),_T("")):_T("Glulx");
+    MENU_GLULX_COMPILEULX = pConfig->Read(language+_T("_")+_T("MENU_GLULX_COMPILEULX"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_COMPILEULX"),_T("")):_T("Compile Ulx");
+    MENU_GLULX_RUNULX = pConfig->Read(language+_T("_")+_T("MENU_GLULX_RUNULX"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_RUNULX"),_T("")):_T("Run Ulx");
+    MENU_GLULX_CREATERESOURCES = pConfig->Read(language+_T("_")+_T("MENU_GLULX_CREATERESOURCES"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_CREATERESOURCES"),_T("")):_T("Create Resources");
+    MENU_GLULX_CREATEBLORBFILE = pConfig->Read(language+_T("_")+_T("MENU_GLULX_CREATEBLORBFILE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_CREATEBLORBFILE"),_T("")):_T("Create Blorb File");
+    MENU_GLULX_BUILDALLBLORBFILE = pConfig->Read(language+_T("_")+_T("MENU_GLULX_BUILDALLBLORBFILE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_BUILDALLBLORBFILE"),_T("")):_T("Build all Blorb file");
+    MENU_GLULX_RUNBLORB = pConfig->Read(language+_T("_")+_T("MENU_GLULX_RUNBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_GLULX_RUNBLORB"),_T("")):_T("Run Blorb");
+                 
     // Object Tree Menu
-    MENU_OBJECTTREE                 = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE"),_T("")):"Object Tree";
-    MENU_OBJECTTREE_REFRESHTREE     = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_REFRESHTREE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_REFRESHTREE"),_T("")):"Refresh tree";
-    MENU_OBJECTTREE_EXPAND_NODES    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_EXPAND_NODES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_EXPAND_NODES"),_T("")):"Expand always all nodes";
-    MENU_OBJECTTREE_SHOW_OBJECTS    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_OBJECTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_OBJECTS"),_T("")):"Show Objects";
-    MENU_OBJECTTREE_SHOW_PROJECT_DEFS= pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T("")):"Show Project Defs";        
-    MENU_OBJECTTREE_SHOW_GLOBALS    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_GLOBALS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_GLOBALS"),_T("")):"Show Globals";
-    MENU_OBJECTTREE_SHOW_CONSTANTS  = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CONSTANTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CONSTANTS"),_T("")):"Show Constants";
-    MENU_OBJECTTREE_SHOW_FUNCTIONS  = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T("")):"Show Functions";
-    MENU_OBJECTTREE_SHOW_CLASSES    = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CLASSES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_CLASSES"),_T("")):"Show Classes";             
-    MENU_OBJECTTREE_SHOW_INCLUDES   = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_INCLUDES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_INCLUDES"),_T("")):"Show Includes";
-    MENU_OBJECTTREE_SHOW_VERBS      = pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_VERBS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OBJECTTREE_SHOW_VERBS"),_T("")):"Show Verbs";
+    MENU_OBJECTTREE = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE"),_T("")):_T("Object Tree");
+    MENU_OBJECTTREE_REFRESHTREE = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_REFRESHTREE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_REFRESHTREE"),_T("")):_T("Refresh tree");
+    MENU_OBJECTTREE_EXPAND_NODES = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_EXPAND_NODES"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_EXPAND_NODES"),_T("")):_T("Expand always all nodes");
+    MENU_OBJECTTREE_SHOW_OBJECTS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_OBJECTS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_OBJECTS"),_T("")):_T("Show Objects");
+    MENU_OBJECTTREE_SHOW_PROJECT_DEFS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_PROJECT_DEFS"),_T("")):_T("Show Project Defs");        
+    MENU_OBJECTTREE_SHOW_GLOBALS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_GLOBALS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_GLOBALS"),_T("")):_T("Show Globals");
+    MENU_OBJECTTREE_SHOW_CONSTANTS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_CONSTANTS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_CONSTANTS"),_T("")):_T("Show Constants");
+    MENU_OBJECTTREE_SHOW_FUNCTIONS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_FUNCTIONS"),_T("")):_T("Show Functions");
+    MENU_OBJECTTREE_SHOW_CLASSES = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_CLASSES"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_CLASSES"),_T("")):_T("Show Classes");             
+    MENU_OBJECTTREE_SHOW_INCLUDES = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_INCLUDES"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_INCLUDES"),_T("")):_T("Show Includes");
+    MENU_OBJECTTREE_SHOW_VERBS = pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_VERBS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OBJECTTREE_SHOW_VERBS"),_T("")):_T("Show Verbs");
 
     // Options Menu                      
-    MENU_OPTIONS                    = pConfig->Read(_T(language+"_"+"MENU_OPTIONS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS"),_T("")):"Options";
-    MENU_OPTIONS_SHOWLINENUMBER     = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_SHOWLINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_SHOWLINENUMBER"),_T("")):"Show line numbers";
-    MENU_OPTIONS_WRAPMODE           = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_WRAPMODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_WRAPMODE"),_T("")):"Wrap Mode";
-    MENU_OPTIONS_AUTOCOMPLETE       = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_AUTOCOMPLETE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_AUTOCOMPLETE"),_T("")):"Autocomplete";
-    MENU_OPTIONS_HOTKEYSREPLACING   = pConfig->Read(_T(language+"_"+"MENU_OPTIONS_HOTKEYSREPLACING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_OPTIONS_HOTKEYSREPLACING"),_T("")):"Hotkeys replacing";
-                      
+    MENU_OPTIONS = pConfig->Read(language+_T("_")+_T("MENU_OPTIONS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OPTIONS"),_T("")):_T("Options");
+    MENU_OPTIONS_SHOWLINENUMBER = pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_SHOWLINENUMBER"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_SHOWLINENUMBER"),_T("")):_T("Show line numbers");
+    MENU_OPTIONS_WRAPMODE = pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_WRAPMODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_WRAPMODE"),_T("")):_T("Wrap Mode");
+    MENU_OPTIONS_AUTOCOMPLETE = pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_AUTOCOMPLETE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_AUTOCOMPLETE"),_T("")):_T("Autocomplete");
+    MENU_OPTIONS_HOTKEYSREPLACING = pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_HOTKEYSREPLACING"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_OPTIONS_HOTKEYSREPLACING"),_T("")):_T("Hotkeys replacing");
+        
     // Documents Menu
-    MENU_DOCUMENTS                  = pConfig->Read(_T(language+"_"+"MENU_DOCUMENTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_DOCUMENTS"),_T("")):"Documents";
+    MENU_DOCUMENTS = pConfig->Read(language+_T("_")+_T("MENU_DOCUMENTS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_DOCUMENTS"),_T("")):_T("Documents");
 
     // Help Menu    
-    MENU_HELP                       = pConfig->Read(_T(language+"_"+"MENU_HELP"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP"),_T("")):"Help";    
-    MENU_HELP_LICENSE               = pConfig->Read(_T(language+"_"+"MENU_HELP_LICENSE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP_LICENSE"),_T("")):"License";
-    MENU_HELP_ABOUT                 = pConfig->Read(_T(language+"_"+"MENU_HELP_ABOUT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MENU_HELP_ABOUT"),_T("")):"About Wide";
-                   
+    MENU_HELP = pConfig->Read(language+_T("_")+_T("MENU_HELP"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_HELP"),_T("")):_T("Help");    
+    MENU_HELP_LICENSE = pConfig->Read(language+_T("_")+_T("MENU_HELP_LICENSE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_HELP_LICENSE"),_T("")):_T("License");
+    MENU_HELP_ABOUT = pConfig->Read(language+_T("_")+_T("MENU_HELP_ABOUT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_HELP_ABOUT"),_T("")):_T("About Wide");
                    
     // GENERIC MESSAGES AND ERRORS
-    MESSAGES_READY                  = pConfig->Read(_T(language+"_"+"MESSAGES_READY"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_READY"),_T("")):"Ready";    
-    MESSAGES_OUTPUTWINDOW           = pConfig->Read(_T(language+"_"+"MESSAGES_OUTPUTWINDOW"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_OUTPUTWINDOW"),_T("")):"Output Window";    
-    MESSAGES_SEARCH_ENTERSTRING     = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_ENTERSTRING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_ENTERSTRING"),_T("")):"Enter a string to find:";    
-    MESSAGES_SEARCH_SEARCHSTRING    = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_SEARCHSTRING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCH_SEARCHSTRING"),_T("")):"Search String";    
-    MESSAGES_MESSAGE                = pConfig->Read(_T(language+"_"+"MESSAGES_MESSAGE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_MESSAGE"),_T("")):"Message";    
-    MESSAGES_SEARCHOBJECT           = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT"),_T("")):"Search Object";    
-    MESSAGES_SEARCHOBJECTFILES      = pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECTFILES"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECTFILES"),_T("")):"Search Object in files";    
-    MESSAGES_SEARCHOBJECT_ENTEROBJECT= pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T("")):"Enter an object to find:";    
-    MESSAGES_LINENUMBER             = pConfig->Read(_T(language+"_"+"MESSAGES_LINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_LINENUMBER"),_T("")):"Line number:";    
-    MESSAGES_GOTOLINENUMBER         = pConfig->Read(_T(language+"_"+"MESSAGES_GOTOLINENUMBER"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_GOTOLINENUMBER"),_T("")):"Goto Line number";    
-    MESSAGES_FILESAVED              = pConfig->Read(_T(language+"_"+"MESSAGES_FILESAVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_FILESAVED"),_T("")):"File saved";    
-    MESSAGES_TEXTNOTSAVED           = pConfig->Read(_T(language+"_"+"MESSAGES_TEXTNOTSAVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_TEXTNOTSAVED"),_T("")):"Text is not saved, save before closing?";    
-    MESSAGES_FILEOPENED             = pConfig->Read(_T(language+"_"+"MESSAGES_FILEOPENED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_FILEOPENED"),_T("")):"File is already opened";    
-    MESSAGES_WARNING                = pConfig->Read(_T(language+"_"+"MESSAGES_WARNING"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_WARNING"),_T("")):"Warning";    
-    MESSAGES_REMOVEMAINFILE         = pConfig->Read(_T(language+"_"+"MESSAGES_REMOVEMAINFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_REMOVEMAINFILE"),_T("")):"Remove Main File";    
-    MESSAGES_MAINFILEREMOVED        = pConfig->Read(_T(language+"_"+"MESSAGES_MAINFILEREMOVED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_MAINFILEREMOVED"),_T("")):"Main file, classes and keywords removed";    
-    MESSAGES_NOPROJECTOPENED        = pConfig->Read(_T(language+"_"+"MESSAGES_NOPROJECTOPENED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_NOPROJECTOPENED"),_T("")):"No Project opened";    
-    MESSAGES_COMPILEULX             = pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEULX"),_T("")):"Compiling in ULX format...";    
-    MESSAGES_COMPILEZCODE           = pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_COMPILEZCODE"),_T("")):"Compiling Z-Code...";    
-    MESSAGES_CREATINGBLORB          = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGBLORB"),_T("")):"Creating blorb file...";    
-    MESSAGES_CREATINGRESOURCEZBLORB = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEZBLORB"),_T("")):"Creating Resources for z-blorb file...";    
-    MESSAGES_CREATINGZBLORB         = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGZBLORB"),_T("")):"Creating z-blorb file...";    
-    MESSAGES_CREATINGRESOURCEBLORB  = pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_CREATINGRESOURCEBLORB"),_T("")):"Creating Resources for blorb file...";    
-    MESSAGES_RUNZBLORB              = pConfig->Read(_T(language+"_"+"MESSAGES_RUNZBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNZBLORB"),_T("")):"Running z-blorb...";    
-    MESSAGES_RUNZCODE               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNZCODE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNZCODE"),_T("")):"Running zcode...";    
-    MESSAGES_RUNBLORB               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNBLORB"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNBLORB"),_T("")):"Running blorb...";    
-    MESSAGES_RUNGLULX               = pConfig->Read(_T(language+"_"+"MESSAGES_RUNGLULX"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_RUNGLULX"),_T("")):"Running glulx...";    
-    MESSAGES_SAVINGALL              = pConfig->Read(_T(language+"_"+"MESSAGES_SAVINGALL"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_SAVINGALL"),_T("")):"Saving all...";    
-    MESSAGES_USINGMAINFILE          = pConfig->Read(_T(language+"_"+"MESSAGES_USINGMAINFILE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"MESSAGES_USINGMAINFILE"),_T("")):"Using MainFile:";    
-    ERRORS_ERROR                    = pConfig->Read(_T(language+"_"+"ERRORS_ERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_ERROR"),_T("")):"Error";    
-    ERRORS_RE                       = pConfig->Read(_T(language+"_"+"ERRORS_RE"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_RE"),_T("")):"Errors in Regular Expression";    
-    ERRORS_FILEEXISTS               = pConfig->Read(_T(language+"_"+"ERRORS_FILEEXISTS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_FILEEXISTS"),_T("")):"The file already exists";    
-    ERRORS_FILEACCESSERROR          = pConfig->Read(_T(language+"_"+"ERRORS_FILEACCESSERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_FILEACCESSERROR"),_T("")):"File access Error";    
-    ERRORS_NOTIMPLEMENTED           = pConfig->Read(_T(language+"_"+"ERRORS_NOTIMPLEMENTED"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_NOTIMPLEMENTED"),_T("")):"Not yet implemented";    
-    ERRORS_NOMARKERS                = pConfig->Read(_T(language+"_"+"ERRORS_NOMARKERS"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_NOMARKERS"),_T("")):"No Markers found";    
-    ERRORS_SAVEERROR                = pConfig->Read(_T(language+"_"+"ERRORS_SAVEERROR"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_SAVEERROR"),_T("")):"Text could not be saved!";    
-    ERRORS_CLOSEABORT               = pConfig->Read(_T(language+"_"+"ERRORS_CLOSEABORT"),_T(""))             !=""?pConfig->Read(_T(language+"_"+"ERRORS_CLOSEABORT"),_T("")):"Close abort";    
-                                
+    MESSAGES_READY = pConfig->Read(language+_T("_")+_T("MESSAGES_READY"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_READY"),_T("")):_T("Ready");    
+    MESSAGES_OUTPUTWINDOW = pConfig->Read(language+_T("_")+_T("MESSAGES_OUTPUTWINDOW"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_OUTPUTWINDOW"),_T("")):_T("Output Window");    
+    MESSAGES_SEARCH_ENTERSTRING = pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCH_ENTERSTRING"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCH_ENTERSTRING"),_T("")):_T("Enter a string to find:");    
+    MESSAGES_SEARCH_SEARCHSTRING = pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCH_SEARCHSTRING"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCH_SEARCHSTRING"),_T("")):_T("Search String");    
+    MESSAGES_MESSAGE = pConfig->Read(language+_T("_")+_T("MESSAGES_MESSAGE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_MESSAGE"),_T("")):_T("Message");    
+    MESSAGES_SEARCHOBJECT = pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECT"),_T("")):_T("Search Object");    
+    MESSAGES_SEARCHOBJECTFILES = pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECTFILES"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECTFILES"),_T("")):_T("Search Object in files");    
+    MESSAGES_SEARCHOBJECT_ENTEROBJECT= pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SEARCHOBJECT_ENTEROBJECT"),_T("")):_T("Enter an object to find:");    
+    MESSAGES_LINENUMBER = pConfig->Read(language+_T("_")+_T("MESSAGES_LINENUMBER"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_LINENUMBER"),_T("")):_T("Line number:");    
+    MESSAGES_GOTOLINENUMBER = pConfig->Read(language+_T("_")+_T("MESSAGES_GOTOLINENUMBER"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_GOTOLINENUMBER"),_T("")):_T("Goto Line number");    
+    MESSAGES_FILESAVED = pConfig->Read(language+_T("_")+_T("MESSAGES_FILESAVED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_FILESAVED"),_T("")):_T("File saved");    
+    MESSAGES_TEXTNOTSAVED = pConfig->Read(language+_T("_")+_T("MESSAGES_TEXTNOTSAVED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_TEXTNOTSAVED"),_T("")):_T("Text is not saved, save before closing?");    
+    MESSAGES_FILEOPENED = pConfig->Read(language+_T("_")+_T("MESSAGES_FILEOPENED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_FILEOPENED"),_T("")):_T("File is already opened");    
+    MESSAGES_WARNING = pConfig->Read(language+_T("_")+_T("MESSAGES_WARNING"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_WARNING"),_T("")):_T("Warning");    
+    MESSAGES_REMOVEMAINFILE = pConfig->Read(language+_T("_")+_T("MESSAGES_REMOVEMAINFILE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_REMOVEMAINFILE"),_T("")):_T("Remove Main File");    
+    MESSAGES_MAINFILEREMOVED = pConfig->Read(language+_T("_")+_T("MESSAGES_MAINFILEREMOVED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_MAINFILEREMOVED"),_T("")):_T("Main file, classes and keywords removed");    
+    MESSAGES_NOPROJECTOPENED = pConfig->Read(language+_T("_")+_T("MESSAGES_NOPROJECTOPENED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_NOPROJECTOPENED"),_T("")):_T("No Project opened");    
+    MESSAGES_COMPILEULX = pConfig->Read(language+_T("_")+_T("MESSAGES_COMPILEULX"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_COMPILEULX"),_T("")):_T("Compiling in ULX format...");    
+    MESSAGES_COMPILEZCODE = pConfig->Read(language+_T("_")+_T("MESSAGES_COMPILEZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_COMPILEZCODE"),_T("")):_T("Compiling Z-Code...");    
+    MESSAGES_CREATINGBLORB = pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGBLORB"),_T("")):_T("Creating blorb file...");    
+    MESSAGES_CREATINGRESOURCEZBLORB = pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGRESOURCEZBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGRESOURCEZBLORB"),_T("")):_T("Creating Resources for z-blorb file...");    
+    MESSAGES_CREATINGZBLORB = pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGZBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGZBLORB"),_T("")):_T("Creating z-blorb file...");    
+    MESSAGES_CREATINGRESOURCEBLORB  = pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGRESOURCEBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_CREATINGRESOURCEBLORB"),_T("")):_T("Creating Resources for blorb file...");    
+    MESSAGES_RUNZBLORB = pConfig->Read(language+_T("_")+_T("MESSAGES_RUNZBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_RUNZBLORB"),_T("")):_T("Running z-blorb...");    
+    MESSAGES_RUNZCODE = pConfig->Read(language+_T("_")+_T("MESSAGES_RUNZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_RUNZCODE"),_T("")):_T("Running zcode...");    
+    MESSAGES_RUNBLORB = pConfig->Read(language+_T("_")+_T("MESSAGES_RUNBLORB"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_RUNBLORB"),_T("")):_T("Running blorb...");    
+    MESSAGES_RUNGLULX = pConfig->Read(language+_T("_")+_T("MESSAGES_RUNGLULX"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_RUNGLULX"),_T("")):_T("Running glulx...");    
+    MESSAGES_SAVINGALL = pConfig->Read(language+_T("_")+_T("MESSAGES_SAVINGALL"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_SAVINGALL"),_T("")):_T("Saving all...");    
+    MESSAGES_USINGMAINFILE = pConfig->Read(language+_T("_")+_T("MESSAGES_USINGMAINFILE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MESSAGES_USINGMAINFILE"),_T("")):_T("Using MainFile:");    
+    ERRORS_ERROR = pConfig->Read(language+_T("_")+_T("ERRORS_ERROR"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_ERROR"),_T("")):_T("Error");    
+    ERRORS_RE = pConfig->Read(language+_T("_")+_T("ERRORS_RE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_RE"),_T("")):_T("Errors in Regular Expression");    
+    ERRORS_FILEEXISTS = pConfig->Read(language+_T("_")+_T("ERRORS_FILEEXISTS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_FILEEXISTS"),_T("")):_T("The file already exists");    
+    ERRORS_FILEACCESSERROR = pConfig->Read(language+_T("_")+_T("ERRORS_FILEACCESSERROR"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_FILEACCESSERROR"),_T("")):_T("File access Error");    
+    ERRORS_NOTIMPLEMENTED = pConfig->Read(language+_T("_")+_T("ERRORS_NOTIMPLEMENTED"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_NOTIMPLEMENTED"),_T("")):_T("Not yet implemented");    
+    ERRORS_NOMARKERS = pConfig->Read(language+_T("_")+_T("ERRORS_NOMARKERS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_NOMARKERS"),_T("")):_T("No Markers found");    
+    ERRORS_SAVEERROR = pConfig->Read(language+_T("_")+_T("ERRORS_SAVEERROR"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_SAVEERROR"),_T("")):_T("Text could not be saved!");    
+    ERRORS_CLOSEABORT = pConfig->Read(language+_T("_")+_T("ERRORS_CLOSEABORT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_CLOSEABORT"),_T("")):_T("Close abort");    
+              
 }   
     
     
@@ -1164,7 +1165,7 @@ void MyFrame::OnSaveFile (wxCommandEvent &evt) {
     }
     
     // Aggiorno la status bar
-    GetStatusBar()->SetStatusText(_(MESSAGES_FILESAVED));
+    GetStatusBar()->SetStatusText(MESSAGES_FILESAVED);
     
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
@@ -1178,14 +1179,14 @@ void MyFrame::OnSaveAll (wxCommandEvent &evt) {     //PL
         if (e) {
             if (e->Modified()) e->SaveFile();
             if (e->Modified()) {
-                wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
+                wxMessageBox (ERRORS_SAVEERROR, ERRORS_CLOSEABORT,
                  wxOK | wxICON_EXCLAMATION);
                 continue;
             }
         }
     }
     // Aggiorno la status bar
-    GetStatusBar()->SetStatusText(_(MESSAGES_FILESAVED));
+    GetStatusBar()->SetStatusText(MESSAGES_FILESAVED);
 
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
@@ -1208,11 +1209,9 @@ void MyFrame::OnPreviousPage(wxCommandEvent &evt) {
 }
 
 
-
-
 // Impostazioni Object Tree
 void MyFrame::OnRefreshTree(wxCommandEvent &event){
-    OnUpdateTree(); 
+    OnUpdateTree();     
 }
 
 
@@ -1242,27 +1241,27 @@ void MyFrame::OnViewDoc(wxCommandEvent &event){
     wxString comando;
     switch (id)
     {
-        case ID_Doc1: documento = pConfig->Read("PDF1_PATH", _T("")); break;
-        case ID_Doc2: documento = pConfig->Read("PDF2_PATH", _T("")); break;
-        case ID_Doc3: documento = pConfig->Read("PDF3_PATH", _T("")); break;
-        case ID_Doc4: documento = pConfig->Read("PDF4_PATH", _T("")); break;
-        case ID_Doc5: documento = pConfig->Read("PDF5_PATH", _T("")); break;
-        case ID_Doc6: documento = pConfig->Read("PDF6_PATH", _T("")); break;
-        case ID_Doc7: documento = pConfig->Read("PDF7_PATH", _T("")); break;
-        case ID_Doc8: documento = pConfig->Read("PDF8_PATH", _T("")); break;
+        case ID_Doc1: documento = pConfig->Read(_T("PDF1_PATH"), _T("")); break;
+        case ID_Doc2: documento = pConfig->Read(_T("PDF2_PATH"), _T("")); break;
+        case ID_Doc3: documento = pConfig->Read(_T("PDF3_PATH"), _T("")); break;
+        case ID_Doc4: documento = pConfig->Read(_T("PDF4_PATH"), _T("")); break;
+        case ID_Doc5: documento = pConfig->Read(_T("PDF5_PATH"), _T("")); break;
+        case ID_Doc6: documento = pConfig->Read(_T("PDF6_PATH"), _T("")); break;
+        case ID_Doc7: documento = pConfig->Read(_T("PDF7_PATH"), _T("")); break;
+        case ID_Doc8: documento = pConfig->Read(_T("PDF8_PATH"), _T("")); break;
     }
     
     // Visualizzo il pdf o word   
     //wxString comando = pConfig->Read("PDFREADER", _T(""))+" \""+documento+"\"";
-    wxString pdfreader = pConfig->Read("PDFREADER", _T(""));
-    if (pdfreader == "") {
-        comando = "start \"\" \"" + documento + "\"";
-        comando.Replace("/","\\",true);
-        wxShell(_T(comando));
+    wxString pdfreader = pConfig->Read(_T("PDFREADER"), _T(""));
+    if (pdfreader == _T("")) {
+        comando = _T("start \"\" \"") + documento + _T("\"");
+        comando.Replace(_T("/"),_T("\\"),true);
+        wxShell(comando);
     }
     else {
-        comando = "\"" + pdfreader + "\" \"" + documento + "\"";
-        wxExecute(_T(comando));
+        comando = _T("\"") + pdfreader + _T("\" \"") + documento + _T("\"");
+        wxExecute(comando);
     }
 }
 
@@ -1274,12 +1273,12 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
     switch (id)
     {
         case ID_ZcodeVersion5: 
-            zcodeversion=".z5"; 
-            zcodeswitch="-v5";
+            zcodeversion=_T(".z5"); 
+            zcodeswitch=_T("-v5");
             break;
         case ID_ZcodeVersion8: 
-            zcodeversion=".z8"; 
-            zcodeswitch="-v8";            
+            zcodeversion=_T(".z8"); 
+            zcodeswitch=_T("-v8");            
             break;
     }
 }
@@ -1287,15 +1286,15 @@ void MyFrame::OnZcodeVersion(wxCommandEvent &event){
 void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     if (event.GetId() != ID_MakeAllBlb) OnClear();
-    OnOutput(MESSAGES_CREATINGBLORB+"\n");
+    OnOutput(MESSAGES_CREATINGBLORB+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString blcFile, blbFile;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         blcFile = e->GetFilename();
         blbFile = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         blcFile = mainFile;
         blbFile = mainFile;
     }
@@ -1304,36 +1303,36 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
     wxSetWorkingDirectory(wpath);
 
 
-    blcFile.Replace(".inf", ".blc", true);
-    blbFile.Replace(".inf", "."+bext, true);
-    wxString comando =  "\""+blc +"\""+" "+"\""+blcFile+"\""+" "+"\""+blbFile+"\"";
+    blcFile.Replace(_T(".inf"), _T(".blc"), true);
+    blbFile.Replace(_T(".inf"), _T(".")+bext, true);
+    wxString comando =  _T("\"")+blc +_T("\"")+_T(" ")+_T("\"")+blcFile+_T("\"")+_T(" ")+_T("\"")+blbFile+_T("\"");
 
     //wxString comando =  blc +" "+blcFile+" "+blbFile;    
     wxArrayString output;
-    if ( wxExecute(_T(comando), output) != 0 )
+    if ( wxExecute(comando, output) != 0 )
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput(ERRORS_ERROR+".\n");
+        OnOutput(ERRORS_ERROR+_T(".\n"));
         inform_error = true;
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }    
     wxSetWorkingDirectory(mpath);
@@ -1342,44 +1341,44 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     if (event.GetId() != ID_MakeAllBlb) OnClear();
-    OnOutput(MESSAGES_CREATINGRESOURCEBLORB+"\n");
+    OnOutput(MESSAGES_CREATINGRESOURCEBLORB+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString bresFile;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         bresFile = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         bresFile = mainFile;
     }
-    bresFile.Replace(".inf", "", true);
-    wxString comando =  "\""+bres +"\""+" "+"\""+bresFile+"\"";
+    bresFile.Replace(_T(".inf"), _T(""), true);
+    wxString comando =  _T("\"")+bres +_T("\"")+_T(" ")+_T("\"")+bresFile+_T("\"");
     wxArrayString output;
-    if ( wxExecute(_T(comando), output) != 0 )
+    if ( wxExecute(comando, output) != 0 )
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
 
-        OnOutput(ERRORS_ERROR+".\n");
+        OnOutput(ERRORS_ERROR+_T(".\n"));
         inform_error = true;
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }
 }
@@ -1401,23 +1400,23 @@ void MyFrame::OnMakeAllBlb (wxCommandEvent &event) {
 void MyFrame::OnRunBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput(MESSAGES_RUNBLORB+"\n");
+    OnOutput(MESSAGES_RUNBLORB+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     
     // Running the MAIN FILE
     wxString nome;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         nome = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         nome = mainFile;
     }
-    nome.Replace(".inf", "."+bext, true);
-    wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    OnOutput(comando+"\n");
+    nome.Replace(_T(".inf"), _T(".")+bext, true);
+    wxString comando =  pConfig->Read(_T("GLULXINTERPRETER"), _T("")) +_T(" ")+_T("\"")+nome+_T("\"");
+    OnOutput(comando+_T("\n"));
     wxArrayString output;
-    wxExecute(_T(comando));
+    wxExecute(comando);
 }
 
 // Run Ulx
@@ -1425,23 +1424,23 @@ void MyFrame::OnRunBlb (wxCommandEvent &event) {
 void MyFrame::OnRunUlx (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput(MESSAGES_RUNGLULX+"\n");
+    OnOutput(MESSAGES_RUNGLULX+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
     wxString nome;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         nome = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         nome = mainFile;
     }        
-    nome.Replace(".inf", ".ulx", true);
-    wxString comando =  pConfig->Read("GLULXINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    OnOutput(comando+"\n");
+    nome.Replace(_T(".inf"), _T(".ulx"), true);
+    wxString comando =  pConfig->Read(_T("GLULXINTERPRETER"), _T("")) +_T(" ")+_T("\"")+nome+_T("\"");
+    OnOutput(comando+_T("\n"));
     wxArrayString output;
-    wxExecute(_T(comando));
+    wxExecute(comando);
 }
 
 // Compile ULX file
@@ -1458,57 +1457,57 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
     OnClear();
     
     // PL: Salvo tutto
-    OnOutput(MESSAGES_SAVINGALL+"\n");
+    OnOutput(MESSAGES_SAVINGALL+_T("\n"));
     //wxCommandEvent subev;
     OnSaveAll(event);
     
-    OnOutput(MESSAGES_COMPILEULX+"\n");
+    OnOutput(MESSAGES_COMPILEULX+_T("\n"));
     wxArrayString output;
 
     // Recupero il nome del file da compilare
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome,ulx;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         nome = e->GetFilename();
         ulx = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         nome = mainFile;
         ulx = mainFile;
     }
-    ulx.Replace(".inf", ".ulx", true);
-    wxString comando =  informCompiler +" -G "+libraryPath+" \""+nome+"\" "+"\""+ulx+"\"";
+    ulx.Replace(_T(".inf"), _T(".ulx"), true);
+    wxString comando =  informCompiler +_T(" -G ")+libraryPath+_T(" \"")+nome+_T("\" ")+_T("\"")+ulx+_T("\"");
 
     //if ( wxExecute(_T("./inform.exe twocol.inf"), output) != 0 )
-    if ( wxExecute(_T(comando), output) != 0 )
+    if ( wxExecute(comando, output) != 0 )
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             //wxPrintf(_T("\t%s\n"), output[n].c_str());
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
 
-        OnOutput(ERRORS_ERROR+".\n");
+        OnOutput(ERRORS_ERROR+_T(".\n"));
         inform_error = true;
 
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             //wxPrintf(_T("\t%s\n"), output[n].c_str());
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }
 }
@@ -1517,44 +1516,44 @@ void MyFrame::OnCompileUlx (wxCommandEvent &event) {
 void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput(MESSAGES_CREATINGRESOURCEZBLORB+"\n");
+    OnOutput(MESSAGES_CREATINGRESOURCEZBLORB+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString idFile;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         idFile = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         idFile = mainFile;
     }
-    idFile.Replace(".inf", "", true);
-    wxString comando =  "\""+bres +"\" \""+idFile+".zres\" \""+idFile+".zblc\" 2del.bli";
+    idFile.Replace(_T(".inf"), _T(""), true);
+    wxString comando =  _T("\"")+bres +_T("\" \"")+idFile+_T(".zres\" \"")+idFile+_T(".zblc\" 2del.bli");
     wxArrayString output;
-    if ( wxExecute(_T(comando), output) != 0 )
+    if ( wxExecute(comando, output) != 0 )
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
 
-        OnOutput(ERRORS_ERROR+".\n");
+        OnOutput(ERRORS_ERROR+_T(".\n"));
         inform_error = true;
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }
     if (inform_error) return;        
@@ -1562,39 +1561,39 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
     OnCompile(event);
     if (inform_error) return;    
 
-    OnOutput(MESSAGES_CREATINGZBLORB+"\n");
+    OnOutput(MESSAGES_CREATINGZBLORB+_T("\n"));
 
     wxString wpath=wxPathOnly(idFile);
     wxString mpath = wxGetCwd();
     wxSetWorkingDirectory(wpath);
 
-    comando =  "\""+blc +"\" \""+idFile+".zblc\" \""+idFile+".zblorb\"";
+    comando =  _T("\"")+blc +_T("\" \"")+idFile+_T(".zblc\" \"")+idFile+_T(".zblorb\"");
 
     //wxString comando =  blc +" "+blcFile+" "+blbFile;
-    if ( wxExecute(_T(comando), output) != 0 )
+    if ( wxExecute(comando, output) != 0 )
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput(ERRORS_ERROR+"\n");
+        OnOutput(ERRORS_ERROR+_T("\n"));
         inform_error = true;
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }
     wxSetWorkingDirectory(mpath);
@@ -1604,43 +1603,43 @@ void MyFrame::OnCreateZBlb (wxCommandEvent &event) {
 void MyFrame::OnRunZBlb (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput(MESSAGES_RUNZBLORB+"\n");
+    OnOutput(MESSAGES_RUNZBLORB+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
 
     // Running the MAIN FILE
     wxString nome;
-    if (mainFile==""){
+    if (mainFile==_T("")){
         nome = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         nome = mainFile;
     }
-    nome.Replace(".inf", ".zblorb", true);
-    wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    OnOutput(comando+"\n");
+    nome.Replace(_T(".inf"), _T(".zblorb"), true);
+    wxString comando =  pConfig->Read(_T("ZCODEINTERPRETER"), _T("")) +_T(" ")+_T("\"")+nome+_T("\"");
+    OnOutput(comando+_T("\n"));
     wxArrayString output;
-    wxExecute(_T(comando));
+    wxExecute(comando);
 }
 
 // Run zcode
 void MyFrame::OnRunZcode (wxCommandEvent &event) {
     if (auinotebook->GetPageCount()==0){ return; }
     OnClear();
-    OnOutput(MESSAGES_RUNZCODE+"\n");
+    OnOutput(MESSAGES_RUNZCODE+_T("\n"));
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome = e->GetFilename();
-    if (mainFile=="") {
+    if (mainFile==_T("")) {
         nome = e->GetFilename();
     } else {
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));
         nome = mainFile;
     }
-    nome.Replace(".inf", zcodeversion, true);    
-    wxString comando =  pConfig->Read("ZCODEINTERPRETER", _T("")) +" "+"\""+nome+"\"";
-    OnOutput(comando+"\n");
+    nome.Replace(_T(".inf"), zcodeversion, true);    
+    wxString comando =  pConfig->Read(_T("ZCODEINTERPRETER"), _T("")) +_T(" ")+_T("\"")+nome+_T("\"");
+    OnOutput(comando+_T("\n"));
     wxArrayString output; 
-    wxExecute(_T(comando));
+    wxExecute(comando);
 }
 
 // Compile
@@ -1655,53 +1654,53 @@ void MyFrame::OnCompile (wxCommandEvent &event) {
     OnClear();
         
     // PL: Salvo tutto
-    OnOutput(MESSAGES_SAVINGALL+"\n");
+    OnOutput(MESSAGES_SAVINGALL+_T("\n"));
     wxCommandEvent subev;
     OnSaveAll(subev);
         
-    OnOutput(MESSAGES_COMPILEZCODE+"\n");
+    OnOutput(MESSAGES_COMPILEZCODE+_T("\n"));
     wxArrayString output;
     
     // Recupero il nome del file da compilare
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
     wxString nome,zcode;    
-    if (mainFile==""){
+    if (mainFile==_T("")){
         nome = e->GetFilename();
         zcode = e->GetFilename();
     }
     else{
-        OnOutput(MESSAGES_USINGMAINFILE+" "+mainFile+"\n");        
+        OnOutput(MESSAGES_USINGMAINFILE+_T(" ")+mainFile+_T("\n"));        
         nome = mainFile;
         zcode = mainFile;        
     }
-    zcode.Replace(".inf", zcodeversion, true);
-    wxString comando =  informCompiler+" "+zcodeswitch+" "+libraryPath+" \""+nome+"\" "+" \""+zcode+"\" ";
+    zcode.Replace(_T(".inf"), zcodeversion, true);
+    wxString comando =  informCompiler+_T(" ")+zcodeswitch+_T(" ")+libraryPath+_T(" \"")+nome+_T("\" ")+_T(" \"")+zcode+_T("\" ");
     
     //if ( wxExecute(_T("./inform.exe twocol.inf"), output) != 0 )
-    if ( wxExecute(_T(comando), output) != 0 )    
+    if ( wxExecute(comando, output) != 0 )    
     {
         OnOutput(comando);
-        OnOutput("\n");
+        OnOutput(_T("\n"));
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput(ERRORS_ERROR+".\n");
+        OnOutput(ERRORS_ERROR+_T(".\n"));
         inform_error = true;
     }
     else
     {
         OnOutput(comando);
-        OnOutput("\n");        
+        OnOutput(_T("\n"));        
         size_t count = output.GetCount();
         for ( size_t n = 0; n < count; n++ )
         {
             OnOutput(output[n].c_str());
-            OnOutput("\n");
+            OnOutput(_T("\n"));
         }
-        OnOutput("Ok.\n");
+        OnOutput(_T("Ok.\n"));
         inform_error = false;
     }
 }
@@ -1732,7 +1731,7 @@ void MyFrame::OnSelChanged(wxTreeEvent &event)
 // AS: funzione che wrappa la appendText per il problema del readonly
 void MyFrame::OnClear(){
     console->SetReadOnly(false);
-    console->SetText("");
+    console->SetText(_T(""));
     console->SetReadOnly(true);    
 }
 
@@ -1794,13 +1793,13 @@ void MyFrame::OnNotebookPageClose(wxAuiNotebookEvent& evt)
         Edit* e = (Edit*) ctrl->GetPage(evt.GetSelection());
         wxString titolo = ctrl->GetPageText(evt.GetSelection());
         if (e->Modified()) {
-            int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
+            int risposta = wxMessageBox (MESSAGES_TEXTNOTSAVED, titolo,
             wxYES_NO | wxCANCEL | wxICON_QUESTION);
 
             if (risposta == wxYES) {
                 e->SaveFile();
                 if (e->Modified()) {
-                    wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
+                    wxMessageBox (ERRORS_SAVEERROR, ERRORS_CLOSEABORT,
                     wxOK | wxICON_EXCLAMATION);
                 }
             }
@@ -1820,12 +1819,12 @@ void MyFrame::OnExit (wxCommandEvent &event) {
         wxString titolo = auinotebook->GetPageText(i);
         if (e) {
             if (e->Modified()) {
-                int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
+                int risposta = wxMessageBox (MESSAGES_TEXTNOTSAVED, titolo,
                     wxYES_NO | wxCANCEL | wxICON_QUESTION);
                 if (risposta == wxYES) {
                     e->SaveFile();
                     if (e->Modified()) {
-                        wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
+                        wxMessageBox (ERRORS_SAVEERROR, ERRORS_CLOSEABORT,
                         wxOK | wxICON_EXCLAMATION);
                         continue;
                     }
@@ -1846,12 +1845,12 @@ void MyFrame::OnClose (wxCloseEvent &event) {
         wxString titolo = auinotebook->GetPageText(i);
         if (e) {
             if (e->Modified()) {
-                int risposta = wxMessageBox (_(MESSAGES_TEXTNOTSAVED), titolo,
+                int risposta = wxMessageBox (MESSAGES_TEXTNOTSAVED, titolo,
                     wxYES_NO | wxCANCEL | wxICON_QUESTION);
                 if (risposta == wxYES) {
                     e->SaveFile();
                     if (e->Modified()) {
-                        wxMessageBox (_(ERRORS_SAVEERROR), _(ERRORS_CLOSEABORT),
+                        wxMessageBox (ERRORS_SAVEERROR, ERRORS_CLOSEABORT,
                         wxOK | wxICON_EXCLAMATION);
                         continue;
                     }
@@ -1928,7 +1927,7 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->AutoCompSetAutoHide(true);
 
     //wxString languagename = stc->QueryLanguage();
-    if (stc->QueryLanguage() != "INFORM") {
+    if (stc->QueryLanguage() != _T("INFORM")) {
         stc->ClearHotkeys();
         stc->SetAutoComplete(false, false);
         stc->SetHotkeys(false, false);   
@@ -1942,7 +1941,7 @@ void MyFrame::setNewStc(Edit* stc) {
     pConfig->SetPath(_T("/HOTKEYS"));
     bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
-        s = pConfig->Read(_T(str),_T(""));
+        s = pConfig->Read(str,_T(""));
         stc->AddHotkey(s);
         //OnOutput(_T(str)+" = "+_T(s)+" ;  ");
         bCont = pConfig->GetNextEntry(str, dummy);
@@ -1954,49 +1953,49 @@ void MyFrame::setNewStc(Edit* stc) {
     // liste per la syntax highlighting che all'arraty wlarray
     wxArrayString wlarray;
     pConfig->SetPath(_T("/STATEMENTS"));
-    wxString statlist = "";
+    wxString statlist = _T("");
     bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
-        s = pConfig->Read(_T(str),_T(""));
-        statlist = statlist + s + " ";
+        s = pConfig->Read(str,_T(""));
+        statlist = statlist + s + _T(" ");
         wlarray.Add(s);
         bCont = pConfig->GetNextEntry(str, dummy);
     }
     pConfig->SetPath(_T("/DIRECTIVES"));
-    wxString direclist = "";
+    wxString direclist = _T("");
     bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
-        s = pConfig->Read(_T(str),_T(""));
-        direclist = direclist + s + " ";
+        s = pConfig->Read(str,_T(""));
+        direclist = direclist + s + _T(" ");
         wlarray.Add(s);
         bCont = pConfig->GetNextEntry(str, dummy);
     }
     pConfig->SetPath(_T("/OTHERKEYWORDS"));
-    wxString otherlist = "";
+    wxString otherlist = _T("");
     bCont = pConfig->GetFirstEntry(str, dummy);
     while(bCont){
-        s = pConfig->Read(_T(str),_T(""));
-        otherlist = otherlist + s + " ";
+        s = pConfig->Read(str,_T(""));
+        otherlist = otherlist + s + _T(" ");
         wlarray.Add(s);
         bCont = pConfig->GetNextEntry(str, dummy);
     }    
     pConfig->SetPath(_T("/"));
     //wxString wordlist = statlist+direclist+otherlist;
     // Aggiungo la roba del progetto
-    if ( mainFile != "" ) {
+    if ( mainFile != _T("") ) {
         for (size_t i = 0; i<projclasses.GetCount(); i++) {
-            direclist = direclist + projclasses[i] + " ";
+            direclist = direclist + projclasses[i] + _T(" ");
             wlarray.Add(projclasses[i]);
         }
         for (size_t i = 0; i<projkeywords.GetCount(); i++) {
-            otherlist = otherlist + projkeywords[i] + " ";
+            otherlist = otherlist + projkeywords[i] + _T(" ");
             wlarray.Add(projkeywords[i]);
         }            
     }
     //Ordino l'array e lo copio nella lista per l'autocompletion
     wlarray.Sort(CompareStrings);
-    wxString wordlist = "";
-    for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + " ";
+    wxString wordlist = _T("");
+    for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + _T(" ");
     wlarray.Clear();
     stc->SetWordlist(wordlist);
     stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist + direclist + otherlist);
@@ -2030,8 +2029,8 @@ void MyFrame::LoadFile(wxString path, wxString name)
  
 void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileDialog* fd = new wxFileDialog(this, "Open File","","","Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*",
-    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");
+    wxFileDialog* fd = new wxFileDialog(this, _T("Open File"),_T(""),_T(""),_T("Inform Source Files (*.inf;*.h)|*.inf;*.h|All Files (*.*)|*.*"),
+    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,_T("filedlg"));
     wxString path,name;
     if (fd->ShowModal() == wxID_OK ){
         path = fd->GetPath();
@@ -2039,7 +2038,7 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
         
         // Check if file is already opened
         if (checkOpenFile(path)){
-           wxMessageBox (_(MESSAGES_FILEOPENED),_(MESSAGES_WARNING), wxOK | wxICON_WARNING);    
+           wxMessageBox (MESSAGES_FILEOPENED,MESSAGES_WARNING, wxOK | wxICON_WARNING);    
            return;
         }
         
@@ -2060,19 +2059,19 @@ void MyFrame::OnLoadFile(wxCommandEvent& WXUNUSED(event))
 // MENU PROJECT
 
 void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
-    wxFileDialog* fd = new wxFileDialog(this, "Open Wide Project","","","Wide Project Files (*.wpf)|*.wpf|All Files (*.*)|*.*",
-    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,"filedlg");    
+    wxFileDialog* fd = new wxFileDialog(this, _T("Open Wide Project"),_T(""),_T(""),_T("Wide Project Files (*.wpf)|*.wpf|All Files (*.*)|*.*"),
+    wxFD_DEFAULT_STYLE,wxDefaultPosition,wxDefaultSize,_T("filedlg"));    
     if (fd->ShowModal() == wxID_OK ){
         wxString path = fd->GetPath();
         wxString name = fd->GetFilename();        
         OnClear();
-        mainFile = "";
+        mainFile = _T("");
         projclasses.Empty();
         projkeywords.Empty();
         
         wxFileConfig* projfile = new wxFileConfig(
-        NOMEAPPLICAZIONE, NOMEAPPLICAZIONE,
-        path, "", wxCONFIG_USE_RELATIVE_PATH, wxConvUTF8);
+        _(NOMEAPPLICAZIONE), _(NOMEAPPLICAZIONE),
+        path, _T(""), wxCONFIG_USE_RELATIVE_PATH, wxConvUTF8);
         //wxConfigBase::Set(projfile);
         //projfile->SetPath(_T("/")); 
 
@@ -2082,39 +2081,39 @@ void MyFrame::OnOpenProject(wxCommandEvent& WXUNUSED(event)) {
         zc = projfile->Read(_T("ZCODEVERSION"), 1l);
         switch (zc) {
           case 8:
-            zcodeversion=".z8";
-            zcodeswitch="-v8";
+            zcodeversion=_T(".z8");
+            zcodeswitch=_T("-v8");
             zcodemenu->Check(ID_ZcodeVersion8, true);
             break;
           case 5:
-            zcodeversion=".z5";
-            zcodeswitch="-v5";
+            zcodeversion=_T(".z5");
+            zcodeswitch=_T("-v5");
             zcodemenu->Check(ID_ZcodeVersion5, true);
             break;
         }        
         projfile->SetPath(_T("/CLASSES"));
         bCont = projfile->GetFirstEntry(str, dummy);
         while(bCont){
-          s = projfile->Read(_T(str),_T(""));
+          s = projfile->Read(str,_T(""));
           projclasses.Add(s);
           bCont = projfile->GetNextEntry(str, dummy);
         }        
         projfile->SetPath(_T("/KEYWORDS"));
         bCont = projfile->GetFirstEntry(str, dummy);
         while(bCont){
-          s = projfile->Read(_T(str),_T(""));
+          s = projfile->Read(str,_T(""));
           projkeywords.Add(s);
           bCont = projfile->GetNextEntry(str, dummy);
         }        
         projfile->SetPath(_T("/FILES"));
         bCont = projfile->GetFirstEntry(str, dummy);
         while(bCont){
-          s = projfile->Read(_T(str),_T(""));
+          s = projfile->Read(str,_T(""));
           str = path.Mid(0,path.Find('\\',true)+1) + s;
           LoadFile(str,s);
-          if (mainFile == "") {
+          if (mainFile == _T("")) {
                 mainFile = str;
-                OnOutput(MESSAGES_USINGMAINFILE+" ["+mainFile+"] ");
+                OnOutput(MESSAGES_USINGMAINFILE+_T(" [")+mainFile+_T("] "));
           }
           bCont = projfile->GetNextEntry(str, dummy);
         }
@@ -2134,14 +2133,14 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
 {
     projclasses.Empty();
     projkeywords.Empty();
-    if (mainFile!=""){
-        wxMessageBox (mainFile, _(MESSAGES_REMOVEMAINFILE),  wxOK | wxICON_INFORMATION);            
-        mainFile="";
+    if (mainFile!=_T("")){
+        wxMessageBox (mainFile, MESSAGES_REMOVEMAINFILE,  wxOK | wxICON_INFORMATION);            
+        mainFile=_T("");
         OnClear();
         OnOutput(MESSAGES_MAINFILEREMOVED);        
     }
     else{
-        wxMessageBox (_(MESSAGES_NOPROJECTOPENED),_(MESSAGES_WARNING), wxOK | wxICON_WARNING);    
+        wxMessageBox (MESSAGES_NOPROJECTOPENED,MESSAGES_WARNING, wxOK | wxICON_WARNING);    
     }
 }
 
@@ -2232,8 +2231,8 @@ void MyFrame::OnUpdateTree()
     cid = tree->GetFirstChild(wroot, ck);
     while (cid.IsOk()) {
         if (tree->ItemHasChildren(cid)) {
-          if (tree->IsExpanded(cid)) cname = "+" + tree->GetItemText(cid);
-           else                      cname = "-" + tree->GetItemText(cid);
+          if (tree->IsExpanded(cid)) cname = _T("+") + tree->GetItemText(cid);
+           else                      cname = _T("-") + tree->GetItemText(cid);
           memo.Add(cname);
     }
         //OnOutput(cname);
@@ -2248,20 +2247,20 @@ void MyFrame::OnUpdateTree()
     wxTreeItemId root = tree->AddRoot(wxT("Object Tree"), 0);
 
 
-    if (showObjects) OnUpdateTreeRegularExpression(text, root, "Object", "\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+)\"?",true);
+    if (showObjects) OnUpdateTreeRegularExpression(text, root, _T("Object"), _T("\n+[ \t\f\v]*Object[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+)\"?"),true);
     if (showProject) {
         for (size_t i = 0; i<projclasses.GetCount(); i++) {
-            wxString regexp = "\n+[ \t\f\v]*"+projclasses[i]+"[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+\"?)";
+            wxString regexp = _T("\n+[ \t\f\v]*")+projclasses[i]+_T("[ \t\n\r\f\v]+(->[ \t\n\r\f\v]+)*\"?([A-Za-z0-9_]+\"?)");
             OnUpdateTreeRegularExpression(text, root, projclasses[i], regexp, true);
         }        
     }
-    if (showGlobals) OnUpdateTreeRegularExpression(text, root, "Global", "\n+[ \t\f\v]*Global[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
-    if (showConstants) OnUpdateTreeRegularExpression(text, root, "Constant", "\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
-    if (showFunctions) OnUpdateTreeRegularExpression(text, root, "Function", "\n+[ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*([A-Za-z0-9_]+).*;", false);
-    if (showClasses) OnUpdateTreeRegularExpression(text, root, "Class", "\n+[ \t\f\v]*Class[ \t\n\r\f\v]+([A-Za-z0-9_]+)", false);
+    if (showGlobals) OnUpdateTreeRegularExpression(text, root, _T("Global"), _T("\n+[ \t\f\v]*Global[ \t\n\r\f\v]+([A-Za-z0-9_]+)"), false);
+    if (showConstants) OnUpdateTreeRegularExpression(text, root, _T("Constant"), _T("\n+[ \t\f\v]*Constant[ \t\n\r\f\v]+([A-Za-z0-9_]+)"), false);
+    if (showFunctions) OnUpdateTreeRegularExpression(text, root, _T("Function"), _T("\n+[ \t\n\r\f\v]*\\[[ \t\n\r\f\v]*([A-Za-z0-9_]+).*;"), false);
+    if (showClasses) OnUpdateTreeRegularExpression(text, root, _T("Class"), _T("\n+[ \t\f\v]*Class[ \t\n\r\f\v]+([A-Za-z0-9_]+)"), false);
     //if (showIncludes) OnUpdateTreeRegularExpression(text, root, "Include", "\n+[ \t\f\v]*Include[ \t\f\v]*\"([A-Za-z0-9_]+)(\x2eh)?\"", false);
-    if (showIncludes) OnUpdateTreeRegularExpression(text, root, "Include", "\n+[ \t\f\v]*Include[ \t\f\v]*\"([A-Za-z0-9_]+)", false);
-    if (showVerbs) OnUpdateTreeRegularExpression(text, root, "Verb", "\n+[ \t\f\v]*Verb[ \t\f\v]+\'([A-Za-z0-9_]+)'", false);
+    if (showIncludes) OnUpdateTreeRegularExpression(text, root, _T("Include"), _T("\n+[ \t\f\v]*Include[ \t\f\v]*\"([A-Za-z0-9_]+)"), false);
+    if (showVerbs) OnUpdateTreeRegularExpression(text, root, _T("Verb"), _T("\n+[ \t\f\v]*Verb[ \t\f\v]+\'([A-Za-z0-9_]+)'"), false);
 
     if (expandAllNodes) {
         tree->ExpandAll();                
@@ -2275,8 +2274,8 @@ void MyFrame::OnUpdateTree()
     while (cid.IsOk()) {
         cname = tree->GetItemText(cid);
         for (size_t i = 0; i<memo.GetCount(); i++) {
-            if (memo[i] == "+" + cname) { tree->Expand(cid); break; }
-            if (memo[i] == "-" + cname) { tree->Collapse(cid); break; }
+            if (memo[i] == _T("+") + cname) { tree->Expand(cid); break; }
+            if (memo[i] == _T("-") + cname) { tree->Collapse(cid); break; }
         }
         cid = tree->GetNextChild(wroot, ck);
     }
@@ -2327,144 +2326,144 @@ wxMenuBar* MyFrame::CreateMenuBar()
     // FILE MENU ----------------------------------------------------------------------------
     wxMenu* file = new wxMenu;    
     // FILE::NEW
-    wxMenuItem *new_file = new wxMenuItem(file, ID_NewFile, _("&"+MENU_FILE_NEWFILE+"\tCtrl+N"));
+    wxMenuItem *new_file = new wxMenuItem(file, ID_NewFile, _T("&")+MENU_FILE_NEWFILE+_T("\tCtrl+N"));
     new_file->SetBitmap(new_xpm);
     file->Append(new_file);    
     
     // FILE::LOAD
-    wxMenuItem *load_file = new wxMenuItem(file, ID_LoadFile, _("&"+MENU_FILE_OPENFILE+"\tCtrl+O"));
+    wxMenuItem *load_file = new wxMenuItem(file, ID_LoadFile, _T("&")+MENU_FILE_OPENFILE+_T("\tCtrl+O"));
     load_file->SetBitmap(fileopen_xpm);
     file->Append(load_file);
 
     // FILE::SAVE
-    wxMenuItem *save_file = new wxMenuItem(file, ID_Save_File, _("&"+MENU_FILE_SAVEFILE+"\tCtrl+S"));
+    wxMenuItem *save_file = new wxMenuItem(file, ID_Save_File, _T("&")+MENU_FILE_SAVEFILE+_T("\tCtrl+S"));
     save_file->SetBitmap(filesave_xpm);
     file->Append(save_file);
     
     //FILE::SAVEALL   //PL
-    wxMenuItem *save_all = new wxMenuItem(file, ID_Save_All, _("&"+MENU_FILE_SAVEALL+"\tCtrl+Shift+S"));
+    wxMenuItem *save_all = new wxMenuItem(file, ID_Save_All, _T("&")+MENU_FILE_SAVEALL+_T("\tCtrl+Shift+S"));
     save_all->SetBitmap(filesaveall_xpm);
     file->Append(save_all);
     
     file->AppendSeparator();
 
     //FILE::NEXTPAGE   //PL
-    wxMenuItem *next_page = new wxMenuItem(file, ID_NextPage, _("&"+MENU_FILE_NEXTTAB+"\tCtrl+F6"));
+    wxMenuItem *next_page = new wxMenuItem(file, ID_NextPage, _T("&")+MENU_FILE_NEXTTAB+_T("\tCtrl+F6"));
     next_page->SetBitmap(forward_xpm);
     file->Append(next_page);
     
     //FILE::PREVIOUSPAGE   //PL
-    wxMenuItem *previous_page = new wxMenuItem(file, ID_PreviousPage, _("&"+MENU_FILE_PREVIOUSTAB+"\tCtrl+F5"));
+    wxMenuItem *previous_page = new wxMenuItem(file, ID_PreviousPage, _T("&")+MENU_FILE_PREVIOUSTAB+_T("\tCtrl+F5"));
     previous_page->SetBitmap(back_xpm);
     file->Append(previous_page);
 
     file->AppendSeparator();
     
-    wxMenuItem *quit = new wxMenuItem(file, ID_Exit, _("&"+MENU_FILE_QUIT+"\tCtrl+Q"));
+    wxMenuItem *quit = new wxMenuItem(file, ID_Exit, _T("&")+MENU_FILE_QUIT+_T("\tCtrl+Q"));
     quit->SetBitmap(quit_xpm);
     file->Append(quit);
 
     // EDIT MENU -------------------------------------------------------------------------
     wxMenu* edit = new wxMenu;
     // EDIT::COPY
-    wxMenuItem *copy = new wxMenuItem(edit, wxID_COPY, _("&"+MENU_EDIT_COPY+"\tCtrl+C"));
+    wxMenuItem *copy = new wxMenuItem(edit, wxID_COPY, _T("&")+MENU_EDIT_COPY+_T("\tCtrl+C"));
     copy->SetBitmap(copy_xpm);
     edit->Append(copy);
 
     // EDIT::CUT
-    wxMenuItem *cut = new wxMenuItem(edit, wxID_CUT, _("&"+MENU_EDIT_CUT+"\tCtrl+X"));
+    wxMenuItem *cut = new wxMenuItem(edit, wxID_CUT, _T("&")+MENU_EDIT_CUT+_T("\tCtrl+X"));
     cut->SetBitmap(cut_xpm);
     edit->Append(cut);
     
     // EDIT::PASTE
-    wxMenuItem *paste = new wxMenuItem(edit, wxID_PASTE, _("&"+MENU_EDIT_PASTE+"\tCtrl+V"));
+    wxMenuItem *paste = new wxMenuItem(edit, wxID_PASTE, _T("&")+MENU_EDIT_PASTE+_T("\tCtrl+V"));
     paste->SetBitmap(paste_xpm);
     edit->Append(paste);    
     edit->AppendSeparator();
 
-    edit->Append(wxID_UNDO, _("&"+MENU_EDIT_UNDO+"\tCtrl+Z"));
-    edit->Append(wxID_REDO, _("&"+MENU_EDIT_REDO+"\tCtrl+Y"));
+    edit->Append(wxID_UNDO, _T("&")+MENU_EDIT_UNDO+_T("\tCtrl+Z"));
+    edit->Append(wxID_REDO, _T("&")+MENU_EDIT_REDO+_T("\tCtrl+Y"));
     edit->AppendSeparator();
     
     // EDIT::INDENT
-    wxMenuItem *indent_r = new wxMenuItem(edit, myID_INDENTINC, _("&"+MENU_EDIT_INDENT+"\tTab"));
+    wxMenuItem *indent_r = new wxMenuItem(edit, myID_INDENTINC, _T("&")+MENU_EDIT_INDENT+_T("\tTab"));
     //indent_r->SetBitmap(forward_xpm);
     edit->Append(indent_r);
 
     // EDIT::UNINDENT
-    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _("&"+MENU_EDIT_UNINDENT+"\tShift+Tab"));
+    wxMenuItem *indent_l = new wxMenuItem(edit, myID_INDENTRED, _T("&")+MENU_EDIT_UNINDENT+_T("\tShift+Tab"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(indent_l);
     edit->AppendSeparator();
 
     // EDIT::COMMENT
-    wxMenuItem *comment = new wxMenuItem(edit, ID_Comment, _("&"+MENU_EDIT_COMMENT+"\tCtrl+Shift+C"));
+    wxMenuItem *comment = new wxMenuItem(edit, ID_Comment, _T("&")+MENU_EDIT_COMMENT+_T("\tCtrl+Shift+C"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(comment);
 
     // EDIT::UNCOMMENT
-    wxMenuItem *uncomment = new wxMenuItem(edit, ID_Uncomment, _("&"+MENU_EDIT_UNCOMMENT+"\tCtrl+Shift+U"));
+    wxMenuItem *uncomment = new wxMenuItem(edit, ID_Uncomment, _T("&")+MENU_EDIT_UNCOMMENT+_T("\tCtrl+Shift+U"));
     //indent_l->SetBitmap(back_xpm);
     edit->Append(uncomment);
 
     // SEARCH MENU                     
     wxMenu* search = new wxMenu;
-    search->Append (ID_Find, _("&"+MENU_SEARCH_FIND+"\tF3"));
-    search->Append (ID_FindBack, _("&"+MENU_SEARCH_FIND_BACKWARDS+"\tShift+F3"));   //PL
-    search->Append (ID_FindReplace, _(MENU_SEARCH_FIND_REPLACE+"\tCtrl+F3"));
-    search->Append (ID_FindObjectLocal, _("&"+MENU_SEARCH_FIND_OBJECT+"\tF4"));
-    search->Append (ID_FindObjectGlobal, _("&"+MENU_SEARCH_FIND_OBJECT_IN_FILE+"\tShift+F4"));
+    search->Append (ID_Find, _T("&")+MENU_SEARCH_FIND+_T("\tF3"));
+    search->Append (ID_FindBack, _T("&")+MENU_SEARCH_FIND_BACKWARDS+_T("\tShift+F3"));   //PL
+    search->Append (ID_FindReplace, MENU_SEARCH_FIND_REPLACE+_T("\tCtrl+F3"));
+    search->Append (ID_FindObjectLocal, _T("&")+MENU_SEARCH_FIND_OBJECT+_T("\tF4"));
+    search->Append (ID_FindObjectGlobal, _T("&")+MENU_SEARCH_FIND_OBJECT_IN_FILE+_T("\tShift+F4"));
     search->AppendSeparator();
-    search->Append(ID_GotoLine, _("&"+MENU_SEARCH_FIND_GOTO_LINE+"\tCtrl+L"));
+    search->Append(ID_GotoLine, _T("&")+MENU_SEARCH_FIND_GOTO_LINE+_T("\tCtrl+L"));
     search->AppendSeparator();
-    search->Append(ID_NextMarker, _("&"+MENU_SEARCH_FIND_NEXT_MARKER+"\tF2"));
-    wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _("&"+MENU_SEARCH_FIND_TOGGLE_MARKER+"\tCtrl+F2"));
+    search->Append(ID_NextMarker, _T("&")+MENU_SEARCH_FIND_NEXT_MARKER+_T("\tF2"));
+    wxMenuItem *marker = new wxMenuItem(search, ID_ToggleMarker, _T("&")+MENU_SEARCH_FIND_TOGGLE_MARKER+_T("\tCtrl+F2"));
     
     marker->SetBitmap(addbookm_xpm);
     search->Append(marker);        
-    search->Append(ID_ResetMarkers, _("&"+MENU_SEARCH_FIND_RESET_MARKERS+"\tCtrl+Shift+F2"));
+    search->Append(ID_ResetMarkers, _T("&")+MENU_SEARCH_FIND_RESET_MARKERS+_T("\tCtrl+Shift+F2"));
 
     // PROJECT MENU
     wxMenu* project = new wxMenu;
-    project->Append (ID_OpenProject, _("&"+MENU_PROJECT_OPEN+"\tCtrl+P"));
-    project->Append (ID_SaveProject, _("&"+MENU_PROJECT_SAVE));
-    project->Append (ID_CloseProject, _("&"+MENU_PROJECT_CLOSE));
+    project->Append (ID_OpenProject, _T("&")+MENU_PROJECT_OPEN+_T("\tCtrl+P"));
+    project->Append (ID_SaveProject, _T("&")+MENU_PROJECT_SAVE);
+    project->Append (ID_CloseProject, _T("&")+MENU_PROJECT_CLOSE);
        
     // ZCODE MENU
     wxMenu* zcode = new wxMenu;
-    zcode->Append (ID_Compile, _("&"+MENU_ZCODE_COMPILEZCODE+"\tF8"));
-    zcode->Append (ID_RunZcode, _("&"+MENU_ZCODE_RUNZCODE+"\tCtrl+F8"));
+    zcode->Append (ID_Compile, _T("&")+MENU_ZCODE_COMPILEZCODE+_T("\tF8"));
+    zcode->Append (ID_RunZcode, _T("&")+MENU_ZCODE_RUNZCODE+_T("\tCtrl+F8"));
     zcode->AppendSeparator();
-    zcode->AppendRadioItem (ID_ZcodeVersion5, _(MENU_ZCODE_ZCODE5));
-    zcode->AppendRadioItem (ID_ZcodeVersion8, _(MENU_ZCODE_ZCODE8));
+    zcode->AppendRadioItem (ID_ZcodeVersion5, MENU_ZCODE_ZCODE5);
+    zcode->AppendRadioItem (ID_ZcodeVersion8, MENU_ZCODE_ZCODE8);
     zcode->AppendSeparator();
-    zcode->Append (ID_CreateZBlb, _(MENU_ZCODE_COMPILEZCODE_BLORB+"\tCtrl+Shift+F8"));
-    zcode->Append (ID_RunZBlb, _(MENU_ZCODE_RUNZCODE_BLORB+"\tShift+F8"));    
+    zcode->Append (ID_CreateZBlb, MENU_ZCODE_COMPILEZCODE_BLORB+_T("\tCtrl+Shift+F8"));
+    zcode->Append (ID_RunZBlb, MENU_ZCODE_RUNZCODE_BLORB+_T("\tShift+F8"));    
     zcodemenu=zcode;
     
     // GLULX MENU
     wxMenu* glulx = new wxMenu;
-    glulx->Append (ID_CompileUlx, _("&"+MENU_GLULX_COMPILEULX+"\tF9"));            
-    glulx->Append (ID_RunUlx, _("&"+MENU_GLULX_RUNULX+"\tCtrl+F9"));
+    glulx->Append (ID_CompileUlx, _T("&")+MENU_GLULX_COMPILEULX+_T("\tF9"));            
+    glulx->Append (ID_RunUlx, _T("&")+MENU_GLULX_RUNULX+_T("\tCtrl+F9"));
     glulx->AppendSeparator();
-    glulx->Append (ID_CreateRes, _("&"+MENU_GLULX_CREATERESOURCES+"\tF10"));
-    glulx->Append (ID_CreateBlb, _("&"+MENU_GLULX_CREATEBLORBFILE+"\tCtrl+F10"));
-    glulx->Append (ID_MakeAllBlb, _("&"+MENU_GLULX_BUILDALLBLORBFILE+"\tF11"));
-    glulx->Append (ID_RunBlb, _("&"+MENU_GLULX_RUNBLORB+"\tCtrl+F11"));
+    glulx->Append (ID_CreateRes, _T("&")+MENU_GLULX_CREATERESOURCES+_T("\tF10"));
+    glulx->Append (ID_CreateBlb, _T("&")+MENU_GLULX_CREATEBLORBFILE+_T("\tCtrl+F10"));
+    glulx->Append (ID_MakeAllBlb, _T("&")+MENU_GLULX_BUILDALLBLORBFILE+_T("\tF11"));
+    glulx->Append (ID_RunBlb, _T("&")+MENU_GLULX_RUNBLORB+_T("\tCtrl+F11"));
 
     // OBJECT TREE MENU
     wxMenu* otree = new wxMenu;
-    otree->Append (ID_RefreshTree, _(MENU_OBJECTTREE_REFRESHTREE+"\tENTER"));
-    otree->AppendCheckItem (ID_ExpandAllAlways, _(MENU_OBJECTTREE_EXPAND_NODES));
+    otree->Append (ID_RefreshTree, MENU_OBJECTTREE_REFRESHTREE+_T("\tENTER"));
+    otree->AppendCheckItem (ID_ExpandAllAlways, MENU_OBJECTTREE_EXPAND_NODES);
     otree->AppendSeparator();
-    otree->AppendCheckItem (ID_ShowObject, _(MENU_OBJECTTREE_SHOW_OBJECTS));
-    otree->AppendCheckItem (ID_ShowProject, _(MENU_OBJECTTREE_SHOW_PROJECT_DEFS));
-    otree->AppendCheckItem (ID_ShowGlobal, _(MENU_OBJECTTREE_SHOW_GLOBALS));
-    otree->AppendCheckItem (ID_ShowConstant, _(MENU_OBJECTTREE_SHOW_CONSTANTS));
-    otree->AppendCheckItem (ID_ShowFunction, _(MENU_OBJECTTREE_SHOW_FUNCTIONS));
-    otree->AppendCheckItem (ID_ShowClass, _(MENU_OBJECTTREE_SHOW_CLASSES));
-    otree->AppendCheckItem (ID_ShowInclude, _(MENU_OBJECTTREE_SHOW_INCLUDES));
-    otree->AppendCheckItem (ID_ShowVerb, _(MENU_OBJECTTREE_SHOW_VERBS));
+    otree->AppendCheckItem (ID_ShowObject, MENU_OBJECTTREE_SHOW_OBJECTS);
+    otree->AppendCheckItem (ID_ShowProject, MENU_OBJECTTREE_SHOW_PROJECT_DEFS);
+    otree->AppendCheckItem (ID_ShowGlobal, MENU_OBJECTTREE_SHOW_GLOBALS);
+    otree->AppendCheckItem (ID_ShowConstant, MENU_OBJECTTREE_SHOW_CONSTANTS);
+    otree->AppendCheckItem (ID_ShowFunction, MENU_OBJECTTREE_SHOW_FUNCTIONS);
+    otree->AppendCheckItem (ID_ShowClass, MENU_OBJECTTREE_SHOW_CLASSES);
+    otree->AppendCheckItem (ID_ShowInclude, MENU_OBJECTTREE_SHOW_INCLUDES);
+    otree->AppendCheckItem (ID_ShowVerb, MENU_OBJECTTREE_SHOW_VERBS);
 
     // OBJECT TREE MENU - Load configuration from file
     otree->Check(ID_ExpandAllAlways, (pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0) );
@@ -2479,10 +2478,10 @@ wxMenuBar* MyFrame::CreateMenuBar()
     
     // OPTION MENU
     wxMenu* option = new wxMenu;
-    option->AppendCheckItem (myID_LINENUMBER, _(MENU_OPTIONS_SHOWLINENUMBER));
-    option->AppendCheckItem (myID_WRAPMODEON, _("&"+MENU_OPTIONS_WRAPMODE));    
-    option->AppendCheckItem (myID_AUTOCOMPON, _("&"+MENU_OPTIONS_AUTOCOMPLETE));
-    option->AppendCheckItem (myID_HOTKEYSON,  _("&"+MENU_OPTIONS_HOTKEYSREPLACING));
+    option->AppendCheckItem (myID_LINENUMBER, MENU_OPTIONS_SHOWLINENUMBER);
+    option->AppendCheckItem (myID_WRAPMODEON, _T("&")+MENU_OPTIONS_WRAPMODE);    
+    option->AppendCheckItem (myID_AUTOCOMPON, _T("&")+MENU_OPTIONS_AUTOCOMPLETE);
+    option->AppendCheckItem (myID_HOTKEYSON,  _T("&")+MENU_OPTIONS_HOTKEYSREPLACING);
     option->Check(myID_LINENUMBER, showLineNumber);
     option->Check(myID_WRAPMODEON, wrapMode);
     option->Check(myID_AUTOCOMPON, autoCompleteSwitch);
@@ -2490,34 +2489,34 @@ wxMenuBar* MyFrame::CreateMenuBar()
     
     // DOCUMENTS MENU
     wxMenu* docs = new wxMenu;
-    if (pConfig->Read("PDF1_NAME", _T(""))!=""){docs->Append(ID_Doc1, pConfig->Read("PDF1_NAME", _T("")));}
-    if (pConfig->Read("PDF2_NAME", _T(""))!=""){docs->Append(ID_Doc2, pConfig->Read("PDF2_NAME", _T("")));}
-    if (pConfig->Read("PDF3_NAME", _T(""))!=""){docs->Append(ID_Doc3, pConfig->Read("PDF3_NAME", _T("")));}
-    if (pConfig->Read("PDF4_NAME", _T(""))!=""){docs->Append(ID_Doc4, pConfig->Read("PDF4_NAME", _T("")));}
-    if (pConfig->Read("PDF5_NAME", _T(""))!=""){docs->Append(ID_Doc5, pConfig->Read("PDF5_NAME", _T("")));}
-    if (pConfig->Read("PDF6_NAME", _T(""))!=""){docs->Append(ID_Doc6, pConfig->Read("PDF6_NAME", _T("")));}
-    if (pConfig->Read("PDF7_NAME", _T(""))!=""){docs->Append(ID_Doc7, pConfig->Read("PDF7_NAME", _T("")));}
-    if (pConfig->Read("PDF8_NAME", _T(""))!=""){docs->Append(ID_Doc8, pConfig->Read("PDF8_NAME", _T("")));}
+    if (pConfig->Read(_T("PDF1_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc1, pConfig->Read(_T("PDF1_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF2_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc2, pConfig->Read(_T("PDF2_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF3_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc3, pConfig->Read(_T("PDF3_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF4_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc4, pConfig->Read(_T("PDF4_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF5_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc5, pConfig->Read(_T("PDF5_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF6_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc6, pConfig->Read(_T("PDF6_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF7_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc7, pConfig->Read(_T("PDF7_NAME"), _T("")));}
+    if (pConfig->Read(_T("PDF8_NAME"), _T(""))!=_T("")){docs->Append(ID_Doc8, pConfig->Read(_T("PDF8_NAME"), _T("")));}
 
     // HELP MENU
     wxMenu* help = new wxMenu;
-    help->Append(ID_License, _(MENU_HELP_LICENSE));    
+    help->Append(ID_License, MENU_HELP_LICENSE);    
     help->AppendSeparator();
-    wxMenuItem *about = new wxMenuItem(help, ID_About, _(MENU_HELP_ABOUT));
+    wxMenuItem *about = new wxMenuItem(help, ID_About, MENU_HELP_ABOUT);
     about->SetBitmap(help_xpm);
     help->Append(about);
 
     // Main MenuBar    
-    mb->Append(file, _(MENU_FILE));
-    mb->Append(edit, _(MENU_EDIT));
-    mb->Append(search, _(MENU_SEARCH));        
-    mb->Append(project , _(MENU_PROJECT));            
-    mb->Append(zcode, _(MENU_ZCODE));
-    mb->Append(glulx, _(MENU_GLULX));    
-    mb->Append(otree, _(MENU_OBJECTTREE));
-    mb->Append(option, _(MENU_OPTIONS));
-    mb->Append(docs, _(MENU_DOCUMENTS));        
-    mb->Append(help, _(MENU_HELP));    
+    mb->Append(file, MENU_FILE);
+    mb->Append(edit, MENU_EDIT);
+    mb->Append(search, MENU_SEARCH);        
+    mb->Append(project , MENU_PROJECT);            
+    mb->Append(zcode, MENU_ZCODE);
+    mb->Append(glulx, MENU_GLULX);    
+    mb->Append(otree, MENU_OBJECTTREE);
+    mb->Append(option, MENU_OPTIONS);
+    mb->Append(docs, MENU_DOCUMENTS);        
+    mb->Append(help, MENU_HELP);    
     
     return mb;
 }

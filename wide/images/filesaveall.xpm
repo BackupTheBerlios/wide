@@ -1,5 +1,5 @@
 /* XPM */
-static char * filesaveall_xpm[] = {
+static const char * filesaveall_xpm[] = {
 "16 15 18 1",
 " 	c None",
 ".	c #5F666D",

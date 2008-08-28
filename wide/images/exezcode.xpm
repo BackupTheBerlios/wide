@@ -1,5 +1,5 @@
 /* XPM */
-static char *exezcode_xpm[] = {
+static const char *exezcode_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "16 16 51 1",
 "% c #E8E8EC",

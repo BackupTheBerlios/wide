@@ -1,5 +1,5 @@
 /* XPM */
-static char * findobject_xpm[] = {
+static const char * findobject_xpm[] = {
 "16 15 26 1",
 " 	c None",
 ".	c #ACC4D3",

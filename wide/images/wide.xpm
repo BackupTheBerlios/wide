@@ -1,5 +1,5 @@
 /* XPM */
-static char * wide_xpm[] = {
+static const char * wide_xpm[] = {
 "16 16 103 2",
 "  	c None",
 ". 	c #A59647",

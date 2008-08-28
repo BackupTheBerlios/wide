@@ -1,5 +1,5 @@
 /* XPM */
-static char * compilezcode_xpm[] = {
+static const char * compilezcode_xpm[] = {
 "16 16 32 1",
 " 	c None",
 ".	c #A8D3FB",
