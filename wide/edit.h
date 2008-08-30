@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.7 2008/08/28 22:45:52 schillacia Exp $
+// RCS-ID:      $Id: edit.h,v 1.8 2008/08/30 12:59:52 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -28,6 +28,7 @@
 //! application headers
 #include "prefs.h"       // preferences
 
+#include "myframe.h"
 
 //============================================================================
 // declarations
@@ -35,7 +36,6 @@
 
 class EditPrint;
 class EditProperties;
-
 
 //----------------------------------------------------------------------------
 //! Edit
@@ -49,7 +49,8 @@ public:
           const wxPoint &pos = wxDefaultPosition,
           const wxSize &size = wxDefaultSize,
           long style = wxSUNKEN_BORDER|wxVSCROLL,
-          wxString filename = wxT("")
+          wxString filename = wxT(""),
+          MyFrame *frame = NULL
          );
 
     //! destructor
@@ -127,6 +128,7 @@ public:
 private:
     // file
     wxString m_filename;
+    MyFrame *m_frame;
 
     // lanugage properties
     LanguageInfo const* m_language;
@@ -196,4 +198,12 @@ private:
 
 #endif // wxUSE_PRINTING_ARCHITECTURE
 
+#ifndef _MYFRAME_H_
+#include "myframe.h"
+#endif
+
 #endif // _EDIT_H_
+
+#ifndef _MYFRAME_H_
+#include "myframe.h"
+#endif

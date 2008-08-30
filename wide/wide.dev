@@ -1,7 +1,7 @@
 [Project]
 FileName=wide.dev
 Name=Wide
-UnitCount=7
+UnitCount=8
 PchHead=-1
 PchSource=-1
 Ver=3
@@ -146,21 +146,31 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit10]
+FileName=OptionDialog.wxform
+Folder=wxIF
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit7]
-FileName=main.h
+FileName=mytreeitemdata.h
 CompileCpp=1
-Folder=
+Folder=Wide
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
-FileName=OptionDialog.wxform
-Folder=wxIF
-Compile=0
-Link=0
+[Unit8]
+FileName=myframe.h
+CompileCpp=1
+Folder=Wide
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=

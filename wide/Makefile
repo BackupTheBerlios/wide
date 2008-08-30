@@ -5,11 +5,11 @@
 CXX   = g++
 STRIP = strip
 
-WX_FLAGS = `wx-config --debug=no --unicode=yes --cxxflags`
-WX_LIBS  = `wx-config --debug=no --unicode=yes --libs`
+WX_FLAGS = `wx-config --debug=no --cxxflags`
+WX_LIBS  = `wx-config --debug=no --libs aui,stc`
 
 CXXFLAGS = $(WX_FLAGS)
-LIBS     = $(WX_LIBS) -lwx_gtk2u_stc-2.8 
+LIBS     = $(WX_LIBS)
 
 
 all: wide

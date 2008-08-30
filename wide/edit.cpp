@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.11 2008/08/28 22:45:52 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.12 2008/08/30 12:59:52 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -37,8 +37,7 @@
 //! application headers
 #include "defsext.h"     // additional definitions
 
-#include "edit.h"        // edit module
-
+#include "edit.h"
 
 //----------------------------------------------------------------------------
 // resources
@@ -113,10 +112,12 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
             const wxPoint &pos,
             const wxSize &size,
             long style,
-            wxString filename)
+            wxString filename,
+            MyFrame *frame)
     : wxStyledTextCtrl (parent, id, pos, size, style) {
     // PL: filename e' usato solo per settare il lexer
     m_filename = wxEmptyString;
+    m_frame = frame;
 
     m_LineNrID = 0;
     m_DividerID = 1;
@@ -146,7 +147,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
 
-    wxString m_languagename = DeterminePrefs(filename);
+    m_languagename = DeterminePrefs(filename);
     InitializePrefs (m_languagename);
     
     // set visibility
@@ -401,6 +402,10 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         if (lineInd == 0) return;
         SetLineIndentation (currentLine, lineInd);
         GotoPos(PositionFromLine (currentLine) + lineInd);
+
+	// aggiorno l'albero principale
+        m_frame->RefreshTree();
+
     }
     // SKILLO
     int style = GetStyleAt(pos);
