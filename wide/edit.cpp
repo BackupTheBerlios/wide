@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.12 2008/08/30 12:59:52 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.13 2008/08/31 08:04:30 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -395,6 +395,9 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int currentLine = GetCurrentLine();
     // Change this if support for mac files with \r is needed
     if (chr == '\n') {
+    	// Update the main tree in the frame
+        m_frame->RefreshTree();        
+        
         int lineInd = 0;
         if (currentLine > 0) {
             lineInd = GetLineIndentation(currentLine - 1);
@@ -402,10 +405,6 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         if (lineInd == 0) return;
         SetLineIndentation (currentLine, lineInd);
         GotoPos(PositionFromLine (currentLine) + lineInd);
-
-	// aggiorno l'albero principale
-        m_frame->RefreshTree();
-
     }
     // SKILLO
     int style = GetStyleAt(pos);
@@ -417,25 +416,8 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
                 AutoCompShow(pos-start, m_wordlist);
         }
         // SKILLO
-    }
-    
+    }    
 }
-
-// TEST
-//bool Edit::HasWord(wxString word, wxString &wordlist)
-//{
-//    word.MakeUpper();   // entire wordlist is uppercase
-//
-//    wxStringTokenizer tkz(wordlist, wxT(" "));
-//    while (tkz.HasMoreTokens())
-//    {
-//        wxString token = tkz.GetNextToken();
-//        if (token.StartsWith(word))
-//            return true;
-//    }
-//    return false;
-//}
-// TEST
 
 //----------------------------------------------------------------------------
 // private functions
@@ -460,7 +442,6 @@ wxString Edit::DeterminePrefs (const wxString &filename) {
         }
     }
     return wxEmptyString;
-
 }
 
 bool Edit::InitializePrefs (const wxString &name) {

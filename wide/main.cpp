@@ -9,14 +9,14 @@
   #include "wx/treectrl.h"  
   #include "wx/artprov.h"
   #include "wx/menu.h"
-  #include "wx/stc/stc.h"  // styled text control
-  #include "wx/aboutdlg.h" // Per la Dialog di About
-  #include "wx/filedlg.h"  // Per il file chooser
-  #include "wx/toolbar.h"  // tool bar principale
+  #include "wx/stc/stc.h"  
+  #include "wx/aboutdlg.h" 
+  #include "wx/filedlg.h"  
+  #include "wx/toolbar.h"  
   #include "wx/imaglist.h"
-  #include "wx/regex.h"    // Regular expressions
-  #include "wx/fileconf.h" // Gestione file di configurazione
-  #include "wx/generic/numdlgg.h" // Gestione input dialog
+  #include "wx/regex.h"    
+  #include "wx/fileconf.h" 
+  #include "wx/generic/numdlgg.h" 
 
   #include "images/fileopen.xpm"
   #include "images/filesave.xpm"
@@ -48,7 +48,6 @@
   #include "myframe.h"
 
   wxFileConfig *pConfig;       
-
 
   // our normal wxApp-derived class, as usual
  class MyApp : public wxApp {
@@ -182,12 +181,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 
 END_EVENT_TABLE()
 
-
-
 // Funzioni di classe ---------------------------------------------------------
 
 // MENU EDIT: UNCOMMENT
-// NON E' FINALE: cambiare l'algoritmo
 void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
     if (auinotebook->GetPageCount()==0) return;
     Edit* e = (Edit*) auinotebook->GetPage(auinotebook->GetSelection());
@@ -204,11 +200,9 @@ void MyFrame::OnUncomment(wxCommandEvent& WXUNUSED(event)){
             if (tline[j] == '!') { tline.Remove(j,1); end--; break; }
             if (tline[j] != ' ' && tline[j] != '\t') break;
         }
-        //wxString tline = e->GetLine(i);
         e->SetTargetStart(linestart);
         e->SetTargetEnd(lineend);
         e->ReplaceTarget(tline);
-        //if (tline.Replace("!","",false)) e->ReplaceTarget(tline);
     }    
     e->SetSelection(start, end);
 }
@@ -504,7 +498,6 @@ void MyFrame::SaveConfiguration() {
      
      pConfig->Write(_T("AUTOCOMPLETE_NUMBER"), autoCompleteNumber);
      
-     
      // Window location
      int x,y,width,height;
      this->GetPosition(&x,&y);
@@ -546,7 +539,6 @@ void MyFrame::LoadConfiguration() {
     bext = pConfig->Read(_T("BLORBEXTENSION"), _T(""));
     
     // TRANSLATION MESSAGES AND MENUES
-    // carico le stringhe in lingua
     language = pConfig->Read(_T("LANGUAGE"), _T(""));
 
     // MENU_FILE    
@@ -675,7 +667,6 @@ void MyFrame::LoadConfiguration() {
     ERRORS_NOMARKERS = pConfig->Read(language+_T("_")+_T("ERRORS_NOMARKERS"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_NOMARKERS"),_T("")):_T("No Markers found");    
     ERRORS_SAVEERROR = pConfig->Read(language+_T("_")+_T("ERRORS_SAVEERROR"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_SAVEERROR"),_T("")):_T("Text could not be saved!");    
     ERRORS_CLOSEABORT = pConfig->Read(language+_T("_")+_T("ERRORS_CLOSEABORT"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("ERRORS_CLOSEABORT"),_T("")):_T("Close abort");    
-              
 }   
     
     
@@ -1709,15 +1700,15 @@ void MyFrame::OnLicense(wxCommandEvent& WXUNUSED(event))
     info.SetDescription(wxString::FromAscii(
 "\nGNU GPL LICENSE\n"
 "\n"
-"This program is free software; you can redistribute it and/or modify it"
-"under the terms of the GNU General Public License as published by the  "
-"Free Software Foundation; either version 3 of the License, or (at your "
-"option) any later version. This program is distributed in the hope that"
-"it will be useful,  but WITHOUT ANY WARRANTY; without even the implied "
-"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See   "
-"the GNU General Public License for more details. You should have       "
-"received a copy of the GNU General Public License along with this      "
-"program. If not, see <http://www.gnu.org/licenses/>."
+"This program is free software; you can redistribute it and/or modify it\n"
+"under the terms of the GNU General Public License as published by the  \n"
+"Free Software Foundation; either version 3 of the License, or (at your \n"
+"option) any later version. This program is distributed in the hope that\n"
+"it will be useful,  but WITHOUT ANY WARRANTY; without even the implied \n"
+"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \n"
+"See the GNU General Public License for more details. \n\nYou should have"
+"received a copy of the GNU General Public License \nalong with this"
+"program.\nIf not, see <http://www.gnu.org/licenses/>."
     ));
     wxAboutBox(info);
 }
