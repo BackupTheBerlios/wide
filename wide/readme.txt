@@ -10,6 +10,7 @@ Contents:
 1) Setup
 2) Projects and project files
 3) Tips about using Wide
+4) License
 
 
 
@@ -131,6 +132,15 @@ appears.
 
 ---
 
+LANGUAGE				Language of the localization
+
+Available values are ENGLISH, ITALIAN, SPANISH, GERMAN, FRENCH
+
+Following the language there are five series - one for each language - of 
+definitions of messages, errors and menu entries.
+
+---
+
 [HOTKEYS]
 ...
 
@@ -242,4 +252,21 @@ where <ID> is an unique identifier.
 * You can shift right-left blocks of text using the TAB and SHIFT+TAB keys.
 * It's possible to install WIDE into an USB pen: simply use relative paths for
   the executables.
-  
+
+
+
+==========
+4) License
+==========
+
+Wide is released under the terms of the Gnu Public License 2.0, which can be
+found in the attached gpl.txt file, or downloaded from Open Source Initiative 
+website: <http://www.opensource.org/>. Everybody can download, use, copy, 
+distribute, transfer and modify this software under the terms of the aforesaid 
+Gnu Public License. 
+The sources of the latest stable version can be downloaded from the Wide
+home page: <http://wide.berlios.de/>; the most recent sources can always 
+be downloaded from the CVS at the Wide home page.
+This software is released ~AS IS~, without warranty of any kind. The authors 
+aren't liable for any direct or indirect damage due to the proper or improper 
+use of this software.
