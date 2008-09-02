@@ -1,7 +1,7 @@
 ***************** WIDE ****************
     Wx Inform Development Environment
         http://wide.berlios.de/
-          Version 0.92 beta
+          Version 0.99 beta
 ***************************************
 
 Contents:
