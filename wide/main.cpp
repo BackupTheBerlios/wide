@@ -87,7 +87,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MyFrame::ID_LoadFile,      MyFrame::OnLoadFile)
     EVT_MENU(MyFrame::ID_Exit,          MyFrame::OnExit)
     EVT_MENU(MyFrame::ID_About,         MyFrame::OnAbout)
-    EVT_MENU(MyFrame::ID_License,       MyFrame::OnLicense)
     EVT_MENU(MyFrame::ID_NewFile,       MyFrame::OnNewFile)
     EVT_MENU(MyFrame::ID_NextPage,      MyFrame::OnNextPage)
     EVT_MENU(MyFrame::ID_PreviousPage,  MyFrame::OnPreviousPage)
@@ -1689,31 +1688,6 @@ void MyFrame::OnCloseProject(wxCommandEvent& WXUNUSED(event))
 }
 
 
-void MyFrame::OnLicense(wxCommandEvent& WXUNUSED(event))
-{
-
-    wxAboutDialogInfo info;
-    info.SetName(_(NOMEAPPLICAZIONE));
-    info.SetVersion(_(VERSIONE));
-    info.SetCopyright(_T("(C) 2008 - Alessandro Schillaci"));
-    info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
-    info.SetDescription(wxString::FromAscii(
-"\nGNU GPL LICENSE\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify it\n"
-"under the terms of the GNU General Public License as published by the  \n"
-"Free Software Foundation; either version 3 of the License, or (at your \n"
-"option) any later version. This program is distributed in the hope that\n"
-"it will be useful,  but WITHOUT ANY WARRANTY; without even the implied \n"
-"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \n"
-"See the GNU General Public License for more details. \n\nYou should have"
-"received a copy of the GNU General Public License \nalong with this"
-"program.\nIf not, see <http://www.gnu.org/licenses/>."
-    ));
-    wxAboutBox(info);
-}
-
-
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     
@@ -1728,6 +1702,19 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     info.AddTranslator(_T("Urbatain (Spanish)"));
     info.AddTranslator(_T("Eric Forgeot (French)"));
     info.AddTranslator(_T("Christof Menear (German)"));
+    info.SetLicense(wxString::FromAscii(
+"\nGNU GPL LICENSE\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify it\n"
+"under the terms of the GNU General Public License as published by the  \n"
+"Free Software Foundation; either version 3 of the License, or (at your \n"
+"option) any later version. This program is distributed in the hope that\n"
+"it will be useful,  but WITHOUT ANY WARRANTY; without even the implied \n"
+"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \n"
+"See the GNU General Public License for more details. \n\nYou should have"
+"received a copy of the GNU General Public License \nalong with this"
+"program.\nIf not, see <http://www.gnu.org/licenses/>."
+    ));
     wxAboutBox(info);    
 }
  
@@ -2043,8 +2030,6 @@ wxMenuBar* MyFrame::CreateMenuBar()
 
     // HELP MENU
     wxMenu* help = new wxMenu;
-    help->Append(ID_License, MENU_HELP_LICENSE);    
-    help->AppendSeparator();
     wxMenuItem *about = new wxMenuItem(help, ID_About, MENU_HELP_ABOUT);
     about->SetBitmap(help_xpm);
     help->Append(about);
