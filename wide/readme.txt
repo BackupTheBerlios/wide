@@ -27,7 +27,7 @@ z-code and glulx formats.
 Main Features:
 
 * Written in C++ (using the wxWidgets Library)
-* Currently, Wide runs on Win32 systems
+* Wide runs on Win32 and Linux systems
 * Auto-completion window, in edit mode
 * Wide is just an exe file: no DLL, no virtual machines. Wide is a "real" 
   stand alone application.
