@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.15 2008/09/05 20:15:31 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.16 2008/09/05 21:29:44 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     // miscelaneous
     m_LineNrMargin = TextWidth (wxSTC_STYLE_LINENUMBER, _T("_999999"));
     m_FoldingMargin = 16;
-    CmdKeyClear (wxSTC_KEY_TAB, 0); // this is done by the menu accelerator key
+    //CmdKeyClear (wxSTC_KEY_TAB, 0); // this is done by the menu accelerator key
     SetLayoutCache (wxSTC_CACHE_PAGE);
 
 }
