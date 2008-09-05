@@ -496,6 +496,7 @@ void MyFrame::SaveConfiguration() {
      pConfig->Write(_T("REPLACEHOTKEYS"), hotkeysSwitch);
      
      pConfig->Write(_T("AUTOCOMPLETE_NUMBER"), autoCompleteNumber);
+     pConfig->Write(_T("TABSIZE"), tabSize);
      
      // Window location
      int x,y,width,height;
@@ -526,6 +527,8 @@ void MyFrame::LoadConfiguration() {
      hotkeysSwitch      = pConfig->Read(_T("REPLACEHOTKEYS"), 1l) != 0;
      
      autoCompleteNumber = pConfig->Read(_T("AUTOCOMPLETE_NUMBER"), 1l);
+     tabSize = pConfig->Read(_T("TABSIZE"), 1l);
+     
      
      // Inform Stuff
      informCompiler = pConfig->Read(_T("INFORMCOMPILER"), _T(""));
@@ -1547,6 +1550,7 @@ void MyFrame::setNewStc(Edit* stc) {
     stc->SetAutoCompleteNumber(autoCompleteNumber);
     stc->SetAutoComplete(autoCompleteSwitch, true);   
     stc->SetHotkeys(hotkeysSwitch, true);
+    stc->SetTabWidth(tabSize);
 
     /*OnClear();
     OnOutput(wordlist);

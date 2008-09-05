@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.14 2008/09/05 16:35:26 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.15 2008/09/05 20:15:31 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -546,11 +546,11 @@ bool Edit::InitializePrefs (const wxString &name) {
                   wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED);
 
     // set spaces and indention
-    SetTabWidth (4);
+    SetTabWidth (2);
     SetUseTabs (false);
-    SetTabIndents (true);
+    SetTabIndents (false);
     SetBackSpaceUnIndents (true);
-    SetIndent (g_CommonPrefs.indentEnable? 4: 0);
+    SetIndent (g_CommonPrefs.indentEnable? 2: 0);
 
     // others
     SetViewEOL (g_CommonPrefs.displayEOLEnable);

@@ -249,6 +249,7 @@ class MyFrame : public wxFrame {
 
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     
+     int tabSize;
      bool autoCompleteSwitch;
      bool showLineNumber;
      bool wrapMode;
