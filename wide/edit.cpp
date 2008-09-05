@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.13 2008/08/31 08:04:30 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.14 2008/09/05 16:35:26 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -585,33 +585,55 @@ bool Edit::LoadFile ()
 #endif // wxUSE_FILEDLG
 }
 
-bool Edit::LoadFile (const wxString &filename) {
 
-    // load file in edit and clear undo
-    if (!filename.empty()) m_filename = filename;
-//     wxFile file (m_filename);
-//     if (!file.IsOpened()) return false;
-    ClearAll ();
-//     long lng = file.Length ();
-//     if (lng > 0) {
-//         wxString buf;
-//         wxChar *buff = buf.GetWriteBuf (lng);
-//         file.Read (buff, lng);
-//         buf.UngetWriteBuf ();
-//         InsertText (0, buf);
-//     }
-//     file.Close();
+bool Edit::LoadFile(const wxString& filename)
+{
+	if (!filename.empty()) m_filename = filename;
+	ClearAll ();
+    bool success = false;
+    wxFile file(filename, wxFile::read);
 
-    wxStyledTextCtrl::LoadFile(m_filename);
+    if (file.IsOpened())
+    {
+        wxString contents;
+        // get the file size (assume it is not huge file...)
+        ssize_t len = (ssize_t)file.Length();
 
-    EmptyUndoBuffer();
+        if (len > 0)
+        {
+            wxMemoryBuffer buffer(len+1);
+            success = (file.Read(buffer.GetData(), len) == len);
+            if (success) {
+                ((char*)buffer.GetData())[len] = 0;
+                contents = wxString(buffer, wxConvISO8859_1, len);
+            }
+        }
+        else
+        {
+            if (len == 0)
+                success = true;  // empty file is ok
+            else
+                success = false; // len == wxInvalidOffset
+        }
+
+        if (success)
+        {
+            SetText(contents);
+            EmptyUndoBuffer();
+            SetSavePoint();
+        }
+    }
+ 	EmptyUndoBuffer();
 
     // determine lexer language
     wxFileName fname (m_filename);
     InitializePrefs (DeterminePrefs (fname.GetFullName()));
-
-    return true;
+    return success;
 }
+
+
+
+
 
 bool Edit::SaveFile ()
 {
@@ -634,26 +656,20 @@ bool Edit::SaveFile ()
 #endif // wxUSE_FILEDLG
 }
 
-bool Edit::SaveFile (const wxString &filename) {
+bool Edit::SaveFile(const wxString& filename)
+{
+	if (!Modified()) return true;
+    wxFile file(filename, wxFile::write);
 
-    // return if no change
-    if (!Modified()) return true;
+    if (!file.IsOpened())
+        return false;
 
-//     // save edit in file and clear undo
-//     if (!filename.empty()) m_filename = filename;
-//     wxFile file (m_filename, wxFile::write);
-//     if (!file.IsOpened()) return false;
-//     wxString buf = GetText();
-//     bool okay = file.Write (buf);
-//     file.Close();
-//     if (!okay) return false;
-//     EmptyUndoBuffer();
-//     SetSavePoint();
+    bool success = file.Write(GetText(), wxConvISO8859_1);
 
-//     return true;
+    if (success)
+        SetSavePoint();
 
-    return wxStyledTextCtrl::SaveFile(filename);
-
+    return success;
 }
 
 bool Edit::Modified () {
