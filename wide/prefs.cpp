@@ -158,7 +158,7 @@ const StyleInfo g_StylePrefs [] = {
 // COMMENTI
     // mySTC_TYPE_COMMENT
     {(wxChar*)_T("Comment"),
-     (wxChar*)_T("DARK GREY"), (wxChar*)_T("WHITE"),
+     (wxChar*)_T("GREY"), (wxChar*)_T("WHITE"),
      (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_BOLD|mySTC_STYLE_ITALIC, 0},
 
     // mySTC_TYPE_COMMENT_DOC
@@ -168,7 +168,7 @@ const StyleInfo g_StylePrefs [] = {
 
     // mySTC_TYPE_COMMENT_LINE
     {(wxChar*)_T("Comment line"),
-     (wxChar*)_T("DARK GREY"), (wxChar*)_T("WHITE"),
+     (wxChar*)_T("GREY"), (wxChar*)_T("WHITE"),
      (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_BOLD|mySTC_STYLE_ITALIC, 0},
 
     // mySTC_TYPE_COMMENT_SPECIAL
