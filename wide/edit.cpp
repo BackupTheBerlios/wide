@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.17 2008/09/08 19:44:04 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.18 2008/09/08 20:31:53 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     SetReadOnly (g_CommonPrefs.readOnlyInitial);
     SetWrapMode (g_CommonPrefs.wrapModeInitial?
                  wxSTC_WRAP_WORD: wxSTC_WRAP_NONE);
-    wxFont font (10, wxMODERN, wxNORMAL, wxNORMAL);
+    wxFont font (10, wxDECORATIVE, wxNORMAL, wxNORMAL);
     StyleSetFont (wxSTC_STYLE_DEFAULT, font);
     StyleSetForeground (wxSTC_STYLE_DEFAULT, *wxBLACK);
     StyleSetBackground (wxSTC_STYLE_DEFAULT, *wxWHITE);
@@ -156,14 +156,6 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     SetYCaretPolicy (wxSTC_CARET_EVEN|wxSTC_VISIBLE_STRICT|wxSTC_CARET_SLOP, 1);
 
     // markers
-//    MarkerDefine (wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_DOTDOTDOT, _T("BLACK"), _T("BLACK"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_ARROWDOWN, _T("BLACK"), _T("BLACK"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_EMPTY,     _T("BLACK"), _T("BLACK"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_DOTDOTDOT, _T("BLACK"), _T("WHITE"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN, _T("BLACK"), _T("WHITE"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY,     _T("BLACK"), _T("BLACK"));
-//    MarkerDefine (wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_EMPTY,     _T("BLACK"), _T("BLACK"));
-
     MarkerDefine (wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_BOXPLUS, _T("WHITE"), _T("BLACK"));
     MarkerDefine (wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_BOXMINUS, _T("WHITE"), _T("BLACK"));
     MarkerDefine (wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_EMPTY,     _T("BLACK"), _T("BLACK"));
