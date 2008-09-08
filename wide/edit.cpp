@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.16 2008/09/05 21:29:44 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.17 2008/09/08 19:44:04 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id,
     SetReadOnly (g_CommonPrefs.readOnlyInitial);
     SetWrapMode (g_CommonPrefs.wrapModeInitial?
                  wxSTC_WRAP_WORD: wxSTC_WRAP_NONE);
-    wxFont font (9, wxMODERN, wxNORMAL, wxNORMAL);
+    wxFont font (10, wxMODERN, wxNORMAL, wxNORMAL);
     StyleSetFont (wxSTC_STYLE_DEFAULT, font);
     StyleSetForeground (wxSTC_STYLE_DEFAULT, *wxBLACK);
     StyleSetBackground (wxSTC_STYLE_DEFAULT, *wxWHITE);
@@ -468,13 +468,13 @@ bool Edit::InitializePrefs (const wxString &name) {
 
     // set margin for line numbers
     SetMarginType (m_LineNrID, wxSTC_MARGIN_NUMBER);
-    StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
+    StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("BLACK")));
     SetMarginWidth (m_LineNrID, 0); // start out not visible
 
     // default fonts for all styles!
     int Nr;
     for (Nr = 0; Nr < wxSTC_STYLE_LASTPREDEFINED; Nr++) {
-        wxFont font (9, wxTELETYPE, wxNORMAL, wxNORMAL);
+        wxFont font (10, wxTELETYPE, wxNORMAL, wxNORMAL);
         StyleSetFont (Nr, font);
     }
 

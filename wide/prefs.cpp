@@ -158,8 +158,8 @@ const StyleInfo g_StylePrefs [] = {
 // COMMENTI
     // mySTC_TYPE_COMMENT
     {(wxChar*)_T("Comment"),
-     (wxChar*)_T("FOREST GREEN"), (wxChar*)_T("WHITE"),
-     (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_ITALIC, 0},
+     (wxChar*)_T("DARK GREY"), (wxChar*)_T("WHITE"),
+     (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_BOLD|mySTC_STYLE_ITALIC, 0},
 
     // mySTC_TYPE_COMMENT_DOC
     {(wxChar*)_T("Comment (Doc)"),
@@ -168,8 +168,8 @@ const StyleInfo g_StylePrefs [] = {
 
     // mySTC_TYPE_COMMENT_LINE
     {(wxChar*)_T("Comment line"),
-     (wxChar*)_T("FOREST GREEN"), (wxChar*)_T("WHITE"),
-     (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_ITALIC, 0},
+     (wxChar*)_T("DARK GREY"), (wxChar*)_T("WHITE"),
+     (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_BOLD|mySTC_STYLE_ITALIC, 0},
 
     // mySTC_TYPE_COMMENT_SPECIAL
     {(wxChar*)_T("Special comment"),
@@ -251,8 +251,8 @@ const StyleInfo g_StylePrefs [] = {
 // Stringhe
     // mySTC_TYPE_UUID
     {(wxChar*)_T("UUID"),
-     (wxChar*)_T("ORANGE"), (wxChar*)_T("WHITE"),
-     (wxChar*)_T(""), FONTSIZE, 0, 0},
+     (wxChar*)_T("FOREST GREEN"), (wxChar*)_T("WHITE"),
+     (wxChar*)_T(""), FONTSIZE, mySTC_STYLE_BOLD, 0},
 
     // mySTC_TYPE_VALUE
     {(wxChar*)_T("Value"),
