@@ -533,10 +533,10 @@ void MyFrame::LoadConfiguration() {
      
      // Inform Stuff
      informCompiler = pConfig->Read(_T("INFORMCOMPILER"), _T(""));
-     libraryPath=_T("+include_path=")+ 
-                pConfig->Read(_T("LIBRARYPATH1"), _T(""))+_T(",")+
-                pConfig->Read(_T("LIBRARYPATH2"), _T(""))+_T(",")+
-                pConfig->Read(_T("LIBRARYPATH3"), _T(""));                
+     libraryPath=_T("+include_path=\"")+
+                pConfig->Read(_T("LIBRARYPATH1"), _T(""))+_T("\",\"")+
+                pConfig->Read(_T("LIBRARYPATH2"), _T(""))+_T("\",\"")+
+                pConfig->Read(_T("LIBRARYPATH3"), _T(""))+_T("\"");                
     bres = pConfig->Read(_T("BRESPATH"), _T(""));                
     blc  = pConfig->Read(_T("BLCPATH"), _T(""));
     bext = pConfig->Read(_T("BLORBEXTENSION"), _T(""));
