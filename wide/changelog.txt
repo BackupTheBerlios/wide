@@ -1,6 +1,13 @@
 CHANGELOG WIDE
 ==============
 
+2013-07-05
+- fixed Makefile (to compile under Arch)
+- fixed path with " under linux systems (now it compiles)
+- fixed autocomplete window performance (under linux)
+
+
+
 2008-08-29
 - compatibilità con linux
 

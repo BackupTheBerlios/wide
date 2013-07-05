@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.18 2008/09/08 20:31:53 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.19 2013/07/05 20:11:24 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -38,6 +38,7 @@
 #include "defsext.h"     // additional definitions
 
 #include "edit.h"
+#include <wx/tokenzr.h>  // string tokenizer
 
 //----------------------------------------------------------------------------
 // resources
@@ -371,6 +372,22 @@ void Edit::OnMarginClick (wxStyledTextEvent &event) {
     }
 }
 
+bool Edit::HasWord(wxString word, wxString &wordlist)
+{
+	word.MakeLower();
+
+	wxStringTokenizer tkz(wordlist.Lower(), _T(" "));
+	while (tkz.HasMoreTokens())
+	{	wxString token = tkz.GetNextToken();
+
+		if (token.Cmp(word)==0)
+			continue;
+		if (token.StartsWith(word))
+			return true;
+	}
+	return false;
+}
+
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int pos = GetCurrentPos();
 
@@ -398,6 +415,21 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         SetLineIndentation (currentLine, lineInd);
         GotoPos(PositionFromLine (currentLine) + lineInd);
     }
+    
+    // TEST
+    pos = GetCurrentPos();
+    int start = WordStartPosition(pos, true);
+
+    if (pos - start >= 1) {
+        if (HasWord(GetTextRange(start, pos), m_wordlist)) {
+            if (!AutoCompActive())
+                AutoCompShow(pos - start, m_wordlist);
+        } else
+            AutoCompCancel();
+    }    
+    // TEST
+    
+    /*
     // SKILLO
     int style = GetStyleAt(pos);
     if (autocomplete && style != 5 && style != 8) {    // Valori trovati per tentativi
@@ -407,8 +439,12 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
     //        if (HasWord(GetTextRange(start, pos), m_wordlist))
                 AutoCompShow(pos-start, m_wordlist);
         }
+        else{
+            AutoCompCancel();
+        }
         // SKILLO
-    }    
+     * 
+    }   */ 
 }
 
 //----------------------------------------------------------------------------

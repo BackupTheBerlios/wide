@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.h,v 1.8 2008/08/30 12:59:52 schillacia Exp $
+// RCS-ID:      $Id: edit.h,v 1.9 2013/07/05 20:11:24 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,8 @@ public:
     // stc
     void OnMarginClick (wxStyledTextEvent &event);
     void OnCharAdded  (wxStyledTextEvent &event);
-
+    bool HasWord(wxString word, wxString &wordlist);
+    
     //! language/lexer
     wxString DeterminePrefs (const wxString &filename);
     bool InitializePrefs (const wxString &filename);
