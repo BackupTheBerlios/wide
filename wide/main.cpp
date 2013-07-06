@@ -1486,6 +1486,7 @@ void MyFrame::setNewStc(Edit* stc) {
     //stc->SetCaretLineBackground(wxColour(152,248,248,wxALPHA_OPAQUE));
     stc->AutoCompSetIgnoreCase(true);
     stc->AutoCompSetAutoHide(true);
+    //stc->CallTipSetForegroundHighlight(wxColour(52,248,248));
 
     //wxString languagename = stc->QueryLanguage();
     if (stc->QueryLanguage() != _T("INFORM")) {
@@ -1498,6 +1499,7 @@ void MyFrame::setNewStc(Edit* stc) {
     long dummy;
     wxString str, s;
     // Recupero le hotkey
+    /*
     stc->ClearHotkeys();
     pConfig->SetPath(_T("/HOTKEYS"));
     bCont = pConfig->GetFirstEntry(str, dummy);
@@ -1506,7 +1508,8 @@ void MyFrame::setNewStc(Edit* stc) {
         stc->AddHotkey(s);
         //OnOutput(_T(str)+" = "+_T(s)+" ;  ");
         bCont = pConfig->GetNextEntry(str, dummy);
-    }   
+    } 
+    */  
     //wxMessageBox (_("Sono qui!"), _("Close abort"),  wxOK | wxICON_EXCLAMATION); 
     
     // Recupero tutte le wordlist per AUTOCOMPLETION dal file di configurazione
@@ -1556,7 +1559,7 @@ void MyFrame::setNewStc(Edit* stc) {
     //Ordino l'array e lo copio nella lista per l'autocompletion
     wlarray.Sort(CompareStrings);
     wxString wordlist = _T("");
-    for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i] + _T(" ");
+    for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i].MakeLower() + _T(" ");
     wlarray.Clear();
     stc->SetWordlist(wordlist);
     stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist + direclist + otherlist);
