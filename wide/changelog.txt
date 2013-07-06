@@ -4,6 +4,9 @@ CHANGELOG WIDE
 2013-07-06
 - fixed new autompletion
 - hardcoded hotkeys
+- change background for selected line
+- fixed blc under linux (should use absolute path for RES file)
+- 
 
 2013-07-05
 - fixed Makefile (to compile under Arch)

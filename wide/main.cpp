@@ -1483,7 +1483,7 @@ void MyFrame::setNewStc(Edit* stc) {
     }
 
     stc->SetCaretLineVisible(true);
-    stc->SetCaretLineBackground(wxColour(152,248,248,wxALPHA_OPAQUE));
+    //stc->SetCaretLineBackground(wxColour(152,248,248,wxALPHA_OPAQUE));
     stc->AutoCompSetIgnoreCase(true);
     stc->AutoCompSetAutoHide(true);
 
