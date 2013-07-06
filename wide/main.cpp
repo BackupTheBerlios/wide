@@ -1707,7 +1707,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     info.SetName(_(NOMEAPPLICAZIONE));
     info.SetVersion(_(VERSIONE));
     info.SetDescription(_(DESCRIZIONE));
-    info.SetCopyright(_T("(C) 2008 - schillacia@users.berlios.de"));
+    info.SetCopyright(_T("(C) 2008 - 2013 schillacia@users.berlios.de"));
     info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.AddDeveloper(_T("Alessandro Schillaci"));
     info.AddDeveloper(_T("Paolo Lucchesi"));

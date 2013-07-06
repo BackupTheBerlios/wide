@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.20 2013/07/06 11:41:00 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.21 2013/07/06 12:27:13 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -391,13 +391,13 @@ bool Edit::HasWord(wxString word, wxString &wordlist)
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int pos = GetCurrentPos();
     wxChar chr = (char) event.GetKey();
-    printf("%d",chr);
+    //printf("%d*",chr);
     bool found = false;
-//    à 65504
-//    è 65512
-//    ì 65516
-//    ò 65522
-//    ù 65529
+//    à 65504 or -32
+//    è 65512 or -24
+//    ì 65516 or -20
+//    ò 65522 or -14
+//    ù 65529 or -7
     
     if (hotkeys) {    
         switch (chr) {
@@ -408,7 +408,21 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
                 AddText(_T("@`a"));
                 found = true;
                 break;
+            case -32:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`a"));
+                found = true;
+                break;                
             case 65512:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`e"));
+                found = true;
+                break;                
+            case -24:
                 SetTargetStart(pos - 2);
                 SetTargetEnd(pos);
                 ReplaceTarget(_T(""));
@@ -422,6 +436,13 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
                 AddText(_T("@`i"));
                 found = true;
                 break;                
+            case -20:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`i"));
+                found = true;
+                break;                
             case 65522:
                 SetTargetStart(pos - 2);
                 SetTargetEnd(pos);
@@ -429,7 +450,21 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
                 AddText(_T("@`o"));
                 found = true;
                 break;                
+            case -14:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`o"));
+                found = true;
+                break;              
             case 65529:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`u"));
+                found = true;
+                break;                
+            case -7:
                 SetTargetStart(pos - 2);
                 SetTargetEnd(pos);
                 ReplaceTarget(_T(""));
