@@ -851,13 +851,14 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         blbFile = mainFile;
     }
     wxString wpath=wxPathOnly(blbFile);
-    wxString mpath = wxGetCwd();
-    wxSetWorkingDirectory(wpath);
+    //wxString mpath = wxGetCwd();
+    //wxSetWorkingDirectory(wpath);
 
 
     blcFile.Replace(_T(".inf"), _T(".blc"), true);
     blbFile.Replace(_T(".inf"), _T(".")+bext, true);
-    wxString comando =  _T("\"")+blc +_T("\"")+_T(" ")+_T("\"")+blcFile+_T("\"")+_T(" ")+_T("\"")+blbFile+_T("\"");
+    //wxString comando =  _T("\"")+blc +_T("\"")+_T(" ")+_T("\"")+blcFile+_T("\"")+_T(" ")+_T("\"")+blbFile+_T("\"");
+    wxString comando =  blc +_T(" ")+blcFile+_T(" ")+blbFile;
 
     //wxString comando =  blc +" "+blcFile+" "+blbFile;    
     wxArrayString output;
@@ -887,7 +888,7 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         OnOutput(_T("Ok.\n"));
         inform_error = false;
     }    
-    wxSetWorkingDirectory(mpath);
+    //wxSetWorkingDirectory(mpath);
 }
 
 void MyFrame::OnCreateRes (wxCommandEvent &event) {
