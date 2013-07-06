@@ -9,7 +9,10 @@ libSDL_sound-1.0 (sudo pacman -S sdl_sound)
 
 
 Windows
+to add icon use:
+windres wide.rc -O coff -o wide.res
 
+g++ -o wide ...... wide.res
 
 
 NOTE:
