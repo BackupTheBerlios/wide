@@ -1310,7 +1310,7 @@ void MyFrame::OnConsoleClicked(wxStyledTextEvent &event) {
             console->SetSelectionEnd(0);
             console->Clear();
             
-            // Se il file non è aperto, lo apro        
+            // Se il file non ï¿½ aperto, lo apro        
             if (!checkOpenFile(file)){
                 wxString nome = file.Mid(file.Find('\\',true)+1,file.Length());
                 LoadFile(file, nome);            

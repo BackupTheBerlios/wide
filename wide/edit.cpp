@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.19 2013/07/05 20:11:24 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.20 2013/07/06 11:41:00 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -390,23 +390,72 @@ bool Edit::HasWord(wxString word, wxString &wordlist)
 
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int pos = GetCurrentPos();
-
-    wxChar chr = (char)event.GetKey();
-    // if (chr < 0) { wxString s; s.Printf("%d",chr); AddText(s); }        
-    if (hotkeys) for (size_t i = 0; i<m_hotkey.GetCount(); i++) {
-        wxString s = m_hotkey[i];
-        if (s[0] == chr) {
-            SetTargetStart(pos - 1); SetTargetEnd(pos);
-            ReplaceTarget(_T(""));
-            AddText(s.Mid(2));
+    wxChar chr = (char) event.GetKey();
+    printf("%d",chr);
+    bool found = false;
+//    à 65504
+//    è 65512
+//    ì 65516
+//    ò 65522
+//    ù 65529
+    
+    if (hotkeys) {    
+        switch (chr) {
+            case 65504:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`a"));
+                found = true;
+                break;
+            case 65512:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`e"));
+                found = true;
+                break;                
+            case 65516:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`i"));
+                found = true;
+                break;                
+            case 65522:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`o"));
+                found = true;
+                break;                
+            case 65529:
+                SetTargetStart(pos - 2);
+                SetTargetEnd(pos);
+                ReplaceTarget(_T(""));
+                AddText(_T("@`u"));
+                found = true;
+                break;                
         }
     }
+    // if (chr < 0) { wxString s; s.Printf("%d",chr); AddText(s); }        
+//    if (hotkeys) {          
+//        for (size_t i = 0; i < m_hotkey.GetCount(); i++) {
+//            wxString s = m_hotkey[i];
+//            printf(" %d ",s[0]);
+//            if (s[0] == chr) {                
+//                SetTargetStart(pos - 1);
+//                SetTargetEnd(pos);
+//                ReplaceTarget(_T(""));
+//                AddText(s.Mid(2));
+//            }
+//        }
+//    }
     int currentLine = GetCurrentLine();
     // Change this if support for mac files with \r is needed
-    if (chr == '\n') {
+    if (chr == '\n' || chr == '\r') {
     	// Update the main tree in the frame
-        m_frame->RefreshTree();        
-        
+        m_frame->RefreshTree();                
         int lineInd = 0;
         if (currentLine > 0) {
             lineInd = GetLineIndentation(currentLine - 1);
@@ -416,18 +465,19 @@ void Edit::OnCharAdded (wxStyledTextEvent &event) {
         GotoPos(PositionFromLine (currentLine) + lineInd);
     }
     
-    // TEST
-    pos = GetCurrentPos();
-    int start = WordStartPosition(pos, true);
-
-    if (pos - start >= 1) {
-        if (HasWord(GetTextRange(start, pos), m_wordlist)) {
-            if (!AutoCompActive())
-                AutoCompShow(pos - start, m_wordlist);
-        } else
-            AutoCompCancel();
-    }    
-    // TEST
+    // new automcpletion code
+    if (!found){
+        pos = GetCurrentPos();
+        int start = WordStartPosition(pos, true);
+        if (pos - start >= 1) {
+            if (HasWord(GetTextRange(start, pos), m_wordlist)) {
+                if (!AutoCompActive())
+                    AutoCompShow(pos - start, m_wordlist);
+            } else
+                AutoCompCancel();
+        }    
+    }
+    // new automcpletion code
     
     /*
     // SKILLO

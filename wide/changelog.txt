@@ -1,6 +1,10 @@
 CHANGELOG WIDE
 ==============
 
+2013-07-06
+- fixed new autompletion
+- hardcoded hotkeys
+
 2013-07-05
 - fixed Makefile (to compile under Arch)
 - fixed path with " under linux systems (now it compiles)
@@ -9,7 +13,7 @@ CHANGELOG WIDE
 
 
 2008-08-29
-- compatibilità con linux
+- compatibilita' con linux
 
 2008-07-18
 - Creazione dei file z-blorb
