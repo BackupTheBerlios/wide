@@ -3,7 +3,7 @@
 // Purpose:     STC test module
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: edit.cpp,v 1.21 2013/07/06 12:27:13 schillacia Exp $
+// RCS-ID:      $Id: edit.cpp,v 1.22 2013/07/06 14:44:22 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -390,7 +390,7 @@ bool Edit::HasWord(wxString word, wxString &wordlist)
 
 void Edit::OnCharAdded (wxStyledTextEvent &event) {
     int pos = GetCurrentPos();
-    wxChar chr = (char) event.GetKey();
+    int chr = (char) event.GetKey();
     //printf("%d*",chr);
     bool found = false;
 //    à 65504 or -32

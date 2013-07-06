@@ -40,7 +40,6 @@
   #include "images/addbookm.xpm"
   #include "images/forward.xpm"
   #include "images/back.xpm"
-  #include "images/logo.xpm"
 
   #include "defsext.h"     // Additional definitions
   #include "prefs.h"       // Prefs      
@@ -1735,7 +1734,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 "received a copy of the GNU General Public License \nalong with this"
 "program.\nIf not, see <http://www.gnu.org/licenses/>."
     ));
-    info.SetIcon(logo_xpm);
+    //info.SetIcon(logo_xpm);
     wxAboutBox(info);    
 }
  
