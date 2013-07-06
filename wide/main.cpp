@@ -850,9 +850,13 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         blcFile = mainFile;
         blbFile = mainFile;
     }
+    
+#ifdef __WINDOWS__     
     wxString wpath=wxPathOnly(blbFile);
-    //wxString mpath = wxGetCwd();
-    //wxSetWorkingDirectory(wpath);
+    wxString mpath = wxGetCwd();
+    wxSetWorkingDirectory(wpath);
+#endif      
+    
 
 
     blcFile.Replace(_T(".inf"), _T(".blc"), true);
@@ -888,7 +892,10 @@ void MyFrame::OnCreateBlb (wxCommandEvent &event) {
         OnOutput(_T("Ok.\n"));
         inform_error = false;
     }    
-    //wxSetWorkingDirectory(mpath);
+#ifdef __WINDOWS__     
+    wxSetWorkingDirectory(mpath);    
+#endif  
+    
 }
 
 void MyFrame::OnCreateRes (wxCommandEvent &event) {

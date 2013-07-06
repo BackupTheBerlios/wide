@@ -9,3 +9,10 @@ libSDL_sound-1.0 (sudo pacman -S sdl_sound)
 
 
 Windows
+
+
+
+NOTE:
+for windows you can use relative path in the res file
+for linux you should use absolute path in the res file
+due to BLC which is different for platform
