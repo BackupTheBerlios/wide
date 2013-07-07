@@ -2,8 +2,10 @@
 #
 # Found to work fine under Linux with unicode version of wxGTK 2.8
 
-CXX   = g++ -DSHARED=0 -DRUNTIME_LIBS=static -DMONOLITHIC=1 -DUNICODE=1 
+#CXX   = g++ -DSHARED=0 -DRUNTIME_LIBS=static -DMONOLITHIC=1 -DUNICODE=1 
+CXX   = g++
 STRIP = strip
+PARAMS = -DSHARED=0 -DRUNTIME_LIBS=static -DMONOLITHIC=1 -DUNICODE=1
 
 WX_FLAGS = `wx-config --debug=no --cxxflags`
 WX_LIBS  = `wx-config --debug=no --libs aui,stc`
