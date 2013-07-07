@@ -1,12 +1,16 @@
 CHANGELOG WIDE
 ==============
 
+2013-07-07
+- WIDE 1.00.00
+
 2013-07-06
 - fixed new autompletion
-- hardcoded hotkeys
+- hardcoded hotkeys (removed hotkeys config from wide.ini file)
 - change background for selected line
 - fixed blc under linux (should use absolute path for RES file)
 - Makelower to poplist words
+
 
 2013-07-05
 - fixed Makefile (to compile under Arch)

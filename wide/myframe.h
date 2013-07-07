@@ -6,8 +6,8 @@
 
   // COSTANTI
   #define SEP " - "
-  #define VERSIONE "0.99.3 beta"
-  #define BUILD " (build 201307052155) "
+  #define VERSIONE "1.00.00"
+  #define BUILD " (build 201307071900) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  

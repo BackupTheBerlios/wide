@@ -1717,13 +1717,28 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     info.SetName(_(NOMEAPPLICAZIONE));
     info.SetVersion(_(VERSIONE));
     info.SetDescription(_(DESCRIZIONE));
-    info.SetCopyright(_T("(C) 2008 - 2013 schillacia@users.berlios.de"));
+    info.SetCopyright(_T("(C) 2008 - 2013 silver.slade@tiscali.it"));
     info.SetWebSite(_T("http://wide.berlios.de/"), _T("Home page"));
     info.AddDeveloper(_T("Alessandro Schillaci"));
     info.AddDeveloper(_T("Paolo Lucchesi"));
     info.AddTranslator(_T("Urbatain (Spanish)"));
     info.AddTranslator(_T("Eric Forgeot (French)"));
     info.AddTranslator(_T("Christof Menear (German)"));
+    info.SetDescription(wxString::FromAscii(
+    "Wide is a win32 Editor for Inform6:\n"
+    "is an Integrated Development Environment (IDE), written entirely\n"
+    "in C++/WxWidgets, for the creation of text adventures based on \n"
+    "Graham Nelson's Inform6 Language. With Wide it's possible to edit,\n"
+    "compile and run a text adventure in the z-code and glulx formats.\n\n"
+    "- Written in C++ (using the wxWidgets Library)\n"
+    "- Wide runs on Win32 / Linux systems\n"
+    "- Wide is localized in spanish, english, italian, german and french\n"
+    "- Auto-completion window, in edit mode\n"
+    "- Wide is just an exe file: no DLL, no virtual machines: it's a stand alone application.\n"
+    "- Wrap lines, show number of lines, code folding\n"
+    "- Inform/Glulx support: wide supports zcode (5 and 8 version), ulx, blb, bres\n"
+    "- Objects tree and Syntax highlight is customizable\n"
+    "- Wide is portable: it can be started from an USB key/pen\n"));
     info.SetLicense(wxString::FromAscii(
 "\nGNU GPL LICENSE\n"
 "\n"
