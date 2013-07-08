@@ -6,15 +6,17 @@
 #
 # Note:
 #
-# >>> You should compile wxwidgets as static library and monolithic:
+# 1) You should compile wxwidgets as static library and monolithic:
 # cd /buiild
 # mingw32-make -f makefile.gcc SHARED=0 RUNTIME_LIBS=static MONOLITHIC=1 BUILD=release UNICODE=1 
 #
-# >> and compile the STC contrib
+# 2) and compile the STC contrib
 # cd contrib
 # cd build
 # cd stc
 # mingw32-make -f makefile.gcc SHARED=0 RUNTIME_LIBS=static MONOLITHIC=1 BUILD=release UNICODE=1 
+#
+# 3) then you can compile wide under windows using this makefile and MinGW
 #
 # ########################################################################
 
@@ -36,6 +38,7 @@ SETUPH=-I$(WXHOME)/lib/gcc_lib/mswu
 # #####################################################
 # DON'T EDIT THESE PARAMETERS
 # #####################################################
+STRIP = strip
 CONTRIB=-I$(WXHOME)/contrib/include
 TARGET := wide.exe
 DESTPATH = $(OUTPUTPATH)/$(TARGET)
@@ -46,7 +49,8 @@ LDFLAGS = -lwxmsw28u_stc -lwxmsw28u  -lwxregexu  -lm -lgdi32 -lcomdlg32 -loleaut
 
 all:
 	$(warning Building...)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOURCES) -o $(DESTPATH) $(LDFLAGS) 
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOURCES) -o $(DESTPATH) $(LDFLAGS) wide.res
+	$(STRIP) -s $(DESTPATH)
 
 clean: 
 	$(warning Cleaning...)
