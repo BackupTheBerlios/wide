@@ -1,6 +1,12 @@
 CHANGELOG WIDE
 ==============
 
+2013-07-11
+- added language menu
+- added InformATE Spanish syntax (WIP)
+
+
+
 2013-07-07
 - WIDE 1.00.00
 

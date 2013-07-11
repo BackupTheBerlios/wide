@@ -151,6 +151,7 @@ class MyFrame : public wxFrame {
     void setNewStc(Edit* stc);                  //PL: New stc settings
     void OnSaveFile(wxCommandEvent &event); 
     void OnSaveAll(wxCommandEvent &event);       //PL
+    void OnLanguage(wxCommandEvent &event);      
     void OnExit(wxCommandEvent& evt);
     void OnNextPage(wxCommandEvent& event);
     void OnPreviousPage(wxCommandEvent& event);
@@ -292,6 +293,14 @@ class MyFrame : public wxFrame {
      wxString MENU_PROJECT_OPEN;
      wxString MENU_PROJECT_SAVE;
      wxString MENU_PROJECT_CLOSE;          
+     
+     wxString MENU_LANGUAGE;
+     wxString MENU_LANGUAGE_ENGLISH;
+     wxString MENU_LANGUAGE_ITALIAN;
+     wxString MENU_LANGUAGE_SPANISH;
+     wxString MENU_LANGUAGE_GERMAN;
+     wxString MENU_LANGUAGE_FRENCH;
+     
      
      wxString MENU_ZCODE;
      wxString MENU_ZCODE_COMPILEZCODE;

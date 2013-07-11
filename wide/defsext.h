@@ -3,7 +3,7 @@
 // Purpose:     STC test declarations
 // Maintainer:  Wyo
 // Created:     2003-09-01
-// RCS-ID:      $Id: defsext.h,v 1.3 2008/04/09 12:36:03 paolol_it Exp $
+// RCS-ID:      $Id: defsext.h,v 1.4 2013/07/11 21:26:27 schillacia Exp $
 // Copyright:   (c) wxGuide
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -75,6 +75,11 @@ enum {
     myID_PAGEPREV,
     myID_PAGENEXT,
     myID_SELECTLINE,
+    myID_ENGLISH,
+    myID_ITALIAN,
+    myID_SPANISH,
+    myID_FRENCH,
+    myID_GERMAN,            
 
     // other IDs
     myID_STATUSBAR,

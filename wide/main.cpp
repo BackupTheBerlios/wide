@@ -157,7 +157,15 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (myID_WRAPMODEON,       MyFrame::OnEdit) 
     EVT_MENU (myID_AUTOCOMPON,       MyFrame::OnEdit) 
     EVT_MENU (myID_HOTKEYSON,        MyFrame::OnEdit)
+    EVT_MENU (myID_ENGLISH,          MyFrame::OnLanguage)    
+    EVT_MENU (myID_ITALIAN,          MyFrame::OnLanguage)    
+    EVT_MENU (myID_GERMAN,           MyFrame::OnLanguage)    
+    EVT_MENU (myID_FRENCH,           MyFrame::OnLanguage)    
+    EVT_MENU (myID_SPANISH,          MyFrame::OnLanguage)    
+
     
+
+
     // Eventi sull'oggetto TREE
     EVT_TREE_SEL_CHANGED(wxID_ANY, MyFrame::OnSelChanged)
     
@@ -592,6 +600,15 @@ void MyFrame::LoadConfiguration() {
     MENU_PROJECT_SAVE = pConfig->Read(language+_T("_")+_T("MENU_PROJECT_SAVE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT_SAVE"),_T("")):_T("Save Project"); 
     MENU_PROJECT_CLOSE = pConfig->Read(language+_T("_")+_T("MENU_PROJECT_CLOSE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_PROJECT_CLOSE"),_T("")):_T("Close Project");
 
+    
+    // LANGUAGE MENU
+    MENU_LANGUAGE_ENGLISH = _T("English");
+    MENU_LANGUAGE_ITALIAN = _T("Italian");
+    MENU_LANGUAGE_SPANISH = _T("Spanish");
+    MENU_LANGUAGE_GERMAN = _T("German");
+    MENU_LANGUAGE_FRENCH = _T("French");
+    
+    
     // ZCODE MENU
     MENU_ZCODE = pConfig->Read(language+_T("_")+_T("MENU_ZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE"),_T("")):_T("Zcode");               
     MENU_ZCODE_COMPILEZCODE = pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE"),_T(""))!=_T("")?pConfig->Read(language+_T("_")+_T("MENU_ZCODE_COMPILEZCODE"),_T("")):_T("Compile Zcode");  
@@ -716,6 +733,29 @@ void MyFrame::OnSaveFile (wxCommandEvent &evt) {
     
     // Aggiorno anche l'albero degli oggetti
     OnUpdateTree();
+}
+
+void MyFrame::OnLanguage(wxCommandEvent &event) {
+    int id = event.GetId();
+    switch (id)
+    {
+        case myID_ENGLISH: 
+            pConfig->Write(_T("LANGUAGE"), _T("ENGLISH"));          
+            break;
+        case myID_ITALIAN: 
+            pConfig->Write(_T("LANGUAGE"), _T("ITALIAN"));          
+            break;
+        case myID_SPANISH: 
+            pConfig->Write(_T("LANGUAGE"), _T("SPANISH"));          
+            break;
+        case myID_GERMAN: 
+            pConfig->Write(_T("LANGUAGE"), _T("GERMAN"));          
+            break;
+        case myID_FRENCH: 
+            pConfig->Write(_T("LANGUAGE"), _T("FRENCH"));          
+            break;
+    }
+    wxMessageBox (_("Restart WIDE to apply"), _("Restart"),  wxOK | wxICON_EXCLAMATION);         
 }
 
 void MyFrame::OnSaveAll (wxCommandEvent &evt) {     //PL
@@ -2054,6 +2094,29 @@ wxMenuBar* MyFrame::CreateMenuBar()
     option->Check(myID_WRAPMODEON, wrapMode);
     option->Check(myID_AUTOCOMPON, autoCompleteSwitch);
     option->Check(myID_HOTKEYSON,  hotkeysSwitch);
+    option->AppendSeparator();
+    option->AppendRadioItem (myID_ENGLISH, MENU_LANGUAGE_ENGLISH);
+    option->AppendRadioItem (myID_ITALIAN, MENU_LANGUAGE_ITALIAN);
+    option->AppendRadioItem (myID_SPANISH, MENU_LANGUAGE_SPANISH);
+    option->AppendRadioItem (myID_GERMAN, MENU_LANGUAGE_GERMAN);
+    option->AppendRadioItem (myID_FRENCH, MENU_LANGUAGE_FRENCH);
+    
+    if (language==_T("ENGLISH")){
+        option->Check(myID_ENGLISH, true);
+    }
+    if (language==_T("ITALIAN")){
+        option->Check(myID_ITALIAN, true);
+    }
+    if (language==_T("SPANISH")){
+        option->Check(myID_SPANISH, true);
+    }
+    if (language==_T("GERMAN")){
+        option->Check(myID_GERMAN, true);
+    }
+    if (language==_T("FRENCH")){
+        option->Check(myID_FRENCH, true);
+    }
+    
     
     // DOCUMENTS MENU
     wxMenu* docs = new wxMenu;
