@@ -131,6 +131,16 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU (ID_CreateRes,          MyFrame::OnCreateRes)        
     EVT_MENU (ID_MakeAllBlb,         MyFrame::OnMakeAllBlb)
         
+        
+    // SYNTAX
+    EVT_MENU (ID_UseDirectives,      MyFrame::OnSyntax)
+    EVT_MENU (ID_UseStatements,      MyFrame::OnSyntax)
+    EVT_MENU (ID_UseOtherkeywords,   MyFrame::OnSyntax)
+    EVT_MENU (ID_UseInformate,       MyFrame::OnSyntax)
+    EVT_MENU (ID_UseCustom1,         MyFrame::OnSyntax)
+    EVT_MENU (ID_UseCustom2,         MyFrame::OnSyntax)
+    EVT_MENU (ID_UseCustom3,         MyFrame::OnSyntax)
+
     // Object Tree    
     EVT_MENU (ID_RefreshTree,        MyFrame::OnRefreshTree)    
     EVT_MENU (ID_ShowObject,         MyFrame::OnOptions)
@@ -488,6 +498,14 @@ void MyFrame::ResetMarkers(wxCommandEvent &event){
 
 
 void MyFrame::SaveConfiguration() {
+     pConfig->Write(_T("USEOTHERKEYWORDS"), useOtherkeywords);
+     pConfig->Write(_T("USEDIRECTIVES"),    useDirectives);
+     pConfig->Write(_T("USESTATEMENTS"),    useStatements);
+     pConfig->Write(_T("USEINFORMATE"),     useInformate);
+     pConfig->Write(_T("USECUSTOM1"),       useCustom1);
+     pConfig->Write(_T("USECUSTOM2"),       useCustom2);
+     pConfig->Write(_T("USECUSTOM3"),       useCustom3);
+
      pConfig->Write(_T("OBJECT_TREE_EXPAND_ALL_NODES"), expandAllNodes);
      pConfig->Write(_T("OBJECT_TREE_SHOW_OBJECTS"), showObjects);
      pConfig->Write(_T("OBJECT_TREE_SHOW_PROJECT"), showProject);
@@ -519,6 +537,16 @@ void MyFrame::SaveConfiguration() {
 
 
 void MyFrame::LoadConfiguration() {
+    
+     // syntax stuff
+     useOtherkeywords = pConfig->Read(_T("USEOTHERKEYWORDS"), 1l) != 0;
+     useDirectives = pConfig->Read(_T("USEDIRECTIVES"), 1l) != 0;
+     useStatements = pConfig->Read(_T("USESTATEMENTS"), 1l) != 0;
+     useInformate = pConfig->Read(_T("USEINFORMATE"), 1l) != 0;
+     useCustom1 = pConfig->Read(_T("USECUSTOM1"), 1l) != 0;
+     useCustom2 = pConfig->Read(_T("USECUSTOM2"), 1l) != 0;
+     useCustom3 = pConfig->Read(_T("USECUSTOM3"), 1l) != 0;
+
      expandAllNodes = pConfig->Read(_T("OBJECT_TREE_EXPAND_ALL_NODES"), 1l) != 0;
      showObjects    = pConfig->Read(_T("OBJECT_TREE_SHOW_OBJECTS"), 1l) != 0;
      showProject    = pConfig->Read(_T("OBJECT_TREE_SHOW_PROJECT"), 1l) != 0;
@@ -804,6 +832,20 @@ void MyFrame::OnRefreshTree(wxCommandEvent &event){
 // Impostazioni Object Tree
 void MyFrame::RefreshTree(){
     OnUpdateTree();     
+}
+
+void MyFrame::OnSyntax(wxCommandEvent &event){
+    int id = event.GetId();
+    switch (id)
+    {
+        case ID_UseDirectives:    useDirectives=event.IsChecked();     break;
+        case ID_UseStatements:    useStatements=event.IsChecked();     break;
+        case ID_UseOtherkeywords: useOtherkeywords=event.IsChecked();  break;        
+        case ID_UseInformate:     useInformate=event.IsChecked();      break;        
+        case ID_UseCustom1:       useCustom1=event.IsChecked();        break;        
+        case ID_UseCustom2:       useCustom2=event.IsChecked();        break;                        
+        case ID_UseCustom3:       useCustom3=event.IsChecked();        break;        
+    }
 }
 
 void MyFrame::OnOptions(wxCommandEvent &event){
@@ -1556,33 +1598,91 @@ void MyFrame::setNewStc(Edit* stc) {
     // Recupero le liste separatamente, aggiungendo le parole sia alle varie
     // liste per la syntax highlighting che all'arraty wlarray
     wxArrayString wlarray;
-    pConfig->SetPath(_T("/STATEMENTS"));
     wxString statlist = _T("");
-    bCont = pConfig->GetFirstEntry(str, dummy);
-    while(bCont){
-        s = pConfig->Read(str,_T(""));
-        statlist = statlist + s + _T(" ");
-        wlarray.Add(s);
-        bCont = pConfig->GetNextEntry(str, dummy);
-    }
-    pConfig->SetPath(_T("/DIRECTIVES"));
     wxString direclist = _T("");
-    bCont = pConfig->GetFirstEntry(str, dummy);
-    while(bCont){
-        s = pConfig->Read(str,_T(""));
-        direclist = direclist + s + _T(" ");
-        wlarray.Add(s);
-        bCont = pConfig->GetNextEntry(str, dummy);
-    }
-    pConfig->SetPath(_T("/OTHERKEYWORDS"));
     wxString otherlist = _T("");
-    bCont = pConfig->GetFirstEntry(str, dummy);
-    while(bCont){
-        s = pConfig->Read(str,_T(""));
-        otherlist = otherlist + s + _T(" ");
-        wlarray.Add(s);
-        bCont = pConfig->GetNextEntry(str, dummy);
-    }    
+    wxString informatelist = _T("");
+    wxString custom1list = _T("");
+    wxString custom2list = _T("");
+    wxString custom3list = _T("");
+    
+    if (useStatements){
+        pConfig->SetPath(_T("/STATEMENTS"));        
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            statlist = statlist + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }
+    }
+    
+    if (useDirectives){
+        pConfig->SetPath(_T("/DIRECTIVES"));        
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            direclist = direclist + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }
+    }
+    
+    if (useOtherkeywords){
+        pConfig->SetPath(_T("/OTHERKEYWORDS"));
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            otherlist = otherlist + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }    
+    }
+    
+    if (useInformate){
+        pConfig->SetPath(_T("/INFORMATE"));
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            informatelist = informatelist + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }    
+    }
+    
+    if (useCustom1){
+        pConfig->SetPath(_T("/CUSTOM1"));
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            custom1list = custom1list + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }    
+    }
+    if (useCustom2){
+        pConfig->SetPath(_T("/CUSTOM2"));
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            custom2list = custom2list + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }    
+    }
+    if (useCustom3){
+        pConfig->SetPath(_T("/CUSTOM3"));
+        bCont = pConfig->GetFirstEntry(str, dummy);
+        while(bCont){
+            s = pConfig->Read(str,_T(""));
+            custom3list = custom3list + s + _T(" ");
+            wlarray.Add(s);
+            bCont = pConfig->GetNextEntry(str, dummy);
+        }    
+    }
+    
+    
+    
     pConfig->SetPath(_T("/"));
     //wxString wordlist = statlist+direclist+otherlist;
     // Aggiungo la roba del progetto
@@ -1602,7 +1702,7 @@ void MyFrame::setNewStc(Edit* stc) {
     for (size_t i = 0; i<wlarray.GetCount(); i++) wordlist = wordlist + wlarray[i].MakeLower() + _T(" ");
     wlarray.Clear();
     stc->SetWordlist(wordlist);
-    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist + direclist + otherlist);
+    stc->SetKeyWords (mySTC_TYPE_DEFAULT, statlist + direclist + otherlist + informatelist + custom1list + custom2list + custom3list);
     //stc->SetKeyWords (1, direclist);
     //stc->SetKeyWords (2, otherlist);   
     stc->SetAutoCompleteNumber(autoCompleteNumber);
@@ -2059,6 +2159,25 @@ wxMenuBar* MyFrame::CreateMenuBar()
     glulx->Append (ID_MakeAllBlb, _T("&")+MENU_GLULX_BUILDALLBLORBFILE+_T("\tF11"));
     glulx->Append (ID_RunBlb, _T("&")+MENU_GLULX_RUNBLORB+_T("\tCtrl+F11"));
 
+    // SYNTAX
+    wxMenu* syntaxmenu = new wxMenu;
+    syntaxmenu->AppendCheckItem (ID_UseDirectives, _T("DIRECTIVES"));
+    syntaxmenu->AppendCheckItem (ID_UseStatements, _T("STATEMENTS"));
+    syntaxmenu->AppendCheckItem (ID_UseOtherkeywords, _T("OTHERKEYWORDS"));
+    syntaxmenu->AppendCheckItem (ID_UseInformate, _T("INFORMATE"));
+    syntaxmenu->AppendCheckItem (ID_UseCustom1, _T("CUSTOM1"));
+    syntaxmenu->AppendCheckItem (ID_UseCustom2, _T("CUSTOM2"));
+    syntaxmenu->AppendCheckItem (ID_UseCustom3, _T("CUSTOM3"));
+    
+    syntaxmenu->Check(ID_UseDirectives, useDirectives);
+    syntaxmenu->Check(ID_UseStatements, useStatements);
+    syntaxmenu->Check(ID_UseOtherkeywords, useOtherkeywords);
+    syntaxmenu->Check(ID_UseInformate, useInformate);
+    syntaxmenu->Check(ID_UseCustom1, useCustom1);
+    syntaxmenu->Check(ID_UseCustom2, useCustom2);
+    syntaxmenu->Check(ID_UseCustom3, useCustom3);
+    
+
     // OBJECT TREE MENU
     wxMenu* otree = new wxMenu;
     otree->Append (ID_RefreshTree, MENU_OBJECTTREE_REFRESHTREE+_T("\tF12"));
@@ -2143,6 +2262,7 @@ wxMenuBar* MyFrame::CreateMenuBar()
     mb->Append(zcode, MENU_ZCODE);
     mb->Append(glulx, MENU_GLULX);    
     mb->Append(otree, MENU_OBJECTTREE);
+    mb->Append(syntaxmenu, _T("Syntax"));    
     mb->Append(option, MENU_OPTIONS);
     mb->Append(docs, MENU_DOCUMENTS);        
     mb->Append(help, MENU_HELP);    

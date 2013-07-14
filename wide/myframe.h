@@ -6,8 +6,8 @@
 
   // COSTANTI
   #define SEP " - "
-  #define VERSIONE "1.00.00"
-  #define BUILD " (build 201307071900) "
+  #define VERSIONE "1.01.00"
+  #define BUILD " (build 201307140915) "
   #define NOMEAPPLICAZIONE "WIDE"  
   #define DESCRIZIONE "Wx Inform Development Environment"    
   #define CONFIG_FILE "wide.ini"  
@@ -74,7 +74,16 @@ class MyFrame : public wxFrame {
         ID_MakeAllBlb,
         ID_CreateRes,    
         ID_CreateZBlb,
-        ID_RunZBlb,                           
+        ID_RunZBlb,    
+        
+        ID_UseDirectives,
+        ID_UseStatements,
+        ID_UseOtherkeywords,
+        ID_UseInformate,
+        ID_UseCustom1,
+        ID_UseCustom2,
+        ID_UseCustom3,       
+        
         ID_Fine = ID_Exit+1000
     };    
     
@@ -166,6 +175,7 @@ class MyFrame : public wxFrame {
     void OnOptions(wxCommandEvent &event);   
     void LoadConfiguration();   
     void SaveConfiguration();
+    void OnSyntax(wxCommandEvent &event);   
    
     // Search menu
     void GotoLine(wxCommandEvent &event);   
@@ -246,7 +256,16 @@ class MyFrame : public wxFrame {
      bool showFunctions;     
      bool showClasses;     
      bool showIncludes;     
-     bool showVerbs;          
+     bool showVerbs;        
+     
+     // syntax
+     bool useOtherkeywords;
+     bool useDirectives;
+     bool useStatements;
+     bool useInformate;
+     bool useCustom1;
+     bool useCustom2;
+     bool useCustom3;
 
      int untitled;
      int autoCompleteNumber;    // Number of char typed before window autocomplete     

@@ -1,9 +1,18 @@
 CHANGELOG WIDE
 ==============
 
-2013-07-11
+2013-07-17
+- WIDE 1.01.00
 - added language menu
-- added InformATE Spanish syntax (WIP)
+- added InformATE Spanish syntax
+- added checkbox for syntax for:
+    OTHERKEYWORDS
+    DIRECTIVES
+    STATEMENTS
+    INFORMATE
+    CUSTOM1
+    CUSTOM2
+    CUSTOM3
 
 
 
