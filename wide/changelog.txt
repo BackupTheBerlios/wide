@@ -1,7 +1,12 @@
 CHANGELOG WIDE
 ==============
 
-2013-07-17
+2013-07-15
+- WIDE 1.01.01
+- fixed static dll
+
+
+2013-07-15
 - WIDE 1.01.00
 - added language menu
 - added InformATE Spanish syntax
