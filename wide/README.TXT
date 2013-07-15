@@ -15,8 +15,3 @@ install on Windows
 5) edit makefile.gcc to fit to your paths
 6) mingw32-make -f makefile.gcc
 
-
-NOTE:
-for windows you can use relative path in the res file
-for linux you should use absolute path in the res file
-due to BLC which is different for platform
